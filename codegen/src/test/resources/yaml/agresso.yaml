@@ -1,0 +1,31 @@
+version: '1.0'
+name: Agresso
+package: com.example.agresso
+qualifier: agresso
+description: Agresso economy system
+keys:
+  - username:
+      name: username
+      description: The person's username
+      type: string
+  - timestamp:
+      name: timestamp
+      description: current time in milliseconds
+      type: integer
+      format: int32
+  - version:
+      name: version
+      description: application version
+      type: number
+      format: double
+  - date:
+      name: date
+      description: date of document creation
+      type: string
+      format: date
+
+tags:
+ - blue: color blue
+ - red: color red
+ - yellow: color yellow
+ 
