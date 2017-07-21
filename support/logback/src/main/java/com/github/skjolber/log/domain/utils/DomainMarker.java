@@ -2,7 +2,11 @@ package com.github.skjolber.log.domain.utils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+
+import org.slf4j.Marker;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -10,11 +14,13 @@ import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.marker.LogstashMarker;
 
 public class DomainMarker extends LogstashMarker implements StructuredArgument {
-        
-    public static final String MARKER_NAME = LogstashMarker.MARKER_NAME_PREFIX + "MAP_FIELDS";
+	
+	private static final long serialVersionUID = 1L;
+
+	public static final String MARKER_NAME = LogstashMarker.MARKER_NAME_PREFIX + "MAP_FIELDS";
 
     protected final Map<String, Object> map = new HashMap<>();
-	private final String qualifier;
+    protected final String qualifier;
 
     public DomainMarker(String qualifier) {
         super(MARKER_NAME);
@@ -71,6 +77,38 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 		return true;
 	}
 
+    public boolean contains(String key) {
+    	return map.containsKey(key);
+    }
+
+    public Object get(String key) {
+    	return map.get(key);
+    }    
     
+    public Map<String, Object> getMap() {
+		return map;
+	}
     
+    public String getQualifier() {
+		return qualifier;
+	}
+    
+    public <T extends DomainMarker> T find(String qualifier) {
+    	if(Objects.equals(qualifier, this.qualifier)) {
+    		return (T) this;
+    	}
+    	
+    	Iterator<Marker> iterator = iterator();
+    	while(iterator.hasNext()) {
+    		Marker next = iterator.next();
+    		if(next instanceof DomainMarker) {
+    			DomainMarker domainMarker = (DomainMarker)next;
+        		if(Objects.equals(qualifier, domainMarker.qualifier)) {
+            		return (T) domainMarker;
+            	}
+    		}
+    	}
+    	
+    	return null;
+    }
 }
