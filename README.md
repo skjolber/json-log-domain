@@ -118,6 +118,7 @@ The definition format consists of the fields
   * `name` - domain name (will prefix generated java sources)
   * `package` - package of generated sources
   * `qualifier` - name of domain subtree in logged JSON output (optional) 
+  * `description` - textual description of domain
   * `keys` - list of key-value definitions (see below). 
   * `tags` - list of tag definitions (see below)
 
