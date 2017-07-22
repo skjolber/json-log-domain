@@ -24,19 +24,19 @@ public class DomainMarkerMatcher<T> extends BaseMatcher<T> implements Serializab
 		return marker(qualifier, key, new IsEqual(value), level);
 	}
 
-	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<String> matcher) {
+	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(null, qualifier, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(String key, Matcher<String> matcher) {
+	public static <T> Matcher<T> marker(String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(null, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String key, Matcher<String> matcher) {
+	public static <T> Matcher<T> marker(Class<?> cls, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(cls.getName(), null, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<String> matcher, Level level) {
+	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<?> matcher, Level level) {
 		return new DomainMarkerMatcher(null, qualifier, key, matcher, level);
 	}
 
@@ -44,11 +44,11 @@ public class DomainMarkerMatcher<T> extends BaseMatcher<T> implements Serializab
 		return marker(cls, qualifier, key, new IsEqual(value), level);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<String> matcher) {
+	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(cls.getName(), qualifier, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<String> matcher, Level level) {
+	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<?> matcher, Level level) {
 		return new DomainMarkerMatcher(cls.getName(), qualifier, key, matcher, level);
 	}
 	

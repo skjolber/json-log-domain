@@ -14,7 +14,6 @@ import ch.qos.logback.core.read.ListAppender;
 
 public class LogbackJUnitRule extends org.junit.rules.ExternalResource {
 
-	// https://github.com/dancerjohn/LibEx/blob/master/testlibex/src/main/java/org/libex/test/logging/log4j/Log4jCapturer.java
 	public static LogbackJUnitRule newInstance(Class<?> ... classes) {
 		LogbackJUnitRule rule = new LogbackJUnitRule();
 		

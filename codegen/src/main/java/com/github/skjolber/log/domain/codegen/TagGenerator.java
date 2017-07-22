@@ -2,6 +2,8 @@ package com.github.skjolber.log.domain.codegen;
 
 import javax.lang.model.element.Modifier;
 
+import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainTag;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -18,7 +20,10 @@ public class TagGenerator {
 		
 		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TAG);
 
-		Builder builder = TypeSpec.enumBuilder(name).addModifiers(Modifier.PUBLIC).addJavadoc(composeJavadoc(ontology, name));
+		Builder builder = TypeSpec.enumBuilder(name)
+					.addModifiers(Modifier.PUBLIC)
+					.addJavadoc(composeJavadoc(ontology, name))
+					.addSuperinterface(DomainTag.class);
 
 		for(Tag tag : ontology.getTags()) {
 			builder = builder.addEnumConstant(tag.getId().toUpperCase(), TypeSpec.anonymousClassBuilder("$S, $S", tag.getId(), tag.getDescription()).addJavadoc(tag.getDescription()).build());
