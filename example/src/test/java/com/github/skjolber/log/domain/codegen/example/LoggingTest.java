@@ -8,6 +8,7 @@ import static com.example.network.NetworkMarkerBuilder.host;
 import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.key;
 import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.tags;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
+import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,6 +44,7 @@ public class LoggingTest {
 	@Test
 	public void multipleDomains1() {
 		MDC.put("uname", "magnus");
+		
 		logger.info(name("java").version(1.7).tags(LanguageTag.JIT, LanguageTag.BYTECODE)
 				.and(host("127.0.0.1").port(8080))
 				.and(system("fedora").tags(LINUX)),
@@ -59,6 +61,9 @@ public class LoggingTest {
 
 		// multiple tags, from a domain
 		assertThat(rule, tags("language", LanguageTag.JIT, LanguageTag.BYTECODE));
+
+		// MDC
+		assertThat(rule, mdc("uname", "magnus"));
 
 	}
 
