@@ -11,6 +11,7 @@ import org.slf4j.Marker;
 
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
 import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainTag;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -20,38 +21,62 @@ public class DomainMarkerMatcher<T> extends BaseMatcher<T> implements Serializab
 
 	private static final long serialVersionUID = 1L;
 	
-	public static <T> Matcher<T> marker(String qualifier, String key, String value, Level level) {
-		return marker(qualifier, key, new IsEqual(value), level);
+	public static <T> Matcher<T> key(String qualifier, String key, String value, Level level) {
+		return key(qualifier, key, new IsEqual(value), level);
 	}
 
-	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<?> matcher) {
+	public static <T> Matcher<T> key(String qualifier, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(null, qualifier, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(String key, Matcher<?> matcher) {
+	public static <T> Matcher<T> key(String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(null, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String key, Matcher<?> matcher) {
+	public static <T> Matcher<T> key(Class<?> cls, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(cls.getName(), null, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(String qualifier, String key, Matcher<?> matcher, Level level) {
+	public static <T> Matcher<T> key(String qualifier, String key, Matcher<?> matcher, Level level) {
 		return new DomainMarkerMatcher(null, qualifier, key, matcher, level);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, String value, Level level) {
-		return marker(cls, qualifier, key, new IsEqual(value), level);
+	public static <T> Matcher<T> key(Class<?> cls, String qualifier, String key, String value, Level level) {
+		return key(cls, qualifier, key, new IsEqual(value), level);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<?> matcher) {
+	public static <T> Matcher<T> key(Class<?> cls, String qualifier, String key, Matcher<?> matcher) {
 		return new DomainMarkerMatcher(cls.getName(), qualifier, key, matcher, null);
 	}
 
-	public static <T> Matcher<T> marker(Class<?> cls, String qualifier, String key, Matcher<?> matcher, Level level) {
+	public static <T> Matcher<T> key(Class<?> cls, String qualifier, String key, Matcher<?> matcher, Level level) {
 		return new DomainMarkerMatcher(cls.getName(), qualifier, key, matcher, level);
 	}
-	
+
+	public static <T> Matcher<T> tags(DomainTag ... tags) {
+		return new DomainMarkerMatcher(null, null , "tags", new TagMatcher(tags), null);
+	}
+
+	public static <T> Matcher<T> tags(Level level, DomainTag ... tags) {
+		return new DomainMarkerMatcher(null, null, "tags", new TagMatcher(tags), level);
+	}
+
+	public static <T> Matcher<T> tags(String qualifier, DomainTag ... tags) {
+		return new DomainMarkerMatcher(null, qualifier, "tags", new TagMatcher(tags), null);
+	}
+
+	public static <T> Matcher<T> tags(Class<?> cls, String qualifier, DomainTag ... tags) {
+		return new DomainMarkerMatcher(cls.getName(), qualifier, "tags", new TagMatcher(tags), null);
+	}
+
+	public static <T> Matcher<T> tags(String qualifier, Level level, DomainTag ... tags) {
+		return new DomainMarkerMatcher(null, qualifier, "tags", new TagMatcher(tags), level);
+	}
+
+	public static <T> Matcher<T> tags(Class<?> cls, String qualifier, Level level, DomainTag ... tags) {
+		return new DomainMarkerMatcher(cls.getName(), qualifier, "tags", new TagMatcher(tags), level);
+	}
+
 	protected final String loggerName;
 	protected final String qualifier;
 	protected final String key;

@@ -5,15 +5,13 @@ import static com.example.global.GlobalTag.LINUX;
 import static com.example.language.LanguageMarkerBuilder.name;
 import static com.example.language.LanguageTag.JIT;
 import static com.example.network.NetworkMarkerBuilder.host;
-import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.marker;
-import static com.github.skjolber.log.domain.test.matcher.TagMatcher.*;
+import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.key;
+import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.tags;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
-
-import javax.print.DocFlavor.BYTE_ARRAY;
 
 import org.apache.log4j.MDC;
 import org.junit.Test;
@@ -36,10 +34,10 @@ public class LoggingTest {
 	public void singleDomain() {
 		logger.info(system("fedora").tags(LINUX), "Hello world");
 		
-		assertThat(rule, marker("system", is("fedora")));
+		assertThat(rule, key("system", is("fedora")));
 		
 		// single tag from global domain
-		assertThat(rule, marker("tags", tags(LINUX)));
+		assertThat(rule, tags(LINUX));
 	}
 	
 	@Test
@@ -55,12 +53,12 @@ public class LoggingTest {
 
 		assertThat(rule, message("Hello world"));
 
-		assertThat(rule, marker("language", "name", is("java")));
-		assertThat(rule, marker("network", "host", is("127.0.0.1")));
-		assertThat(rule, marker("system", is("fedora")));
+		assertThat(rule, key("language", "name", is("java")));
+		assertThat(rule, key("network", "host", is("127.0.0.1")));
+		assertThat(rule, key("system", is("fedora")));
 
 		// multiple tags, from a domain
-		assertThat(rule, marker("language", "tags", tags(LanguageTag.JIT, LanguageTag.BYTECODE)));
+		assertThat(rule, tags("language", LanguageTag.JIT, LanguageTag.BYTECODE));
 
 	}
 
@@ -75,9 +73,9 @@ public class LoggingTest {
 		
 		assertThat(rule, message("Hello world"));
 
-		assertThat(rule, marker("language", "name", is("java")));
-		assertThat(rule, marker("network", "host", is("127.0.0.1")));
-		assertThat(rule, marker("system", is("fedora")));
+		assertThat(rule, key("language", "name", is("java")));
+		assertThat(rule, key("network", "host", is("127.0.0.1")));
+		assertThat(rule, key("system", is("fedora")));
 		
 	}
 

@@ -13,10 +13,6 @@ public class TagMatcher extends BaseMatcher<DomainTag> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static TagMatcher tags(DomainTag ... tags) {
-		return new TagMatcher(tags);
-	}
-
 	private final DomainTag tags[];
 
 	public TagMatcher(DomainTag ... tags) {
