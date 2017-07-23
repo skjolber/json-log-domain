@@ -29,7 +29,7 @@ public class LoggingTest {
 
 	private static Logger logger = LoggerFactory.getLogger(LoggingTest.class);
 
-	public LogbackJUnitRule rule = LogbackJUnitRule.newInstance(LoggingTest.class);
+	public LogbackJUnitRule rule = LogbackJUnitRule.newInstance();
 
 	@Test
 	public void singleDomain() {

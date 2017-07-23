@@ -181,6 +181,41 @@ A few common classes are not part of the generated sources:
 </dependency>
 ```
 
+# Testing
+Verify that testing is performed using the test library. 
+
+Capture log statements using a [JUnit Rule]
+
+```java
+public LogbackJUnitRule rule = LogbackJUnitRule.newInstance();
+```
+
+and verify logging using
+
+```java
+assertThat(rule, message("Hello world"));
+
+assertThat(rule, key("language", "name", is("java")));
+assertThat(rule, key("network", "host", is("127.0.0.1")));
+assertThat(rule, key("system", is("fedora")));
+
+assertThat(rule, tags("language", LanguageTag.JIT));
+
+// MDC
+assertThat(rule, mdc("uname", "magnus"));
+```
+
+optionally also using `Class` and `Level` filtering. Import the library using
+
+```xml
+<dependency>
+    <groupId>com.github.skjolber.log-domain</groupId>
+    <artifactId>log-domain-test-logback</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
 # History
 
  - [1.0.0]: Initial version
@@ -192,3 +227,4 @@ A few common classes are not part of the generated sources:
 [Logback]:					https://logback.qos.ch/
 [logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:	https://github.com/swagger-api/swagger-codegen
+[JUnit Rule]:				https://github.com/junit-team/junit4/wiki/rules
