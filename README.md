@@ -17,7 +17,7 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 [Apache 2.0]
 
 # Obtain
-The project is based on [Maven] and is not yet available from central Maven repository.
+The project is based on [Maven] and is __not yet__ available from central Maven repository.
 
 # Usage
 The generated sources allow for writing statements like
@@ -195,11 +195,12 @@ and verify logging using
 ```java
 assertThat(rule, message("Hello world"));
 
-assertThat(rule, key("language", "name", is("java")));
-assertThat(rule, key("network", "host", is("127.0.0.1")));
-assertThat(rule, key("system", is("fedora")));
+assertThat(rule, qualifier("language").key("name").value("java"));
+assertThat(rule, qualifier("network").key("host").value("127.0.0.1"));
+assertThat(rule, key("system").value("fedora"));
 
-assertThat(rule, tags("language", LanguageTag.JIT));
+// multiple tags (from single domain)
+assertThat(rule, qualifier("language").tags(LanguageTag.JIT, LanguageTag.BYTECODE));
 
 // MDC
 assertThat(rule, mdc("uname", "magnus"));

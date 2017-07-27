@@ -30,10 +30,12 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
     
     @Override
     public void writeTo(JsonGenerator generator) throws IOException {
-    	if(qualifier != null && !qualifier.isEmpty()) { 
+    	if(qualifier != null && !qualifier.isEmpty()) {
+    		// subtree
 	        generator.writeFieldName(qualifier);
 	        generator.writeObject(map);
 	    } else {
+	    	// root
 	    	for (Map.Entry<?, ?> entry : map.entrySet()) {
                 generator.writeFieldName(String.valueOf(entry.getKey()));
                 generator.writeObject(entry.getValue());
@@ -44,6 +46,48 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
     @Override
     public String toString() {
         return String.valueOf(map);
+    }
+
+    public boolean contains(String key) {
+    	return map.containsKey(key);
+    }
+
+    public Object get(String key) {
+    	return map.get(key);
+    }    
+    
+    public Map<String, Object> getMap() {
+		return map;
+	}
+    
+    public String getQualifier() {
+		return qualifier;
+	}
+    
+    /**
+     * Search chained {@linkplain DomainMarker}s for the correct qualifier.
+     * 
+     * @param qualifier
+     * @return a marker matching the qualifier, or null if no such exists.
+     */
+    
+    public <T extends DomainMarker> T find(String qualifier) {
+    	if(Objects.equals(qualifier, this.qualifier)) {
+    		return (T) this;
+    	}
+    	
+    	Iterator<Marker> iterator = iterator();
+    	while(iterator.hasNext()) {
+    		Marker next = iterator.next();
+    		if(next instanceof DomainMarker) {
+    			DomainMarker domainMarker = (DomainMarker)next;
+        		if(Objects.equals(qualifier, domainMarker.qualifier)) {
+            		return (T) domainMarker;
+            	}
+    		}
+    	}
+    	
+    	return null;
     }
 
 	@Override
@@ -76,39 +120,6 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 			return false;
 		return true;
 	}
-
-    public boolean contains(String key) {
-    	return map.containsKey(key);
-    }
-
-    public Object get(String key) {
-    	return map.get(key);
-    }    
     
-    public Map<String, Object> getMap() {
-		return map;
-	}
     
-    public String getQualifier() {
-		return qualifier;
-	}
-    
-    public <T extends DomainMarker> T find(String qualifier) {
-    	if(Objects.equals(qualifier, this.qualifier)) {
-    		return (T) this;
-    	}
-    	
-    	Iterator<Marker> iterator = iterator();
-    	while(iterator.hasNext()) {
-    		Marker next = iterator.next();
-    		if(next instanceof DomainMarker) {
-    			DomainMarker domainMarker = (DomainMarker)next;
-        		if(Objects.equals(qualifier, domainMarker.qualifier)) {
-            		return (T) domainMarker;
-            	}
-    		}
-    	}
-    	
-    	return null;
-    }
 }

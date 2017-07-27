@@ -44,12 +44,12 @@ public class MarkerGenerator {
 
 		builder = builder.addMethod(MethodSpec.constructorBuilder()
 				.addModifiers(Modifier.PUBLIC)
-				.addStatement("super($S)", ontology.getQualifier())
+				.addStatement("super(QUALIFIER)")
 		        .build());
 		
 		// private static final long serialVersionUID = 1L;
-		FieldSpec build = FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build();
-		builder = builder.addField(build);
+		builder = builder.addField(FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build());
+		builder = builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", ontology.getQualifier()).build());
 		
 		for(Key key : keys) {
 			builder = builder.addMethod(getMethod(name, key));

@@ -19,6 +19,10 @@ public class TagMatcher extends BaseMatcher<DomainTag> implements Serializable {
 		this.tags = tags;
 	}
 	
+	public TagMatcher(List<DomainTag> tags) {
+		this.tags = tags.toArray(new DomainTag[tags.size()]);
+	}
+
 	public boolean matches(Object actual) {
     	if(actual instanceof List) {
     		List list = (List)actual;

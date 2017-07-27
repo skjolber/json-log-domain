@@ -5,8 +5,7 @@ import static com.example.global.GlobalTag.LINUX;
 import static com.example.language.LanguageMarkerBuilder.name;
 import static com.example.language.LanguageTag.JIT;
 import static com.example.network.NetworkMarkerBuilder.host;
-import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.key;
-import static com.github.skjolber.log.domain.test.matcher.DomainMarkerMatcher.tags;
+import static com.github.skjolber.log.domain.test.matcher.MarkerBuilder.*;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
 import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,10 +14,13 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.apache.log4j.MDC;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.global.GlobalTag;
 import com.example.language.LanguageLogger;
 import com.example.language.LanguageTag;
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
@@ -29,13 +31,16 @@ public class LoggingTest {
 
 	private static Logger logger = LoggerFactory.getLogger(LoggingTest.class);
 
-	public LogbackJUnitRule rule = LogbackJUnitRule.newInstance();
+	public LogbackJUnitRule rule = LogbackJUnitRule.newInstance(LoggingTest.class);
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
 	@Test
 	public void singleDomain() {
 		logger.info(system("fedora").tags(LINUX), "Hello world");
 		
-		assertThat(rule, key("system", is("fedora")));
+		assertThat(rule, key("system").value("fedora"));
 		
 		// single tag from global domain
 		assertThat(rule, tags(LINUX));
@@ -55,12 +60,12 @@ public class LoggingTest {
 
 		assertThat(rule, message("Hello world"));
 
-		assertThat(rule, key("language", "name", is("java")));
-		assertThat(rule, key("network", "host", is("127.0.0.1")));
-		assertThat(rule, key("system", is("fedora")));
+		assertThat(rule, qualifier("language").key("name").value("java"));
+		assertThat(rule, qualifier("network").key("host").value("127.0.0.1"));
+		assertThat(rule, key("system").value("fedora"));
 
 		// multiple tags, from a domain
-		assertThat(rule, tags("language", LanguageTag.JIT, LanguageTag.BYTECODE));
+		assertThat(rule, qualifier("language").tags(LanguageTag.JIT, LanguageTag.BYTECODE));
 
 		// MDC
 		assertThat(rule, mdc("uname", "magnus"));
@@ -78,11 +83,37 @@ public class LoggingTest {
 		
 		assertThat(rule, message("Hello world"));
 
-		assertThat(rule, key("language", "name", is("java")));
-		assertThat(rule, key("network", "host", is("127.0.0.1")));
-		assertThat(rule, key("system", is("fedora")));
-		
+		assertThat(rule, qualifier("language").key("name").value("java"));
+		assertThat(rule, qualifier("network").key("host").value("127.0.0.1"));
+		assertThat(rule, key("system").value("fedora"));
 	}
 
+	@Test
+	public void exceptionTag() {
+		exception.expect(AssertionError.class);
+		
+		logger.info(system("fedora").tags(LINUX), "Hello world");
+
+		assertThat(rule, tags(GlobalTag.WINDOWS));
+	}
+
+	@Test
+	public void exceptionValue() {
+		exception.expect(AssertionError.class);
+		
+		logger.info(system("fedora").tags(LINUX), "Hello world");
+
+		assertThat(rule, key("system").value("ubuntu"));
+	}
+
+	@Test
+	public void exceptionWrongLogger() {
+		exception.expect(AssertionError.class);
+		
+		Logger logger = LoggerFactory.getLogger(GlobalTag.class);
+		logger.info(system("fedora").tags(LINUX), "Hello world");
+
+		assertThat(rule, key("system").value("fedora"));
+	}
 
 }
