@@ -5,7 +5,7 @@ import static com.example.global.GlobalTag.LINUX;
 import static com.example.language.LanguageMarkerBuilder.name;
 import static com.example.language.LanguageTag.JIT;
 import static com.example.network.NetworkMarkerBuilder.host;
-import static com.github.skjolber.log.domain.test.matcher.MarkerBuilder.*;
+import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.*;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
 import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.*;
 import static org.hamcrest.CoreMatchers.is;

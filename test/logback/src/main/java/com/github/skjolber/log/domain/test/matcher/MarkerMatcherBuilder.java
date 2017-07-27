@@ -6,7 +6,7 @@ import com.github.skjolber.log.domain.utils.DomainTag;
 
 import ch.qos.logback.classic.Level;
 
-public class MarkerBuilder {
+public class MarkerMatcherBuilder {
 
 	public static <T> MarkerMatcher<T> cls(Class<?> cls) {
 		MarkerMatcher<T> builder = new MarkerMatcher<T>();
