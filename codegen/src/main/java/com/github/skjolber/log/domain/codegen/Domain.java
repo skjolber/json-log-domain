@@ -82,4 +82,8 @@ public class Domain {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public boolean hasTags() {
+		return !tags.isEmpty();
+	}
 }

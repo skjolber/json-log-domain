@@ -28,7 +28,7 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 	protected Matcher<T> matcher;
 	protected Level level;
 	protected List<DomainTag> tags = new ArrayList<>(); 
-	protected boolean initalized; // ensure builder pattern completes
+	protected boolean initalized; // ensure builder pattern completes, if in use.
 
 	public MarkerMatcher() {
 	}
