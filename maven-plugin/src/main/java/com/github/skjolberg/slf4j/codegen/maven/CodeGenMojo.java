@@ -1,6 +1,7 @@
 package com.github.skjolberg.slf4j.codegen.maven;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -12,7 +13,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.JavaGenerator;
+import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
 @Mojo(name = "generate",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES,
@@ -35,8 +38,22 @@ public class CodeGenMojo extends AbstractMojo {
 
         if(!domains.isEmpty()) {
 		    try {
+		    	File javaOutput = new File(outputDirectory, "java/");
+		    	File markdownOutput = new File(outputDirectory, "markdown/");
+		    	
+		    	if(!markdownOutput.exists() && !markdownOutput.mkdirs()) {
+		    		throw new IOException("Problem creating directory " + markdownOutput.getAbsolutePath());
+		    	}
+
+		    	if(!javaOutput.exists() && !javaOutput.mkdirs()) {
+		    		throw new IOException("Problem creating directory " + javaOutput.getAbsolutePath());
+		    	}
+
 		        for(Domain domain : domains) {
-		    		JavaGenerator.generate(domain.getPath(), outputDirectory);
+	        		com.github.skjolber.log.domain.codegen.Domain result = DomainFactory.parse(new FileReader(domain.getPath()));
+
+	        		JavaGenerator.generate(result, javaOutput);
+	        		MarkdownGenerator.generate(result, new File(markdownOutput, result.getName() + ".md"), true);
 		        }
 				
 				if(project != null) {

@@ -141,7 +141,7 @@ Each tag is defined by:
  - `name` - a valid Java Enum name
  - `description` - textual description of the tag
 
-# Generating helper sources
+# Generating Java helper sources
 YAML files are converted to helper classes using `log-domain-maven-plugin`.
 
 ```xml
@@ -180,6 +180,9 @@ A few common classes are not part of the generated sources:
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
+
+## Markdown documentation
+By default, a [markdown file] will also be generated for online documentation. 
 
 # Testing
 Verify that testing is performed using the test library. 
@@ -229,3 +232,4 @@ optionally also using `Class` and `Level` filtering. Import the library using
 [logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:	https://github.com/swagger-api/swagger-codegen
 [JUnit Rule]:				https://github.com/junit-team/junit4/wiki/rules
+[markdown file]:			https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71

@@ -17,14 +17,14 @@ import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class MarkdownGenerator {
 
-	public static void generate(File file, File outputDirectory, boolean javaCodeGenerated) throws IOException {
+	public static void generate(File file, File outputFile, boolean javaCodeGenerated) throws IOException {
 		Domain domain = DomainFactory.parse(new FileReader(file));
 
-		generate(domain, outputDirectory, javaCodeGenerated);
+		generate(domain, outputFile, javaCodeGenerated);
 	}
 
-	public static void generate(Domain domain, File outputDirectory, boolean javaCodeGenerated) throws IOException {
-		Writer writer = new OutputStreamWriter(new FileOutputStream(outputDirectory));
+	public static void generate(Domain domain, File outputFile, boolean javaCodeGenerated) throws IOException {
+		Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile));
 		try {
 			writer.write(generate(domain, javaCodeGenerated));
 		} finally {

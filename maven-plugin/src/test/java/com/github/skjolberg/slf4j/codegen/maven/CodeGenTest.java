@@ -19,7 +19,7 @@ public class CodeGenTest extends AbstractMojoTestCase {
         super.tearDown();
     }
 
-    public void testJustMessage() throws Exception {
+    public void testGen() throws Exception {
         File pom = getTestFile("src/test/resources/unit/domain-log-codegen/pom.xml");
         assertNotNull(pom);
         assertTrue(pom.exists());
