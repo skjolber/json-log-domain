@@ -17,7 +17,7 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 [Apache 2.0]
 
 # Obtain
-The project is based on [Maven] and is __not yet__ available from central Maven repository.
+The project is based on [Maven] and is available from central Maven repository. Se further down for dependencies.
 
 # Usage
 The generated sources allow for writing statements like
@@ -148,7 +148,7 @@ YAML files are converted to helper classes using `log-domain-maven-plugin`.
 <plugin>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <executions>
         <execution>
             <id>generate</id>
@@ -177,7 +177,7 @@ A few common classes are not part of the generated sources:
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-support-logback</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -215,7 +215,7 @@ optionally also using `Class` and `Level` filtering. Import the library using
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-test-logback</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
