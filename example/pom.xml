@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>com.github.skjolber.log-domain</groupId>
                 <artifactId>log-domain-maven-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>generate</id>

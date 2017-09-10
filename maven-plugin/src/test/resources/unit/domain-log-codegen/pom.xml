@@ -4,7 +4,7 @@
 	<groupId>com.github.skjolber.log-domain.test</groupId>
 	<artifactId>domain-log-codegen-maven-test-plugin</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>reminder-maven-plugin Maven Mojo</name>
 
 	<properties>
@@ -42,7 +42,7 @@
 			<plugin>
 				<groupId>com.github.skjolber.log-domain</groupId>
 				<artifactId>log-domain-maven-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>1.0.1-SNAPSHOT</version>
 				<configuration>
 					<outputDirectory>target/generated-sources/log-domain-codegen</outputDirectory>
 					<domains>
