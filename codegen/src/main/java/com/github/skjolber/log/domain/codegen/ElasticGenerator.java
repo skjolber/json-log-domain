@@ -13,7 +13,7 @@ import org.json.JSONObject;
  * 
  * Generator for adding mapping to Elastic Search.
  * 
- * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
+ * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">Elastic manual</a>
  * 
  */
 

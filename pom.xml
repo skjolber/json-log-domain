@@ -5,7 +5,9 @@
 	<artifactId>log-domain-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
+	<name>log-domain-parent</name>
+	<description>Parent for log-domain modules</description>
+	<url>https://github.com/skjolber/log-domain</url>
 	<organization>
 		<name>Media Skjolberg</name>
 		<url>http://skjolber.github.io</url>
@@ -232,7 +234,6 @@
 						<goals>deploy</goals>
 					</configuration>
 				</plugin>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
@@ -273,6 +274,14 @@
 			</properties>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>

@@ -9,7 +9,9 @@
 
     <artifactId>log-domain-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-
+	<name>log-domain-maven-plugin</name>
+	<description>Maven plugin for generating sources</description>
+	
     <properties>
         <mavenVersion>3.5.0</mavenVersion>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
@@ -167,9 +169,30 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-            <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-changelog-plugin</artifactId> 
-                <version>2.3</version> <configuration> <type>range</type> <range>90</range> 
-                </configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
         </plugins>
     </reporting>
 
