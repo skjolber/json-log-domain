@@ -1,8 +1,11 @@
 package com.github.skjolber.log.domain.utils;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,26 +24,87 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 
     protected final Map<String, Object> map = new HashMap<>();
     protected final String qualifier;
+    
+    protected List<DomainMdcMarker> mdc;
 
     public DomainMarker(String qualifier) {
         super(MARKER_NAME);
 
         this.qualifier = qualifier;
     }
+
+    public void captureDomainMdc() {
+    	if(mdc == null) {
+    		mdc = DomainMdc.copy();
+    	}
+    }
+    
+    public List<DomainMdcMarker> getMdc() {
+    	if(mdc == null) {
+    		mdc = DomainMdc.copy();
+    	}
+		return mdc;
+	}
+    
+    public void setMdc(List<DomainMdcMarker> mdc) {
+		this.mdc = mdc;
+	}
     
     @Override
     public void writeTo(JsonGenerator generator) throws IOException {
-    	if(qualifier != null && !qualifier.isEmpty()) {
-    		// subtree
-	        generator.writeFieldName(qualifier);
-	        generator.writeObject(map);
-	    } else {
-	    	// root
+    	// check if there is MDC JSON data
+    	
+    	captureDomainMdc();
+    	if(mdc == null || mdc.isEmpty()) {
+    		JsonMdcJsonProvider.writeMap(generator, qualifier, map);
+    	} else {
+        	if(qualifier != null && !qualifier.isEmpty()) {
+        		// subtree
+    	        generator.writeFieldName(qualifier);
+    	        generator.writeStartObject();
+    	    }
+    		
+	        Map<String, Object> domainMdc = new HashMap<>();
+	        for(DomainMdcMarker item : mdc) {
+	        	if(Objects.equals(item.getQualifier(), qualifier)) {
+	        		domainMdc.putAll(item.getMap());
+	        	}
+	        	
+	        	if(item.hasReferences()) {
+					Iterator<Marker> iterator = item.iterator();
+
+					while(iterator.hasNext()) {
+						Marker next = iterator.next();
+		    			if(next instanceof DomainMarker) {
+		    				DomainMarker domainMarker = (DomainMarker)next;
+		    			
+		    	        	if(Objects.equals(domainMarker.getQualifier(), qualifier)) {
+		    	        		domainMdc.putAll(domainMarker.getMap());
+		    	        	}
+		    			}
+					}
+
+	        	}
+	        }
+
+			// mdc - filtered
+	    	for (Map.Entry<?, ?> entry : domainMdc.entrySet()) {
+	    		if(!map.containsKey(entry.getKey())) {
+	                generator.writeFieldName(String.valueOf(entry.getKey()));
+	                generator.writeObject(entry.getValue());
+	    		}
+            }
+
+	    	// marker
 	    	for (Map.Entry<?, ?> entry : map.entrySet()) {
                 generator.writeFieldName(String.valueOf(entry.getKey()));
                 generator.writeObject(entry.getValue());
-            }	    	
-	    }
+            }
+    		
+        	if(qualifier != null && !qualifier.isEmpty()) {
+        		generator.writeEndObject();
+        	}
+    	}
     }
     
     @Override
@@ -121,5 +185,15 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 		return true;
 	}
     
+	@Override
+	public synchronized void add(Marker reference) {
+		if(reference instanceof LogstashMarker) {
+			super.add(reference);
+		} else {
+			throw new IllegalArgumentException("Expected marker instance of " + LogstashMarker.class.getName());
+		}
+	}
+
+
     
 }
