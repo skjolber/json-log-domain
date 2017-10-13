@@ -41,7 +41,6 @@ public class MdcMatcher<T> extends BaseMatcher<T> implements Serializable {
 		return new MdcMatcher(null, key, matcher, level);
 	}
 	
-	
 	protected final String loggerName;
     protected final String key;
     protected final Matcher<String> matcher;

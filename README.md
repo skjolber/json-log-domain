@@ -148,7 +148,7 @@ YAML files are converted to helper classes using `log-domain-maven-plugin`.
 <plugin>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <executions>
         <execution>
             <id>generate</id>
@@ -177,12 +177,49 @@ A few common classes are not part of the generated sources:
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-support-logback</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
+## MDC-style logging
+To enable MDC-style JSON logging, enable a [JsonProvider] in the configuration:
+
+```xml
+<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+    <!-- add provider for JSON MDC -->
+    <provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
+</encoder>
+
+```
+
+and create `AutoClosable` scopes using
+
+```java
+try (AutoCloseable a =  mdc(host("localhost").port(8080))) { // network
+    logger.info().name("java").version(1.7).tags(JIT)  // programming language
+        .and(system("Fedora").tags(LINUX)) // global
+        .message("Hello world");
+}
+```
+
+or the equivalent using try-finally; 
+
+```java
+Closeable mdc = mdc(host("localhost").port(8080); // network
+try {
+    ...
+} finally {
+    mdc.close();
+}
+```
+
+Unlike the build-in MDC, the JSON MDC works like a stack.
+
 ## Markdown documentation
 By default, a [markdown file] will also be generated for online documentation. 
+
+## Elasticsearch configuration files
+
 
 # Testing
 Verify that testing is performed using the test library. 
@@ -205,7 +242,7 @@ assertThat(rule, key("system").value("fedora"));
 // multiple tags (from single domain)
 assertThat(rule, qualifier("language").tags(LanguageTag.JIT, LanguageTag.BYTECODE));
 
-// MDC
+// check non-JSON value MDC
 assertThat(rule, mdc("uname", "magnus"));
 ```
 
@@ -215,7 +252,7 @@ optionally also using `Class` and `Level` filtering. Import the library using
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-test-logback</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -233,3 +270,4 @@ optionally also using `Class` and `Level` filtering. Import the library using
 [Swagger Code Generator]:	https://github.com/swagger-api/swagger-codegen
 [JUnit Rule]:				https://github.com/junit-team/junit4/wiki/rules
 [markdown file]:			https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
+[JsonProvider]:			https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents

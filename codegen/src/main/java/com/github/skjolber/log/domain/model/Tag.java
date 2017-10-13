@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen;
+package com.github.skjolber.log.domain.model;
 
 public class Tag {
 

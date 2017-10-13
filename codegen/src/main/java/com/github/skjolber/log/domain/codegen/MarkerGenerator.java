@@ -6,9 +6,10 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Key;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -21,14 +22,6 @@ public class MarkerGenerator {
 	protected static final String MARKER = "Marker";
 	protected static final String MARKER_BUILDER = "MarkerBuilder";
 
-	private static MethodSpec getter(String methodName, FieldSpec field) {
-		return MethodSpec.methodBuilder(methodName)
-				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.returns(field.type)
-				.addStatement("return $N", field)
-				.build();
-	}
-	
 	public static JavaFile marker(Domain ontology) {
 		
 		List<Key> keys = ontology.getKeys();
@@ -106,7 +99,7 @@ public class MarkerGenerator {
 	}
 
 	private static MethodSpec getMethod(ClassName name, Key key) {
-		Class type = parseTypeFormat(key.getType(), key.getFormat());
+		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
 		
@@ -122,29 +115,7 @@ public class MarkerGenerator {
 			.build();
 	}
 
-	private String toString(Class type) {
-		if(type == String.class) {
-			return "$N";
-		} else if(type == int.class) {
-			return "Integer.toString($N)";
-		} else if(type == boolean.class) {
-			return "Boolean.parseBoolean($N)";
-		} else if(type == long.class) {
-			return "Long.toString($N)";
-		} else if(type == float.class) {
-			return "Float.toString($N)";
-		} else if(type == double.class) {
-			return "Double.toString($N)";
-		} else if(type == byte[].class) {
-			return "Integer.toString($N)";
-		} else if(type == Date.class) {
-			return "Integer.toString($N)";
-		}
-
-		throw new IllegalArgumentException();
-	}
-
-	private static Class parseTypeFormat(String type, String format) {
+	private static Class<?> parseTypeFormat(String type, String format) {
 		switch(type) {
 			case "integer" : {
 				if(format != null) {
@@ -206,7 +177,7 @@ public class MarkerGenerator {
 	}
 
 	private static MethodSpec getBuilderMethod(ClassName name, Key key) {
-		Class type = parseTypeFormat(key.getType(), key.getFormat());
+		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
 		

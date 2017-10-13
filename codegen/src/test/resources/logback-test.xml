@@ -1,25 +1,25 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
    
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
 			<includeCallerData>true</includeCallerData>
+			
+			<!-- add provider for custom JSON MDC -->
+			<provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
+			
+			<!-- add pretty-printing for testing -->
+			<jsonGeneratorDecorator class="com.github.skjolber.log.domain.codegen.test.PrettyPrintingDecorator"/>
 		</encoder>
-<!-- 
-        <encoder>
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger: %msg %mdc %marker %n</pattern>
-        </encoder>
-         -->   
     </appender>
 
-    <appender name="STDOUT2" class="ch.qos.logback.core.ConsoleAppender">
-   
+    <appender name="STDOUT_CLASSIC" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger: %msg %mdc %marker %n</pattern>
         </encoder>
     </appender>
     
 	<root level="INFO">
-		<appender-ref ref="STDOUT" />
-		<appender-ref ref="STDOUT2" />
+		<appender-ref ref="STDOUT_JSON" />
+		<appender-ref ref="STDOUT_CLASSIC" />
 	</root>
 </configuration>

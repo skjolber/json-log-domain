@@ -2,7 +2,9 @@ package com.github.skjolber.log.domain.test.matcher;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -11,12 +13,15 @@ import org.hamcrest.core.IsEqual;
 import org.slf4j.Marker;
 
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
+import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainMdc;
 import com.github.skjolber.log.domain.utils.DomainTag;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import net.logstash.logback.marker.LogstashMarker;
 
 public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 
@@ -74,15 +79,85 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 		if (marker instanceof DomainMarker) {
 			DomainMarker domainMarker = (DomainMarker) marker;
 
-			DomainMarker qualifiedMarker = domainMarker.find(qualifier);
+			DomainMarker qualifiedMarker = find(qualifier, domainMarker);
 			if (qualifiedMarker != null) {
 				if (matcher.matches(qualifiedMarker.get(key))) {
 					return true;
 				}
 			}
 		}
+		
+		if(marker.hasReferences()) { // search for 
+			Iterator<Marker> iterator = marker.iterator();
+			while(iterator.hasNext()) {
+				Marker next = iterator.next();
+				
+				if(next.getClass() == marker.getClass()) {
+					throw new IllegalArgumentException("Multiple instances of " + next.getClass() + " within same log statement not supported");
+				}
+				
+				if(next instanceof DeferredMdcMarker) {
+					DeferredMdcMarker deferred = (DeferredMdcMarker)next;
+					// see whether we can find the right value here
+					
+					List<DomainMdc> mdc = deferred.getMdc();
+					for(int i = mdc.size() - 1; i >= 0; i--) {
+						DomainMdc domainMdc = mdc.get(i);
+							
+						Object value = find(domainMdc);
+						
+						if(value != null) {
+							return matcher.matches(value);
+						}
+					}
+				}
+			}
+		}
+		
+		
 		return false;
 	}
+
+	private Object find(DomainMdc domainMdc) {
+		
+		LogstashMarker delegate = domainMdc.getDelegate();
+		
+		DomainMarker qualifiedMarker = find(qualifier, delegate);
+		if (qualifiedMarker != null) {
+			return qualifiedMarker.get(key);
+		}
+		
+		return null;
+	}
+	
+    /**
+     * Search chained {@linkplain DomainMarker}s for the correct qualifier.
+     * 
+     * @param qualifier
+     * @return a marker matching the qualifier, or null if no such exists.
+     */
+    
+    public static DomainMarker find(String qualifier, Marker marker) {
+    	if(marker instanceof DomainMarker) {
+    		DomainMarker domainMarker = (DomainMarker)marker;
+	    	if(Objects.equals(qualifier, domainMarker.getQualifier())) {
+	    		return domainMarker;
+	    	}
+    	}
+    	
+    	Iterator<Marker> iterator = marker.iterator();
+    	while(iterator.hasNext()) {
+    		Marker next = iterator.next();
+    		if(next instanceof DomainMarker) {
+    			DomainMarker domainMarker = (DomainMarker)next;
+        		if(Objects.equals(qualifier, domainMarker.getQualifier())) {
+            		return domainMarker;
+            	}
+    		}
+    	}
+    	
+    	return null;
+    }
 
 	public void describeTo(Description description) {
 		StringBuilder builder = new StringBuilder();

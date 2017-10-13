@@ -1,7 +1,5 @@
 package com.github.skjolber.log.domain.codegen;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -10,31 +8,28 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
 
+import com.github.skjolber.log.domain.model.Domain;
 import com.squareup.javapoet.JavaFile;
 
 public class JavaGenerator {
 
-	public static void generate(File file, File outputDirectory) throws IOException {
-		Domain ontology = DomainFactory.parse(new FileReader(file));
+	public static void generate(Path file, Path outputDirectory) throws IOException {
+		Domain ontology = DomainFactory.parse(Files.newBufferedReader(file, StandardCharsets.UTF_8));
 
 		generate(ontology, outputDirectory);
 	}
 
-	public static void generate(Domain ontology, File outputDirectory) throws IOException {
+	public static void generate(Domain ontology, Path outputDirectory) throws IOException {
 		JavaFile tags = TagGenerator.tag(ontology);
 		JavaFile marker = MarkerGenerator.marker(ontology);
 		JavaFile builder = MarkerGenerator.markerBuilder(ontology);
 		JavaFile statement = LoggerGenerator.statement(ontology);
 		JavaFile logger = LoggerGenerator.logger(ontology);
 
-		if(!outputDirectory.exists()) {
-			if(!outputDirectory.mkdirs()) {
-				throw new IOException();
-			}
-		}
+		Files.createDirectories(outputDirectory);
 
 		for(JavaFile file : new JavaFile[]{tags, marker, builder, statement, logger}) {
-			if(changed(file, outputDirectory.toPath())) {
+			if(changed(file, outputDirectory)) {
 				file.writeTo(outputDirectory);
 			} else {
 				// do not write this file

@@ -2,6 +2,8 @@ package com.github.skjolber.log.domain.codegen;
 
 import javax.lang.model.element.Modifier;
 
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Tag;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainTag;
 import com.squareup.javapoet.ClassName;
@@ -17,6 +19,10 @@ public class TagGenerator {
 
 	@SuppressWarnings("restriction")
 	public static JavaFile tag(Domain ontology) {
+		
+		if(!ontology.hasTags()) {
+			return null;
+		}
 		
 		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TAG);
 

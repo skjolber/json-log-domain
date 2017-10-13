@@ -1,4 +1,4 @@
-package yaml.logger;
+package com.github.skjolber.log.domain.codegen;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -8,9 +8,9 @@ import java.io.FileReader;
 
 import org.junit.Test;
 
-import com.github.skjolber.log.domain.codegen.Domain;
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
+import com.github.skjolber.log.domain.model.Domain;
 
 public class MarkdownTest {
 	

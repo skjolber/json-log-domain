@@ -35,7 +35,8 @@ import net.logstash.logback.composite.FieldNamesAware;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
 
 /**
- * Adds JSON MDC fields to output. If a {@link DomainMarker} contains conflicting qualifiers, not logging is performed for those
+ * 
+ * Adds JSON MDC fields to output. If a marker is present and contains overriding qualifiers, no logging is performed for those
  * qualifier here. The {@link DomainMarker} is itself responsible for including JSON MDC values when writing fields.
  *
  */
@@ -44,7 +45,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 
     @Override
     public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
-    	List<DomainMdcMarker> mdc = null;
+    	List<DomainMdc> mdc = null;
 		Set<String> filter = null;
     	
 		Marker marker = event.getMarker();
@@ -88,17 +89,23 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 		// filter out domains available in this marker - those will have to pull from mdc themselves to print 
 		// the corresponding values
 		Map<String, Map<String, Object>> mdcMap = new HashMap<>();
-		for(DomainMdcMarker item : mdc) {
-			
-			if(filter == null || !filter.contains(item.getQualifier())) {
-				Map<String, Object> map = mdcMap.get(item.getQualifier());
-				if(map == null) {
-					map = new HashMap<>();
-					mdcMap.put(item.getQualifier(), map);
+		for(DomainMdc wrapper : mdc) {
+			Marker item = wrapper.getDelegate();
+	        
+			if(item instanceof DomainMarker) {
+				DomainMarker domainMarker = (DomainMarker)item;
+				
+				if(filter == null || !filter.contains(domainMarker.getQualifier())) {
+					Map<String, Object> map = mdcMap.get(domainMarker.getQualifier());
+					if(map == null) {
+						map = new HashMap<>();
+						mdcMap.put(domainMarker.getQualifier(), map);
+					}
+				
+					map.putAll(domainMarker.getMap());
 				}
-			
-				map.putAll(item.getMap());
 			}
+			
 			
 			if(item.hasReferences()) {
 				Iterator<Marker> iterator = item.iterator();
@@ -111,10 +118,10 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 							Map<String, Object> referenceMap = mdcMap.get(reference.getQualifier());
 							if(referenceMap == null) {
 								referenceMap = new HashMap<>();
-								mdcMap.put(item.getQualifier(), referenceMap);
+								mdcMap.put(reference.getQualifier(), referenceMap);
 							}
 							
-							referenceMap.putAll(item.getMap());			    				
+							referenceMap.putAll(reference.getMap());			    				
 	    				}
 	    			}
 				}
@@ -149,7 +156,13 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
     public void prepareForDeferredProcessing(ILoggingEvent event) {
 		// copy mdc list, even if empty, share the same instance for all markers
     	
-		List<DomainMdcMarker> mdc = DomainMdc.get();
+		captureDomainMdc(event);
+		
+    	super.prepareForDeferredProcessing(event);
+    }
+
+	public static void captureDomainMdc(ILoggingEvent event) {
+		List<DomainMdc> mdc = DomainMdc.get();
 		if(mdc == null) {
 			mdc = Collections.emptyList();
 		} else {
@@ -164,8 +177,8 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 				LoggingEvent loggingEvent = (LoggingEvent)event;
 				loggingEvent.setMarker(new DeferredMdcMarker(mdc));
 			} else {
-				throw new IllegalArgumentException("Event cannot be prepared for deferred processing: " + event.getClass().getName());
-			}					
+				throw new IllegalArgumentException("Event cannot be prepared for deferred processing: " + event.getClass().getName() + ", please use events of type " + LoggingEvent.class.getName());
+			}
 		} else {
 			if(marker instanceof DomainMarker) {
 				DomainMarker domainMarker = (DomainMarker)marker;
@@ -186,9 +199,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			
 			marker.add(new DeferredMdcMarker(mdc));
 		}
-		
-    	super.prepareForDeferredProcessing(event);
-    }
+	}
     
     @Override
     public void setFieldNames(LogstashFieldNames fieldNames) {

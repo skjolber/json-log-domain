@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Key;
+import com.github.skjolber.log.domain.model.Tag;
 
 public class DomainFactory {
 

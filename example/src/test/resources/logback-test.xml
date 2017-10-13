@@ -1,10 +1,18 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
+   
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-		</encoder> 
+			<includeCallerData>true</includeCallerData>
+			
+			<!-- add provider for custom JSON MDC-style -->
+			<provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
+			
+			<!-- add pretty-printing for testing -->
+			<jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
+		</encoder>
     </appender>
-
+    
 	<root level="INFO">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="STDOUT_CLASSIC" />
 	</root>
 </configuration>

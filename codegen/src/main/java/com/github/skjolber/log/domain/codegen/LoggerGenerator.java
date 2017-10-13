@@ -1,18 +1,15 @@
 package com.github.skjolber.log.domain.codegen;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Key;
 import com.github.skjolber.log.domain.utils.AbstractDomainLogger;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -24,15 +21,6 @@ public class LoggerGenerator {
 	
 	private static final String LOGGER = "Logger";
 	private static final String STATEMENT = "LogStatement";
-	private static final String MARKER_BUILDER = "MarkerBuilder";
-
-	private static MethodSpec getter(String methodName, FieldSpec field) {
-		return MethodSpec.methodBuilder(methodName)
-				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.returns(field.type)
-				.addStatement("return $N", field)
-				.build();
-	}
 	
 	public static JavaFile statement(Domain ontology) {
 		
@@ -116,8 +104,6 @@ public class LoggerGenerator {
 				.addParameter(ArrayTypeName.of(tags), "value")
 				.varargs();
 		
-		ClassName arrays = ClassName.get(Arrays.class);
-		
 		builder = builder.addStatement("marker.tags(value)");
 		
 		return builder
@@ -127,7 +113,7 @@ public class LoggerGenerator {
 	}
 
 	private static MethodSpec getMethod(ClassName name, Key key) {
-		Class type = parseTypeFormat(key.getType(), key.getFormat());
+		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
 		
@@ -143,29 +129,7 @@ public class LoggerGenerator {
 			.build();
 	}
 
-	private String toString(Class type) {
-		if(type == String.class) {
-			return "$N";
-		} else if(type == int.class) {
-			return "Integer.toString($N)";
-		} else if(type == boolean.class) {
-			return "Boolean.parseBoolean($N)";
-		} else if(type == long.class) {
-			return "Long.toString($N)";
-		} else if(type == float.class) {
-			return "Float.toString($N)";
-		} else if(type == double.class) {
-			return "Double.toString($N)";
-		} else if(type == byte[].class) {
-			return "Integer.toString($N)";
-		} else if(type == Date.class) {
-			return "Integer.toString($N)";
-		}
-
-		throw new IllegalArgumentException();
-	}
-
-	private static Class parseTypeFormat(String type, String format) {
+	private static Class<?> parseTypeFormat(String type, String format) {
 		switch(type) {
 			case "integer" : {
 				if(format != null) {
@@ -208,16 +172,12 @@ public class LoggerGenerator {
 	}
 	
 	public static JavaFile logger(Domain ontology) {
-		List<Key> keys = ontology.getKeys();
-		
 		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + LOGGER);
 
 		ClassName statementName = ClassName.get(ontology.getTargetPackage(), ontology.getName() + STATEMENT);
 
 		ClassName superClassName = ClassName.get(AbstractDomainLogger.class);
 
-		ClassName markerName = ClassName.get(ontology.getTargetPackage(), ontology.getName() + MarkerGenerator.MARKER);
-		
 		Builder builder = TypeSpec.classBuilder(name)
 				.superclass(ParameterizedTypeName.get(superClassName, statementName))				
 				.addJavadoc(composeJavadoc(ontology, name))
@@ -238,26 +198,6 @@ public class LoggerGenerator {
 		
 		return file.build();		
 		
-	}
-
-	private static MethodSpec getBuilderMethod(ClassName name, Key key) {
-		Class type = parseTypeFormat(key.getType(), key.getFormat());
-		
-		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
-		
-		MethodSpec.Builder builder = MethodSpec.methodBuilder(key.getId())
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(parameter);
-		
-		builder = builder
-				.addStatement("$T marker = new $T()", name, name)
-				.addStatement("marker." + key.getId() + "($N)", parameter);
-		
-		builder = builder.addJavadoc(key.getDescription());
-
-		return builder.returns(name)
-			.addStatement("return marker")
-			.build();
 	}
 	
 }

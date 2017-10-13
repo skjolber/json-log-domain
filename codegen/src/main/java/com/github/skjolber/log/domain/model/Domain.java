@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen;
+package com.github.skjolber.log.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;

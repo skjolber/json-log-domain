@@ -25,7 +25,7 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
     protected final Map<String, Object> map = new HashMap<>();
     protected final String qualifier;
     
-    protected List<DomainMdcMarker> mdc;
+    protected List<DomainMdc> mdc;
 
     public DomainMarker(String qualifier) {
         super(MARKER_NAME);
@@ -33,20 +33,20 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
         this.qualifier = qualifier;
     }
 
-    public void captureDomainMdc() {
+    protected void captureDomainMdc() {
     	if(mdc == null) {
     		mdc = DomainMdc.copy();
     	}
     }
     
-    public List<DomainMdcMarker> getMdc() {
+    public List<DomainMdc> getMdc() {
     	if(mdc == null) {
     		mdc = DomainMdc.copy();
     	}
 		return mdc;
 	}
     
-    public void setMdc(List<DomainMdcMarker> mdc) {
+    public void setMdc(List<DomainMdc> mdc) {
 		this.mdc = mdc;
 	}
     
@@ -65,11 +65,16 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
     	    }
     		
 	        Map<String, Object> domainMdc = new HashMap<>();
-	        for(DomainMdcMarker item : mdc) {
-	        	if(Objects.equals(item.getQualifier(), qualifier)) {
-	        		domainMdc.putAll(item.getMap());
-	        	}
-	        	
+			for(DomainMdc wrapper : mdc) {
+				Marker item = wrapper.getDelegate();
+	        
+				if(item instanceof DomainMarker) {
+					DomainMarker domainMarker = (DomainMarker)item;
+		        	if(Objects.equals(domainMarker.getQualifier(), qualifier)) {
+		        		domainMdc.putAll(domainMarker.getMap());
+		        	}
+				}
+				
 	        	if(item.hasReferences()) {
 					Iterator<Marker> iterator = item.iterator();
 
@@ -127,32 +132,6 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
     public String getQualifier() {
 		return qualifier;
 	}
-    
-    /**
-     * Search chained {@linkplain DomainMarker}s for the correct qualifier.
-     * 
-     * @param qualifier
-     * @return a marker matching the qualifier, or null if no such exists.
-     */
-    
-    public <T extends DomainMarker> T find(String qualifier) {
-    	if(Objects.equals(qualifier, this.qualifier)) {
-    		return (T) this;
-    	}
-    	
-    	Iterator<Marker> iterator = iterator();
-    	while(iterator.hasNext()) {
-    		Marker next = iterator.next();
-    		if(next instanceof DomainMarker) {
-    			DomainMarker domainMarker = (DomainMarker)next;
-        		if(Objects.equals(qualifier, domainMarker.qualifier)) {
-            		return (T) domainMarker;
-            	}
-    		}
-    	}
-    	
-    	return null;
-    }
 
 	@Override
 	public int hashCode() {

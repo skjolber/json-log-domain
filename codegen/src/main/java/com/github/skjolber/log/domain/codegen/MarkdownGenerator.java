@@ -1,13 +1,17 @@
 package com.github.skjolber.log.domain.codegen;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Key;
+import com.github.skjolber.log.domain.model.Tag;
 
 import net.steppschuh.markdowngenerator.list.UnorderedList;
 import net.steppschuh.markdowngenerator.table.Table;
@@ -17,14 +21,14 @@ import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class MarkdownGenerator {
 
-	public static void generate(File file, File outputFile, boolean javaCodeGenerated) throws IOException {
-		Domain domain = DomainFactory.parse(new FileReader(file));
+	public static void generate(Path file, Path outputFile, boolean javaCodeGenerated) throws IOException {
+		Domain domain = DomainFactory.parse(Files.newBufferedReader(file, StandardCharsets.UTF_8));
 
 		generate(domain, outputFile, javaCodeGenerated);
 	}
 
-	public static void generate(Domain domain, File outputFile, boolean javaCodeGenerated) throws IOException {
-		Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile));
+	public static void generate(Domain domain, Path outputFile, boolean javaCodeGenerated) throws IOException {
+		Writer writer = Files.newBufferedWriter(outputFile);
 		try {
 			writer.write(generate(domain, javaCodeGenerated));
 		} finally {
@@ -90,28 +94,30 @@ public class MarkdownGenerator {
 			sb.append("\n");
 		}
 		
-		sb.append(new Heading("Tags", 3));
-		sb.append("\n");
-		sb.append("\n");
-
-		tableViewer = new Table.Builder()
-				.withAlignments(Table.ALIGN_LEFT, Table.ALIGN_LEFT)
-				.addRow("Tag", "Description");
-		for(Tag tag : domain.getTags()) {
-			tableViewer = tableViewer.addRow(tag.getId(), tag.getDescription());
-		}
-
-		sb.append(tableViewer.build());
-		sb.append("\n");
-		sb.append("\n");
-		if(javaCodeGenerated) {
-			sb.append(new Text("Add the following import:"));
+		if(domain.hasTags()) {
+			sb.append(new Heading("Tags", 3));
 			sb.append("\n");
 			sb.append("\n");
-			String tagCode = String.format("import static %1s.%2s.*;", domain.getTargetPackage(), domain.getName() + TagGenerator.TAG);
-			sb.append(new CodeBlock(tagCode, "java"));
+	
+			tableViewer = new Table.Builder()
+					.withAlignments(Table.ALIGN_LEFT, Table.ALIGN_LEFT)
+					.addRow("Tag", "Description");
+			for(Tag tag : domain.getTags()) {
+				tableViewer = tableViewer.addRow(tag.getId(), tag.getDescription());
+			}
+	
+			sb.append(tableViewer.build());
 			sb.append("\n");
 			sb.append("\n");
+			if(javaCodeGenerated) {
+				sb.append(new Text("Add the following import:"));
+				sb.append("\n");
+				sb.append("\n");
+				String tagCode = String.format("import static %1s.%2s.*;", domain.getTargetPackage(), domain.getName() + TagGenerator.TAG);
+				sb.append(new CodeBlock(tagCode, "java"));
+				sb.append("\n");
+				sb.append("\n");
+			}
 		}
 		
 		return sb.toString();

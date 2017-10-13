@@ -14,15 +14,15 @@ public class DeferredMdcMarker extends LogstashMarker implements StructuredArgum
 
 	public static final String MARKER_NAME = LogstashMarker.MARKER_NAME_PREFIX + "DEFERRED_MAP_FIELDS";
 
-    protected final List<DomainMdcMarker> mdc;
+    protected final List<DomainMdc> mdc;
 
-    public DeferredMdcMarker(List<DomainMdcMarker> mdc) {
+    public DeferredMdcMarker(List<DomainMdc > mdc) {
         super(MARKER_NAME);
         
         this.mdc = mdc;
     }
     
-    public List<DomainMdcMarker> getMdc() {
+    public List<DomainMdc> getMdc() {
 		return mdc;
 	}
     

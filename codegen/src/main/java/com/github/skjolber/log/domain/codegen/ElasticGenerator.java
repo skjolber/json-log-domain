@@ -9,12 +9,16 @@ import java.io.Writer;
 
 import org.json.JSONObject;
 
+import com.github.skjolber.log.domain.model.Domain;
+import com.github.skjolber.log.domain.model.Key;
+
 /**
  * 
  * Generator for adding mapping to Elastic Search.
  * 
  * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">Elastic manual</a>
  * 
+ * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html">Elastic manual</a>
  */
 
 public class ElasticGenerator {

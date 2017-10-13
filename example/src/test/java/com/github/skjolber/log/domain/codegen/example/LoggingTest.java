@@ -11,6 +11,8 @@ import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.MDC;
@@ -24,6 +26,7 @@ import com.example.global.GlobalTag;
 import com.example.language.LanguageLogger;
 import com.example.language.LanguageTag;
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
+import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
@@ -116,4 +119,20 @@ public class LoggingTest {
 		assertThat(rule, key("system").value("fedora"));
 	}
 
+	@Test
+	public void singleDomainMDC() throws IOException {
+		Closeable mdc = DomainMdc.mdc(host("localhost"));
+		try {
+			logger.info(system("fedora").tags(LINUX), "Hello world");
+			
+			assertThat(rule, key("system").value("fedora"));
+			assertThat(rule, qualifier("network").key("host").value("localhost"));
+
+			// single tag from global domain
+			assertThat(rule, tags(LINUX));
+		} finally {
+			mdc.close();
+		}
+	}
+	
 }
