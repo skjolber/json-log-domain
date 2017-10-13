@@ -1,15 +1,21 @@
 package com.github.skjolber.log.domain.codegen;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import org.apache.commons.lang3.ClassUtils;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -43,18 +49,66 @@ public class MarkerGenerator {
 		// private static final long serialVersionUID = 1L;
 		builder = builder.addField(FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build());
 		builder = builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", ontology.getQualifier()).build());
+
+		ClassName tags = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TagGenerator.TAG);
+
+		List<FieldSpec> fields = new ArrayList<>();
+		for(Key key : keys) {
+			FieldSpec field = getField(name, key);
+			builder = builder.addField(field);
+			fields.add(field);
+		}
+
+		FieldSpec tagsField = FieldSpec.builder(ArrayTypeName.of(tags), "tags", Modifier.PRIVATE).build();
+		builder = builder.addField(tagsField);
+		fields.add(tagsField);
 		
 		for(Key key : keys) {
 			builder = builder.addMethod(getMethod(name, key));
 		}
 		
-		ClassName tags = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TagGenerator.TAG);
-		
+		builder = builder.addMethod(getWriterMethod(fields));
+				
 		builder = builder.addMethod(getTagsMethod(name, tags));
 		
 		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
 		
 		return file.build();		
+	}
+	
+	private static MethodSpec getWriterMethod(List<FieldSpec> fields) {
+		ParameterSpec parameter = ParameterSpec.builder(JsonGenerator.class, "generator").build();
+		
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("writeTo")
+				.addModifiers(Modifier.PUBLIC)
+				.addException(IOException.class)
+				.addParameter(parameter);
+		
+		builder = builder.addStatement("writeHeadTo($N)", parameter);
+
+		for(FieldSpec key : fields) {
+			builder = builder.addCode(CodeBlock.builder()
+					.beginControlFlow("if(this.$N != null)", key)
+					.addStatement("$N.writeFieldName($S)", parameter, key.name)
+					.addStatement("$N.writeObject(this.$N)", parameter, key) // TODO microoptimize by checking for type
+					.endControlFlow().build());
+		}
+
+		
+		
+		builder = builder.addStatement("writeTailTo($N)", parameter);
+
+		return builder.build();
+	}
+
+	private static FieldSpec getField(ClassName name, Key key) {
+		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
+		
+		if(type.isPrimitive()) {
+			type = ClassUtils.primitiveToWrapper(type);
+		}
+		
+		return FieldSpec.builder(type, key.getId(), Modifier.PRIVATE).build();
 	}
 
 	private static String composeJavadoc(Domain ontology, ClassName name) {
@@ -83,14 +137,19 @@ public class MarkerGenerator {
 	}
 
 	private static MethodSpec getTagsMethod(ClassName name, ClassName tags) {
+		
+		ParameterSpec parameter = ParameterSpec.builder(ArrayTypeName.of(tags), "tags").build();
+
 		MethodSpec.Builder builder = MethodSpec.methodBuilder("tags")
 				.addModifiers(Modifier.PUBLIC)
-				.addParameter(ArrayTypeName.of(tags), "value")
+				.addParameter(parameter)
 				.varargs();
 		
 		ClassName arrays = ClassName.get(Arrays.class);
-		
-		builder = builder.addStatement("map.put($S, $T.asList(value))", "tags", arrays);
+
+		builder = builder.addStatement("this.$N = $N", parameter, parameter);
+
+		//builder = builder.addStatement("map.put($S, $T.asList(value))", "tags", arrays);
 		
 		return builder
 				.returns(name)
@@ -101,13 +160,13 @@ public class MarkerGenerator {
 	private static MethodSpec getMethod(ClassName name, Key key) {
 		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
 		
-		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
+		ParameterSpec parameter = ParameterSpec.builder(type, key.getId()).build();
 		
 		MethodSpec.Builder builder = MethodSpec.methodBuilder(key.getId())
 				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
 				.addParameter(parameter);
 		
-		builder = builder.addStatement("map.put($S, $N)", key.getId(), parameter);
+		builder = builder.addStatement("this.$N = $N", key.getId(), parameter);
 		builder = builder.addJavadoc(key.getDescription());
 		
 		return builder.returns(name)

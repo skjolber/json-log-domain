@@ -88,7 +88,6 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 		    	        	}
 		    			}
 					}
-
 	        	}
 	        }
 
@@ -134,37 +133,6 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((map == null) ? 0 : map.hashCode());
-		result = prime * result + ((qualifier == null) ? 0 : qualifier.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DomainMarker other = (DomainMarker) obj;
-		if (map == null) {
-			if (other.map != null)
-				return false;
-		} else if (!map.equals(other.map))
-			return false;
-		if (qualifier == null) {
-			if (other.qualifier != null)
-				return false;
-		} else if (!qualifier.equals(other.qualifier))
-			return false;
-		return true;
-	}
-    
-	@Override
 	public synchronized void add(Marker reference) {
 		if(reference instanceof LogstashMarker) {
 			super.add(reference);
@@ -173,6 +141,19 @@ public class DomainMarker extends LogstashMarker implements StructuredArgument {
 		}
 	}
 
+	public void writeHeadTo(JsonGenerator generator) throws IOException {
+	  	// check if there is MDC JSON data
+		if(qualifier != null && !qualifier.isEmpty()) {
+			// subtree
+		    generator.writeFieldName(qualifier);
+		    generator.writeStartObject();
+		}
+	}
+	
+	public void writeTailTo(JsonGenerator generator) throws IOException {
+	  	if(qualifier != null && !qualifier.isEmpty()) {
+	  		generator.writeEndObject();
+	  	}
+	}
 
-    
 }

@@ -30,6 +30,11 @@
             <artifactId>javapoet</artifactId>
             <version>1.9.0</version>
         </dependency>
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>3.6</version>
+		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

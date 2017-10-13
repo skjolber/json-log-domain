@@ -135,7 +135,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 
     }
 
-    protected static void writeMap(JsonGenerator generator, String qualifier, Map<String, Object> map) throws IOException {
+    public static void writeMap(JsonGenerator generator, String qualifier, Map<String, Object> map) throws IOException {
     	if(map == null || map.isEmpty()) {
     		return;
     	}
