@@ -1,8 +1,6 @@
 package com.github.skjolber.log.domain.codegen;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +18,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
 
@@ -27,12 +26,13 @@ public class MarkerGenerator {
 	
 	protected static final String MARKER = "Marker";
 	protected static final String MARKER_BUILDER = "MarkerBuilder";
+	protected static final String PARENT_FIELD_NAME = "parent";
 
 	public static JavaFile marker(Domain ontology) {
 		
 		List<Key> keys = ontology.getKeys();
 		
-		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + MARKER);
+		ClassName name = getName(ontology);
 
 		ClassName superClassName = ClassName.get("com.github.skjolber.log.domain.utils", "DomainMarker");
 
@@ -41,42 +41,83 @@ public class MarkerGenerator {
 					.addJavadoc(composeJavadoc(ontology, name))
 					.addModifiers(Modifier.PUBLIC);
 
-		builder = builder.addMethod(MethodSpec.constructorBuilder()
-				.addModifiers(Modifier.PUBLIC)
-				.addStatement("super(QUALIFIER)")
-		        .build());
+		com.squareup.javapoet.MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+			.addModifiers(Modifier.PUBLIC)
+			.addStatement("super(QUALIFIER)")
+			.addStatement("$T $N = mdc.get()", name, PARENT_FIELD_NAME)
+			.beginControlFlow("if($N != null)", PARENT_FIELD_NAME);
+			
+		for(Key key : keys) {
+			constructor.addStatement("this.$N = $N.$N", key.getId(), PARENT_FIELD_NAME, key.getId());
+		}
+		
+		if(ontology.hasTags()) {
+			constructor
+				.addStatement("this.tags = $N.tags", PARENT_FIELD_NAME);
+		}
+		
+		constructor
+			.addStatement("this.$N = $N", PARENT_FIELD_NAME, PARENT_FIELD_NAME)
+			.endControlFlow();
+		
+		builder.addMethod(constructor.build());
+		
+		boolean global = ontology.getQualifier() != null;
 		
 		// private static final long serialVersionUID = 1L;
-		builder = builder.addField(FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build());
-		builder = builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", ontology.getQualifier()).build());
+		builder.addField(FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build());
+		builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", global ? ontology.getQualifier() : "").build());
 
-		ClassName tags = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TagGenerator.TAG);
-
-		List<FieldSpec> fields = new ArrayList<>();
-		for(Key key : keys) {
-			FieldSpec field = getField(name, key);
-			builder = builder.addField(field);
-			fields.add(field);
-		}
-
-		FieldSpec tagsField = FieldSpec.builder(ArrayTypeName.of(tags), "tags", Modifier.PRIVATE).build();
-		builder = builder.addField(tagsField);
-		fields.add(tagsField);
+		TypeName mdcName = MdcGenerator.getName(ontology);
 		
-		for(Key key : keys) {
-			builder = builder.addMethod(getMethod(name, key));
-		}
-		
-		builder = builder.addMethod(getWriterMethod(fields));
+		builder.addField(FieldSpec.builder(mdcName, "mdc", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).build());
+
+		builder.addStaticBlock(CodeBlock.builder().addStatement("mdc = new $T()", mdcName).addStatement("mdc.register()").build());
 				
-		builder = builder.addMethod(getTagsMethod(name, tags));
+		ClassName tags;
+		if(ontology.hasTags()) {
+			tags = TagGenerator.getName(ontology);
+		} else {
+			tags = null;
+		}
+		
+		for(Key key : keys) {
+			builder.addField(getField(name, key));
+		}
+
+		if(ontology.hasTags()) {
+			builder.addField(FieldSpec.builder(ArrayTypeName.of(tags), "tags", Modifier.PRIVATE).build());
+		}
+		
+		for(Key key : keys) {
+			builder.addMethod(getMethod(name, key));
+		}
+
+		for(Key key : keys) {
+			builder.addMethod(getGetter(name, key));
+		}
+		
+		builder
+			.addMethod(getWriterMethod(keys, name, tags, global))
+			.addMethod(getPopMethod(ontology))
+			.addMethod(getPushMethod(ontology));
+
+		if(ontology.hasTags()) {
+			builder
+				.addMethod(getTagsBuilderMethod(name, tags, ontology.getTags().size()))
+				.addMethod(getTagsGetterMethod(tags));
+		}
 		
 		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
 		
 		return file.build();		
 	}
+
+	public static ClassName getName(Domain ontology) {
+		return ClassName.get(ontology.getTargetPackage(), ontology.getName() + MARKER);
+	}
 	
-	private static MethodSpec getWriterMethod(List<FieldSpec> fields) {
+	private static MethodSpec getWriterMethod(List<Key> fields, ClassName name, ClassName tags, boolean global) {
 		ParameterSpec parameter = ParameterSpec.builder(JsonGenerator.class, "generator").build();
 		
 		MethodSpec.Builder builder = MethodSpec.methodBuilder("writeTo")
@@ -84,21 +125,46 @@ public class MarkerGenerator {
 				.addException(IOException.class)
 				.addParameter(parameter);
 		
-		builder = builder.addStatement("writeHeadTo($N)", parameter);
-
-		for(FieldSpec key : fields) {
-			builder = builder.addCode(CodeBlock.builder()
-					.beginControlFlow("if(this.$N != null)", key)
-					.addStatement("$N.writeFieldName($S)", parameter, key.name)
-					.addStatement("$N.writeObject(this.$N)", parameter, key) // TODO microoptimize by checking for type
+		if(!global) {
+			builder.addStatement("writeHeadTo($N)", parameter);
+		}
+		
+		for(Key key : fields) {
+			builder.addCode(CodeBlock.builder()
+					.beginControlFlow("if(this.$N != null)", key.getId())
+					.addStatement("$N.writeFieldName($S)", parameter, key.getId())
+					.addStatement("$N." + getWriteMethod(key) + "(this.$N)", parameter, key.getId()) // TODO microoptimize by checking for type
 					.endControlFlow().build());
 		}
 
+		if(tags != null) {
+			// tags
+			builder.addCode(CodeBlock.builder()
+					.beginControlFlow("if(this.$N != null)", "tags")
+					.addStatement("$N.writeFieldName($S)", parameter, "tags")
+					.addStatement("$N.writeStartArray()", parameter)
+					.beginControlFlow("for($T tag : tags)", tags)
+					.beginControlFlow("if(tag != null)")
+					.addStatement("generator.writeString(tag.getId())", parameter)
+					.endControlFlow()
+					.endControlFlow()
+					.addStatement("$N.writeEndArray()", parameter)
+					.addStatement("$N.writeObject(this.$N)", parameter, "tags") // TODO microoptimize by checking for type
+					.endControlFlow().build());
+		}
+		if(!global) {
+			builder.addStatement("writeTailTo($N)", parameter);
+		}
 		
-		
-		builder = builder.addStatement("writeTailTo($N)", parameter);
-
 		return builder.build();
+	}
+
+	private static String getWriteMethod(Key key) {
+		// TODO more write methods
+		if(key.getType().equals("string") && key.getFormat() == null) {
+			return "writeString";
+		}
+		return "writeObject";
 	}
 
 	private static FieldSpec getField(ClassName name, Key key) {
@@ -136,42 +202,72 @@ public class MarkerGenerator {
 		return builder.toString();
 	}
 
-	private static MethodSpec getTagsMethod(ClassName name, ClassName tags) {
+	private static MethodSpec getTagsBuilderMethod(ClassName name, ClassName tags, int size) {
 		
 		ParameterSpec parameter = ParameterSpec.builder(ArrayTypeName.of(tags), "tags").build();
-
-		MethodSpec.Builder builder = MethodSpec.methodBuilder("tags")
+		return MethodSpec.methodBuilder("tags")
 				.addModifiers(Modifier.PUBLIC)
 				.addParameter(parameter)
-				.varargs();
-		
-		ClassName arrays = ClassName.get(Arrays.class);
-
-		builder = builder.addStatement("this.$N = $N", parameter, parameter);
-
-		//builder = builder.addStatement("map.put($S, $T.asList(value))", "tags", arrays);
-		
-		return builder
+				.varargs()
+				.addStatement("$T clone = new $T[" + size + "]", ArrayTypeName.of(tags), tags)
+				.beginControlFlow("if(this.tags != null)")
+				.addStatement("System.arraycopy(this.tags, 0, clone, 0, " + size + ")")
+				.endControlFlow()
+				.beginControlFlow("for($T tag : tags)", tags)
+				.addStatement("clone[tag.ordinal()] = tag")
+				.endControlFlow()
+				.addStatement("this.tags = clone")
 				.returns(name)
 				.addStatement("return this")
 				.build();
 	}
 
+	private static MethodSpec getTagsGetterMethod(ClassName tags) {
+		
+		return MethodSpec.methodBuilder("getTags")
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ArrayTypeName.of(tags))
+				.addStatement("return tags")
+				.build();
+	}
+
+	
 	private static MethodSpec getMethod(ClassName name, Key key) {
 		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
+		if(type.isPrimitive()) {
+			type = ClassUtils.primitiveToWrapper(type);
+		}
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, key.getId()).build();
 		
-		MethodSpec.Builder builder = MethodSpec.methodBuilder(key.getId())
+		return MethodSpec.methodBuilder(key.getId())
 				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.addParameter(parameter);
+				.addParameter(parameter)
+				.addStatement("this.$N = $N", key.getId(), parameter)
+				.addJavadoc(key.getDescription())
+				.returns(name)
+				.addStatement("return this")
+				.build();
+	}
+	
+	private static MethodSpec getGetter(ClassName name, Key key) {
+		Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
+		if(type.isPrimitive()) {
+			type = ClassUtils.primitiveToWrapper(type);
+		}
 		
-		builder = builder.addStatement("this.$N = $N", key.getId(), parameter);
-		builder = builder.addJavadoc(key.getDescription());
+		String id = key.getId();
 		
-		return builder.returns(name)
-			.addStatement("return this")
-			.build();
+		return getGetter(key, type, id);
+	}
+
+	private static MethodSpec getGetter(Key key, Class<?> type, String id) {
+		return MethodSpec.methodBuilder("get" + Character.toUpperCase(id.charAt(0)) + id.substring(1))
+				.addModifiers(Modifier.PUBLIC)
+				.addJavadoc(key.getDescription())
+				.returns(type)
+				.addStatement("return $N", id)
+				.build();
 	}
 
 	private static Class<?> parseTypeFormat(String type, String format) {
@@ -226,13 +322,10 @@ public class MarkerGenerator {
 					.addModifiers(Modifier.PUBLIC);
 				
 		for(Key key : keys) {
-			builder = builder.addMethod(getBuilderMethod(ClassName.get(ontology.getTargetPackage(), ontology.getName()+ MARKER), key));
+			builder.addMethod(getBuilderMethod(getName(ontology), key));
 		}
 		
-		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
-		
-		return file.build();		
-		
+		return JavaFile.builder(name.packageName(), builder.build()).build();
 	}
 
 	private static MethodSpec getBuilderMethod(ClassName name, Key key) {
@@ -240,19 +333,31 @@ public class MarkerGenerator {
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
 		
-		MethodSpec.Builder builder = MethodSpec.methodBuilder(key.getId())
+		return MethodSpec.methodBuilder(key.getId())
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(parameter);
-		
-		builder = builder
+				.addParameter(parameter)
 				.addStatement("$T marker = new $T()", name, name)
-				.addStatement("marker." + key.getId() + "($N)", parameter);
-		
-		builder = builder.addJavadoc(key.getDescription());
-
-		return builder.returns(name)
-			.addStatement("return marker")
-			.build();
+				.addStatement("marker." + key.getId() + "($N)", parameter)
+				.addJavadoc(key.getDescription())
+				.returns(name)
+				.addStatement("return marker")
+				.build();
 	}
 	
+	private static MethodSpec getPopMethod(Domain ontology) {
+		return MethodSpec.methodBuilder("popContext")
+				.addModifiers(Modifier.PUBLIC)
+				.addStatement("mdc.pop(this)")
+				.addStatement("super.popContext()")
+				.build();
+	}
+	
+	private static MethodSpec getPushMethod(Domain ontology) {
+		return MethodSpec.methodBuilder("pushContext")
+				.addModifiers(Modifier.PUBLIC)
+				.addStatement("mdc.push(this)")
+				.addStatement("super.pushContext()")
+				.build();
+	}
+
 }

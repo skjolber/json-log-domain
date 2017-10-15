@@ -32,32 +32,30 @@ public class LoggerGenerator {
 
 		ClassName markerName = ClassName.get(ontology.getTargetPackage(), ontology.getName() + MarkerGenerator.MARKER);
 
-		Builder builder = TypeSpec.classBuilder(name)
-					.superclass(ParameterizedTypeName.get(superClassName, markerName))
-					.addModifiers(Modifier.PUBLIC);
-
 		ParameterSpec loggerParameter = ParameterSpec.builder(org.slf4j.Logger.class, "logger").build();
 		ParameterSpec levelParameter = ParameterSpec.builder(int.class, "level").build();
 
-		builder = builder.addMethod(MethodSpec.constructorBuilder()
-				.addModifiers(Modifier.PUBLIC)
-				.addParameter(loggerParameter)
-				.addParameter(levelParameter)
-   
-				.addStatement("super($N, $N, new $T())", loggerParameter, levelParameter, markerName)
-		        .build());
+		Builder builder = TypeSpec.classBuilder(name)
+					.superclass(ParameterizedTypeName.get(superClassName, markerName))
+					.addModifiers(Modifier.PUBLIC)
+					.addMethod(MethodSpec.constructorBuilder()
+						.addModifiers(Modifier.PUBLIC)
+						.addParameter(loggerParameter)
+						.addParameter(levelParameter)
+						.addStatement("super($N, $N, new $T())", loggerParameter, levelParameter, markerName)
+						.build()
+					);
 		
 		for(Key key : keys) {
-			builder = builder.addMethod(getMethod(name, key));
+			builder.addMethod(getMethod(name, key));
 		}
 		
-		ClassName tags = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TagGenerator.TAG);
+		if(ontology.hasTags()) {
+			ClassName tags = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TagGenerator.TAG);
+			builder.addMethod(getTagsMethod(name, tags));
+		}
 		
-		builder = builder.addMethod(getTagsMethod(name, tags));
-		
-		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
-		
-		return file.build();		
+		return JavaFile.builder(name.packageName(), builder.build()).build();
 	}
 
 	private static String composeJavadoc(Domain ontology, ClassName name) {
@@ -89,24 +87,19 @@ public class LoggerGenerator {
 	}
 
 	private static MethodSpec getCreateLogStatementMethod(ClassName name) {
-		MethodSpec.Builder builder = MethodSpec.methodBuilder("createLogStatement")
+		return MethodSpec.methodBuilder("createLogStatement")
 				.addModifiers(Modifier.PROTECTED)
-				.addParameter(int.class, "level");
-
-		builder = builder.addStatement("return new $T(slf4jLogger, level)", name);
-		
-		return builder.returns(name).build();
+				.addParameter(int.class, "level")
+				.addStatement("return new $T(slf4jLogger, level)", name)
+				.returns(name).build();
 	}
 
 	private static MethodSpec getTagsMethod(ClassName name, ClassName tags) {
-		MethodSpec.Builder builder = MethodSpec.methodBuilder("tags")
+		return MethodSpec.methodBuilder("tags")
 				.addModifiers(Modifier.PUBLIC)
 				.addParameter(ArrayTypeName.of(tags), "value")
-				.varargs();
-		
-		builder = builder.addStatement("marker.tags(value)");
-		
-		return builder
+				.varargs()
+				.addStatement("marker.tags(value)")
 				.returns(name)
 				.addStatement("return this")
 				.build();
@@ -117,14 +110,11 @@ public class LoggerGenerator {
 		
 		ParameterSpec parameter = ParameterSpec.builder(type, "value").build();
 		
-		MethodSpec.Builder builder = MethodSpec.methodBuilder(key.getId())
-				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.addParameter(parameter);
-		
-		builder = builder.addStatement("marker." + key.getId() + "($N)", parameter);
-		builder = builder.addJavadoc(key.getDescription());
-		
-		return builder.returns(name)
+		return MethodSpec.methodBuilder(key.getId())
+			.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+			.addParameter(parameter)
+			.addStatement("marker." + key.getId() + "($N)", parameter)
+			.addJavadoc(key.getDescription()).returns(name)
 			.addStatement("return this")
 			.build();
 	}
@@ -176,28 +166,18 @@ public class LoggerGenerator {
 
 		ClassName statementName = ClassName.get(ontology.getTargetPackage(), ontology.getName() + STATEMENT);
 
-		ClassName superClassName = ClassName.get(AbstractDomainLogger.class);
-
-		Builder builder = TypeSpec.classBuilder(name)
-				.superclass(ParameterizedTypeName.get(superClassName, statementName))				
-				.addJavadoc(composeJavadoc(ontology, name))
-				.addModifiers(Modifier.PUBLIC);
-						
 		ParameterSpec loggerParameter = ParameterSpec.builder(org.slf4j.Logger.class, "logger").build();
 
-		builder = builder.addMethod(MethodSpec.constructorBuilder()
+		return JavaFile.builder(name.packageName(), TypeSpec.classBuilder(name)
+			.superclass(ParameterizedTypeName.get(ClassName.get(AbstractDomainLogger.class), statementName))				
+			.addJavadoc(composeJavadoc(ontology, name))
+			.addModifiers(Modifier.PUBLIC)
+			.addMethod(MethodSpec.constructorBuilder()
 				.addModifiers(Modifier.PUBLIC)
 				.addParameter(loggerParameter)
-   
 				.addStatement("super($N)", loggerParameter)
-		        .build());
-		
-		builder = builder.addMethod(getCreateLogStatementMethod(statementName));
-		
-		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
-		
-		return file.build();		
-		
+		        .build())
+			.addMethod(getCreateLogStatementMethod(statementName)).build()).build();
 	}
 	
 }

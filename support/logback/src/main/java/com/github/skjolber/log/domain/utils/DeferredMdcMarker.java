@@ -14,22 +14,23 @@ public class DeferredMdcMarker extends LogstashMarker implements StructuredArgum
 
 	public static final String MARKER_NAME = LogstashMarker.MARKER_NAME_PREFIX + "DEFERRED_MAP_FIELDS";
 
-    protected final List<DomainMdc> mdc;
-
-    public DeferredMdcMarker(List<DomainMdc > mdc) {
+	private final List<DomainMarker> deferredMarkers;
+	
+    public DeferredMdcMarker(List<DomainMarker> deferredMarkers) {
         super(MARKER_NAME);
         
-        this.mdc = mdc;
+        this.deferredMarkers = deferredMarkers;
     }
     
-    public List<DomainMdc> getMdc() {
-		return mdc;
+    public List<DomainMarker> getMarkers() {
+		return deferredMarkers;
 	}
     
     @Override
     public void writeTo(JsonGenerator generator) throws IOException {
-    	// do nothing
+		for (DomainMarker domainMarker : deferredMarkers) {
+			domainMarker.writeTo(generator);
+		}
     }
-
 
 }

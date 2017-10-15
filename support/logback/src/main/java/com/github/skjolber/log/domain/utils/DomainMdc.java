@@ -2,85 +2,114 @@ package com.github.skjolber.log.domain.utils;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import org.slf4j.Marker;
 
 import net.logstash.logback.marker.LogstashMarker;
 
-public class DomainMdc implements AutoCloseable, Closeable {
-	
-	private static final long serialVersionUID = 1L;
+public abstract class DomainMdc<T extends DomainMarker> {
 
-    private static InheritableThreadLocal<List<DomainMdc>> inheritableThreadLocal = new InheritableThreadLocal<List<DomainMdc>>() {
-        @Override
-        protected List<DomainMdc> childValue(List<DomainMdc> parentValue) {
+	private static volatile List<DomainMdc<? extends DomainMarker>> mdcs = new ArrayList<>();
+
+	public static void register(DomainMdc<? extends DomainMarker> mdc) {
+		// defensive copy operation
+		List<DomainMdc<? extends DomainMarker>> next = new ArrayList<>(DomainMdc.mdcs);
+		
+		next.add(mdc);
+		
+		DomainMdc.mdcs = next;
+	}
+
+	public static void unregister(DomainMdc<? extends DomainMarker> mdc) {
+		// defensive copy operation
+		List<DomainMdc<? extends DomainMarker>> next = new ArrayList<>(DomainMdc.mdcs);
+
+		next.remove(mdc);
+
+		DomainMdc.mdcs = next;
+	}
+
+	public static List<DomainMdc<? extends DomainMarker>> getMdcs() {
+		return mdcs;
+	}
+	
+	public static Closeable mdc(LogstashMarker marker) {
+		if(marker instanceof DomainMarker) {
+			DomainMarker domainMarker = (DomainMarker)marker;
+			domainMarker.pushContext();
+			
+			if(marker.hasReferences()) {
+				Iterator<Marker> iterator = marker.iterator();
+				while(iterator.hasNext()) {
+					Marker next = iterator.next();
+					
+					if(next instanceof DomainMarker) {
+						mdc((DomainMarker)next);
+					}
+				}
+			}
+			return domainMarker;
+		}
+		throw new IllegalArgumentException("Expected instance of " + DomainMarker.class.getName());
+	}
+	
+	protected ThreadLocal<T> inheritableThreadLocal = new InheritableThreadLocal<T>() {
+		
+		@Override
+		protected T childValue(T parentValue) {
             if (parentValue == null) {
                 return null;
             }
-            return new ArrayList<DomainMdc>(parentValue);
-        }
+            return parentValue;
+		}
     };
 
-    public static void clear() {
-    	List<DomainMdc> list= inheritableThreadLocal.get();
-    	if(list != null) {
-    		list.clear();
+	protected String qualifier;
+
+	public DomainMdc(String qualifier) {
+		this.qualifier = qualifier;
+	}
+	
+	public String getQualifier() {
+		return qualifier;
+	}
+
+	public T get() {
+		return inheritableThreadLocal.get();
+	}
+    
+    public void push(T child) {
+		inheritableThreadLocal.set(child);
+    }
+    
+    public void pop(T item) {
+    	T tail = inheritableThreadLocal.get();
+    	if(tail == null) {
+    		throw new IllegalArgumentException("Cannot pop MDC stack, already empty");
+    	} else if(item != tail) {
+    		throw new IllegalArgumentException("MDC entries must be removed in the reverse order as they were added");
     	}
+    	
+		T parent = (T) item.getParent();
+		if(parent != null) {
+			inheritableThreadLocal.set(parent);
+		} else {
+	    	inheritableThreadLocal.remove();
+		}
     }
-
-    public static List<DomainMdc> get() {
-    	return inheritableThreadLocal.get();
+	
+    public void clear() {
+    	inheritableThreadLocal.remove();
     }
-
-	public static void remove(DomainMdc marker) {
-		List<DomainMdc> domainMarkers = inheritableThreadLocal.get();
-
-		if(domainMarkers != null) {
-			for(int i = 0; i < domainMarkers.size(); i++) {
-				if(marker == domainMarkers.get(i)) {
-					domainMarkers.remove(i);
-					i--;
-				}
-			}
-		}
-	}
-
-	public static void add(DomainMdc marker) {
-		List<DomainMdc> current = inheritableThreadLocal.get();
-		if(current == null) {
-			current = new ArrayList<>();
-			inheritableThreadLocal.set(current);
-		}
-		// add to chain
-		current.add(marker);
+    
+	public void register() {
+		DomainMdc.register(this);
 	}
 	
-	public static List<DomainMdc> copy() {
-		List<DomainMdc> list = inheritableThreadLocal.get();
-		if(list != null) {
-			return new ArrayList<>(list);
-		}
-		return null;
+	public void unregister() {
+		DomainMdc.unregister(this);
 	}
 	
-	public static DomainMdc mdc(LogstashMarker marker) {
-		return new DomainMdc(marker);
-	}
-	
-	private final LogstashMarker delegate;
-
-	public DomainMdc(LogstashMarker delegate) {
-		this.delegate = delegate;
-		
-		add(this);
-	}
-
-	@Override
-	public void close() {
-		remove(this);
-	}
-	
-	public LogstashMarker getDelegate() {
-		return delegate;
-	}	
 }
- 

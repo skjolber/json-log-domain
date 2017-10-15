@@ -33,7 +33,6 @@ public class TagMatcher extends BaseMatcher<DomainTag> implements Serializable {
     		}
     		return true;
     	}
-
     	return false;
     }
 

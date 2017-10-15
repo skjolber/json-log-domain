@@ -16,9 +16,9 @@ import com.github.skjolber.log.domain.model.Key;
  * 
  * Generator for adding mapping to Elastic Search.
  * 
- * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">Elastic manual</a>
+ * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">Elastic field mapping</a>
  * 
- * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html">Elastic manual</a>
+ * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html">Elastic templates</a>
  */
 
 public class ElasticGenerator {

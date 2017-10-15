@@ -4,7 +4,6 @@ import javax.lang.model.element.Modifier;
 
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Tag;
-import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainTag;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -24,7 +23,7 @@ public class TagGenerator {
 			return null;
 		}
 		
-		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + TAG);
+		ClassName name = getName(ontology);
 
 		Builder builder = TypeSpec.enumBuilder(name)
 					.addModifiers(Modifier.PUBLIC)
@@ -32,13 +31,13 @@ public class TagGenerator {
 					.addSuperinterface(DomainTag.class);
 
 		for(Tag tag : ontology.getTags()) {
-			builder = builder.addEnumConstant(tag.getId().toUpperCase(), TypeSpec.anonymousClassBuilder("$S, $S", tag.getId(), tag.getDescription()).addJavadoc(tag.getDescription()).build());
+			builder.addEnumConstant(tag.getId().toUpperCase(), TypeSpec.anonymousClassBuilder("$S, $S", tag.getId(), tag.getDescription()).addJavadoc(tag.getDescription()).build());
 		}
 		
 		FieldSpec id = FieldSpec.builder(String.class, "id", Modifier.PRIVATE, Modifier.FINAL).build();
 		FieldSpec description = FieldSpec.builder(String.class, "description", Modifier.PRIVATE, Modifier.FINAL).build();
 		
-		builder = builder
+		builder
 				.addField(id)
 				.addField(description)
 				.addMethod(MethodSpec.constructorBuilder()
@@ -52,6 +51,10 @@ public class TagGenerator {
 				.addMethod(getter("getDescription", description));
 
 		return JavaFile.builder(name.packageName(), builder.build()).build();
+	}
+
+	public static ClassName getName(Domain ontology) {
+		return ClassName.get(ontology.getTargetPackage(), ontology.getName() + TAG);
 	}
 
 	private static MethodSpec getter(String methodName, FieldSpec field) {

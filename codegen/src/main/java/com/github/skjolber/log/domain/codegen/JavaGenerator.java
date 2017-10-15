@@ -25,14 +25,17 @@ public class JavaGenerator {
 		JavaFile builder = MarkerGenerator.markerBuilder(ontology);
 		JavaFile statement = LoggerGenerator.statement(ontology);
 		JavaFile logger = LoggerGenerator.logger(ontology);
+		JavaFile mdc = MdcGenerator.statement(ontology);
 
 		Files.createDirectories(outputDirectory);
 
-		for(JavaFile file : new JavaFile[]{tags, marker, builder, statement, logger}) {
-			if(changed(file, outputDirectory)) {
-				file.writeTo(outputDirectory);
-			} else {
-				// do not write this file
+		for(JavaFile file : new JavaFile[]{tags, marker, builder, statement, logger, mdc}) {
+			if(file != null) {
+				if(changed(file, outputDirectory)) {
+					file.writeTo(outputDirectory);
+				} else {
+					// do not write this file
+				}
 			}
 		}
 	}

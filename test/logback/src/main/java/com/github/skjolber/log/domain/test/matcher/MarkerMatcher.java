@@ -1,6 +1,11 @@
 package com.github.skjolber.log.domain.test.matcher;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -76,59 +81,116 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 		if (marker == null) {
 			return false;
 		}
-		if (marker instanceof DomainMarker) {
-			DomainMarker domainMarker = (DomainMarker) marker;
-
-			DomainMarker qualifiedMarker = find(qualifier, domainMarker);
-			if (qualifiedMarker != null) {
-				if (matcher.matches(qualifiedMarker.get(key))) {
-					return true;
-				}
-			}
-		}
 		
-		if(marker.hasReferences()) { // search for 
-			Iterator<Marker> iterator = marker.iterator();
-			while(iterator.hasNext()) {
-				Marker next = iterator.next();
-				
-				if(next.getClass() == marker.getClass()) {
-					throw new IllegalArgumentException("Multiple instances of " + next.getClass() + " within same log statement not supported");
+		if(key != null) {
+			System.out.println("IS KEY");
+			if(qualifier != null) {
+				DomainMarker qualifiedMarker = findQualifiedMarker(marker);
+				if (qualifiedMarker != null) {
+					Object value = getter(qualifiedMarker, key);
+					
+					return matcher.matches(value);
 				}
 				
-				if(next instanceof DeferredMdcMarker) {
-					DeferredMdcMarker deferred = (DeferredMdcMarker)next;
-					// see whether we can find the right value here
-					
-					List<DomainMdc> mdc = deferred.getMdc();
-					for(int i = mdc.size() - 1; i >= 0; i--) {
-						DomainMdc domainMdc = mdc.get(i);
+				if(marker.hasReferences()) {
+					Iterator<Marker> iterator = marker.iterator();
+					while(iterator.hasNext()) {
+						qualifiedMarker = findQualifiedMarker(iterator.next());
+						if (qualifiedMarker != null) {
+							Object value = getter(qualifiedMarker, key);
 							
-						Object value = find(domainMdc);
-						
-						if(value != null) {
 							return matcher.matches(value);
 						}
 					}
 				}
+			} else {
+				
+				if(matchMarker(marker)) {
+					return true;
+				}
+				if(marker.hasReferences()) {
+					Iterator<Marker> iterator = marker.iterator();
+					while(iterator.hasNext()) {
+						if(matchMarker(iterator.next())) {
+							return true;
+						}
+					}
+				}
+				
 			}
+		} else if(tags.isEmpty()) {
+			System.out.println("TAGS");
 		}
-		
 		
 		return false;
 	}
 
-	private Object find(DomainMdc domainMdc) {
-		
-		LogstashMarker delegate = domainMdc.getDelegate();
-		
-		DomainMarker qualifiedMarker = find(qualifier, delegate);
-		if (qualifiedMarker != null) {
-			return qualifiedMarker.get(key);
+	private boolean matchMarker(Marker marker) {
+		if (marker instanceof DomainMarker) {
+			Object value = getter((DomainMarker) marker, key);
+			if(value != null && matcher.matches(value)) {
+				return true;
+			}
+			
+		} else if(marker instanceof DeferredMdcMarker) {
+			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
+			
+			for(DomainMarker mdcMarker : deferredMdcMarker.getMarkers()) {
+				Object value = getter((DomainMarker) mdcMarker, key);
+				if(value != null && matcher.matches(value)) {
+					return true;
+				}
+			}
 		}
+		return false;
+	}
+
+	private DomainMarker findQualifiedMarker(Marker marker) {
+		DomainMarker qualifiedMarker = null;
+		if (marker instanceof DomainMarker) {
+			DomainMarker domainMarker = (DomainMarker) marker;
+
+			qualifiedMarker = find(qualifier, domainMarker);
+		} else if(marker instanceof DeferredMdcMarker) {
+			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
+			
+			List<DomainMarker> markers = deferredMdcMarker.getMarkers();
+			for(DomainMarker mdcMarker : markers) {
+				qualifiedMarker = find(qualifier, mdcMarker);
+				if (qualifiedMarker != null) {
+					break;
+				}
+			}
+		}
+		return qualifiedMarker;
+	}
+
+	private Object getterLocal(DomainMarker marker, String name) {
+		try {
+			for (PropertyDescriptor pd : Introspector.getBeanInfo(marker.getClass()).getPropertyDescriptors()) {
+				if (name.equals(pd.getName())) {
+					return pd.getReadMethod().invoke(marker);
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private Object getter(DomainMarker marker, String name) {
+		DomainMarker current = marker;
+		do {
+			Object value = getterLocal(current, name);
+			if(value != null) {
+				return value;
+			}
+			current = current.getParent();
+		} while(current != null);
 		
 		return null;
 	}
+
 	
     /**
      * Search chained {@linkplain DomainMarker}s for the correct qualifier.
@@ -249,14 +311,10 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 	
 	protected void init() {
 		if(!tags.isEmpty()) {
-			if(key == null) {
-				key = "tags";
-			}
 			if(matcher == null) {
 				matcher = (Matcher<T>) new TagMatcher(tags);
 			}
-		}
-		if(key == null) {
+		} else if(key == null) {
 			throw new IllegalArgumentException("Expected key");
 		}
 	}
