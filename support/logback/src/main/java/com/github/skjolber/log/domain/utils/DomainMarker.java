@@ -16,13 +16,11 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 	
 	private static final long serialVersionUID = 1L;
 
-	public static final String MARKER_NAME = LogstashMarker.MARKER_NAME_PREFIX + "MAP_FIELDS";
-
     protected final String qualifier;
     protected DomainMarker parent;
 
     public DomainMarker(String qualifier) {
-        super(MARKER_NAME);
+        super(LogstashMarker.MARKER_NAME_PREFIX + qualifier);
 
         this.qualifier = qualifier;
     }
@@ -33,6 +31,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 
 	@Override
 	public synchronized void add(Marker reference) {
+		// note: this looks at the name passed to the superclass constructor
 		if(reference instanceof LogstashMarker) {
 			super.add(reference);
 		} else {

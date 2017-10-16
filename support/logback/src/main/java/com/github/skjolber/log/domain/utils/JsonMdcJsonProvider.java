@@ -116,11 +116,16 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			}
 		}
 	}
-    
+
     @Override
     public void prepareForDeferredProcessing(ILoggingEvent event) {
-		// add a holder for domains which have no marker within the current event
+    	captureContext(event);
+    	
+    	super.prepareForDeferredProcessing(event);
+    }
 
+    public static void captureContext(ILoggingEvent event) {
+		// add a holder for domains which have no marker within the current event
 		Marker marker = event.getMarker();
 		
 		if(marker == null) {
@@ -177,8 +182,6 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			marker.add(new DeferredMdcMarker(deferredMarkers));
 
 		}
-    	
-    	super.prepareForDeferredProcessing(event);
     }
 
     

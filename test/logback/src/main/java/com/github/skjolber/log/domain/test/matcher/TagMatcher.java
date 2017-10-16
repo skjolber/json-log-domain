@@ -2,7 +2,9 @@ package com.github.skjolber.log.domain.test.matcher;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -13,25 +15,27 @@ public class TagMatcher extends BaseMatcher<DomainTag> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final DomainTag tags[];
+	private final Set<DomainTag> tags;
 
 	public TagMatcher(DomainTag ... tags) {
-		this.tags = tags;
+		this(Arrays.asList(tags));
 	}
 	
 	public TagMatcher(List<DomainTag> tags) {
-		this.tags = tags.toArray(new DomainTag[tags.size()]);
+		this.tags = new HashSet<>(tags);
 	}
 
 	public boolean matches(Object actual) {
-    	if(actual instanceof List) {
-    		List list = (List)actual;
-    		for(DomainTag tag : tags) {
-    			if(!list.contains(tag)) {
-    				return false;
+    	if(actual instanceof DomainTag[]) {
+    		DomainTag[] array = (DomainTag[])actual;
+    		
+    		Set<DomainTag> tags = new HashSet<>();
+    		for(DomainTag tag : array) {
+    			if(tag != null) {
+    				tags.add(tag);
     			}
     		}
-    		return true;
+    		return this.tags.equals(tags);
     	}
     	return false;
     }

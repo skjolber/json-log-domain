@@ -83,25 +83,12 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 		}
 		
 		if(key != null) {
-			System.out.println("IS KEY");
 			if(qualifier != null) {
-				DomainMarker qualifiedMarker = findQualifiedMarker(marker);
+				DomainMarker qualifiedMarker = find(qualifier, marker);
 				if (qualifiedMarker != null) {
 					Object value = getter(qualifiedMarker, key);
 					
 					return matcher.matches(value);
-				}
-				
-				if(marker.hasReferences()) {
-					Iterator<Marker> iterator = marker.iterator();
-					while(iterator.hasNext()) {
-						qualifiedMarker = findQualifiedMarker(iterator.next());
-						if (qualifiedMarker != null) {
-							Object value = getter(qualifiedMarker, key);
-							
-							return matcher.matches(value);
-						}
-					}
 				}
 			} else {
 				
@@ -118,8 +105,6 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 				}
 				
 			}
-		} else if(tags.isEmpty()) {
-			System.out.println("TAGS");
 		}
 		
 		return false;
@@ -143,26 +128,6 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 			}
 		}
 		return false;
-	}
-
-	private DomainMarker findQualifiedMarker(Marker marker) {
-		DomainMarker qualifiedMarker = null;
-		if (marker instanceof DomainMarker) {
-			DomainMarker domainMarker = (DomainMarker) marker;
-
-			qualifiedMarker = find(qualifier, domainMarker);
-		} else if(marker instanceof DeferredMdcMarker) {
-			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
-			
-			List<DomainMarker> markers = deferredMdcMarker.getMarkers();
-			for(DomainMarker mdcMarker : markers) {
-				qualifiedMarker = find(qualifier, mdcMarker);
-				if (qualifiedMarker != null) {
-					break;
-				}
-			}
-		}
-		return qualifiedMarker;
 	}
 
 	private Object getterLocal(DomainMarker marker, String name) {
@@ -205,17 +170,37 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 	    	if(Objects.equals(qualifier, domainMarker.getQualifier())) {
 	    		return domainMarker;
 	    	}
+    	} else if(marker instanceof DeferredMdcMarker) {
+			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
+			
+			for (DomainMarker domainMarker : deferredMdcMarker.getMarkers()) {
+				DomainMarker found = find(qualifier, domainMarker);
+				if(found != null) {
+					return found;
+				}
+			}
     	}
     	
-    	Iterator<Marker> iterator = marker.iterator();
-    	while(iterator.hasNext()) {
-    		Marker next = iterator.next();
-    		if(next instanceof DomainMarker) {
-    			DomainMarker domainMarker = (DomainMarker)next;
-        		if(Objects.equals(qualifier, domainMarker.getQualifier())) {
-            		return domainMarker;
-            	}
-    		}
+    	if(marker.hasReferences()) {
+	    	Iterator<Marker> iterator = marker.iterator();
+	    	while(iterator.hasNext()) {
+	    		Marker next = iterator.next();
+	    		if(next instanceof DomainMarker) {
+	    			DomainMarker domainMarker = find(qualifier, (DomainMarker)next);
+	        		if(domainMarker != null) {
+	            		return domainMarker;
+	            	}
+	        	} else if(next instanceof DeferredMdcMarker) {
+	    			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)next;
+	    			
+	    			for (DomainMarker domainMarker : deferredMdcMarker.getMarkers()) {
+	    				DomainMarker found = find(qualifier, domainMarker);
+	    				if(found != null) {
+	    					return found;
+	    				}
+	    			}
+	    		}
+	    	}
     	}
     	
     	return null;
@@ -286,6 +271,8 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 		for(DomainTag tag : tags) {
 			this.tags.add(tag);
 		}
+		this.key = "tags";
+		
 		return this;
 	}
 

@@ -13,6 +13,6 @@
     </appender>
     
 	<root level="INFO">
-		<appender-ref ref="STDOUT_CLASSIC" />
+		<appender-ref ref="STDOUT_JSON" />
 	</root>
 </configuration>
