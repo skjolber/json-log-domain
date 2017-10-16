@@ -58,15 +58,15 @@ public class ScratchTest {
 		AgressoMarker mdc1 = new AgressoMarker().username("first").timestamp(1).and(GlobalMarkerBuilder.system("linux"));
 		DomainMdc.mdc(mdc1);
 		
-		AgressoMarker mdc2 = new AgressoMarker().username("second");
+		AgressoMarker mdc2 = new AgressoMarker().username("second").timestamp(2);
 		DomainMdc.mdc(mdc2);
 		
-		for(int i = 0; i < 100000000; i++) {
-			logger.info(new AgressoMarker().username("third"), "Marker + message inside context 1 + 2");
-		}
+		AgressoMarker m = new AgressoMarker().username("third");
+		
+		logger.info(new AgressoMarker().username("third"), "Marker + message inside context 1 + 2");
 		
 		mdc2.close();
-		//logger.info(m, "Marker + message inside context DEFERRED 2");
+		logger.info(m, "Marker + message inside context DEFERRED 2");
 		
 		//logger.info(new AgressoMarker().version(123.4), "Marker + message outside context 2 ");
 		

@@ -1,16 +1,20 @@
 package com.github.skjolber.log.domain.codegen;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.lang.model.element.Modifier;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Marker;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
+import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -29,6 +33,7 @@ public class MarkerGenerator {
 	protected static final String PARENT_FIELD_NAME = "parent";
 
 	public static JavaFile marker(Domain ontology) {
+		// Note: omitting equals-method because of the way the way LogstashMarker compares references. 
 		
 		List<Key> keys = ontology.getKeys();
 		
@@ -107,16 +112,56 @@ public class MarkerGenerator {
 				.addMethod(getTagsBuilderMethod(name, tags, ontology.getTags().size()))
 				.addMethod(getTagsGetterMethod(tags));
 		}
+
+		builder.addMethod(getEqualToMethod(keys, name, tags, ontology.hasTags() ? ontology.getTags().size() : 0));
 		
-		com.squareup.javapoet.JavaFile.Builder file = JavaFile.builder(name.packageName(), builder.build());
-		
-		return file.build();		
+		return JavaFile.builder(name.packageName(), builder.build()).build();
 	}
 
 	public static ClassName getName(Domain ontology) {
 		return ClassName.get(ontology.getTargetPackage(), ontology.getName() + MARKER);
 	}
-	
+
+	private static MethodSpec getEqualToMethod(List<Key> fields, ClassName name, ClassName tags, int size) {
+		ParameterSpec parameter = ParameterSpec.builder(Marker.class, "marker").build();
+
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("equalTo")
+				.addModifiers(Modifier.PUBLIC)
+				.addParameter(parameter)
+				.beginControlFlow("if($N instanceof $T)", parameter, name)
+					.addStatement("$T domainMarker = ($T)$N", name, name, parameter)
+				;
+
+		for(Key key : fields) {
+			builder
+					.addCode(CodeBlock.builder()
+					.beginControlFlow("if(!$T.equals(this.$N, domainMarker.$N))", Objects.class, key.getId(), key.getId())
+					.addStatement("return false")
+					.endControlFlow().build());
+		}
+
+		if(tags != null) {
+			// tags
+			builder
+					.addCode(
+							CodeBlock.builder()
+							.beginControlFlow("if(!$T.equals(this.tags, domainMarker.tags))", Arrays.class)
+								.addStatement("return false")
+							.endControlFlow()
+							.build());
+		}
+		
+		
+		
+		return builder
+			.addStatement("return true")
+			.endControlFlow()
+			.addStatement("return false")
+			.returns(boolean.class)
+			
+			.build();
+	}
+
 	private static MethodSpec getWriterMethod(List<Key> fields, ClassName name, ClassName tags, boolean global) {
 		ParameterSpec parameter = ParameterSpec.builder(JsonGenerator.class, "generator").build();
 		

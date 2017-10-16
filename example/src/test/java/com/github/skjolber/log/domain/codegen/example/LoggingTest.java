@@ -5,7 +5,7 @@ import static com.example.global.GlobalTag.LINUX;
 import static com.example.language.LanguageMarkerBuilder.name;
 import static com.example.language.LanguageTag.JIT;
 import static com.example.network.NetworkMarkerBuilder.host;
-import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.*;
+import static com.github.skjolber.log.domain.test.matcher.GenericMarkerMatcherBuilder.*;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
 import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.apache.log4j.MDC;
@@ -21,11 +22,17 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
+import com.example.global.GlobalMarker;
 import com.example.global.GlobalTag;
 import com.example.language.LanguageLogger;
 import com.example.language.LanguageTag;
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
+import com.github.skjolber.log.domain.test.matcher.GenericMarkerMatcher;
+import com.github.skjolber.log.domain.test.matcher.MarkerMatcher;
+import com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder;
+import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -128,11 +135,14 @@ public class LoggingTest {
 			assertThat(rule, key("system").value("fedora"));
 			assertThat(rule, qualifier("network").key("host").value("localhost"));
 
+			assertThat(rule, MarkerMatcherBuilder.matcher(system("fedora").tags(LINUX)));
+
 			// single tag from global domain
 			assertThat(rule, tags(LINUX));
 		} finally {
 			mdc.close();
 		}
 	}
+	
 	
 }

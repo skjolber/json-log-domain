@@ -94,4 +94,6 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 		// do nothing
 	}
 
+	public abstract boolean equalTo(Marker marker);
+
 }
