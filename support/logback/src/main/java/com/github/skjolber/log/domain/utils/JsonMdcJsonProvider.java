@@ -58,9 +58,8 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			} else if(marker instanceof DomainMarker) {
 				DomainMarker domainMarker = (DomainMarker)marker;
 				
-				domainMarker.writeTo(generator);
 				for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
-					if(!Objects.equals(abstractMdc.getQualifier(), domainMarker)) {
+					if(!Objects.equals(abstractMdc.getQualifier(), domainMarker.getQualifier())) {
 						DomainMarker mdcMarker = abstractMdc.get();
 						if(mdcMarker != null) {
 							mdcMarker.writeTo(generator);
@@ -100,9 +99,9 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 		
 		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) { // list of possible MDCs
 			if(!filter.contains(abstractMdc.getQualifier())) {
-				DomainMarker domainMarker = abstractMdc.get();
-				if(domainMarker != null) {
-					domainMarker.writeTo(generator);
+				DomainMarker mdcMarker = abstractMdc.get();
+				if(mdcMarker != null) {
+					mdcMarker.writeTo(generator);
 				}
 			}
 		}

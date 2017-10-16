@@ -86,4 +86,8 @@ public class Domain {
 	public boolean hasTags() {
 		return !tags.isEmpty();
 	}
+
+	public boolean hasQualifier() {
+		return qualifier != null && !qualifier.trim().isEmpty();
+	}
 }

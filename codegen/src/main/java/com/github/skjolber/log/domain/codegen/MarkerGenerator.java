@@ -62,11 +62,11 @@ public class MarkerGenerator {
 		
 		builder.addMethod(constructor.build());
 		
-		boolean global = ontology.getQualifier() != null;
+		boolean global = !ontology.hasQualifier();
 		
 		// private static final long serialVersionUID = 1L;
 		builder.addField(FieldSpec.builder(long.class, "serialVersionUID", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("1L").build());
-		builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", global ? ontology.getQualifier() : "").build());
+		builder.addField(FieldSpec.builder(String.class, "QUALIFIER", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", !global ? ontology.getQualifier() : "").build());
 
 		TypeName mdcName = MdcGenerator.getName(ontology);
 		

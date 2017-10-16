@@ -41,17 +41,13 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 
 	public void writeHeadTo(JsonGenerator generator) throws IOException {
 	  	// check if there is MDC JSON data
-		if(qualifier != null && !qualifier.isEmpty()) {
-			// subtree
-		    generator.writeFieldName(qualifier);
-		    generator.writeStartObject();
-		}
+		// subtree
+	    generator.writeFieldName(qualifier);
+	    generator.writeStartObject();
 	}
 	
 	public void writeTailTo(JsonGenerator generator) throws IOException {
-	  	if(qualifier != null && !qualifier.isEmpty()) {
-	  		generator.writeEndObject();
-	  	}
+  		generator.writeEndObject();
 	}
 
 	public void pushContext() {

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.example.agresso.AgressoLogger;
 import com.example.agresso.AgressoMarker;
 import com.example.agresso.AgressoMdc;
+import com.example.global.GlobalMarkerBuilder;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainMdc;
 public class ScratchTest {
@@ -43,6 +44,7 @@ public class ScratchTest {
 				logger.info(username("thomas").timestamp(6), "Marker + message inside context");
 				
 				wrapper.info().username("thomas").timestamp(6).message("Wrapped logger marker + message inside context");
+				
 				wrapper.debug().message("TEST");
 			}
 		}
@@ -53,28 +55,24 @@ public class ScratchTest {
 	public void testLoggerMdc2() throws Exception {
 		Logger logger = LoggerFactory.getLogger(ScratchTest.class);
 		
-		AgressoMarker mdc1 = new AgressoMarker().username("first").timestamp(1);
+		AgressoMarker mdc1 = new AgressoMarker().username("first").timestamp(1).and(GlobalMarkerBuilder.system("linux"));
 		DomainMdc.mdc(mdc1);
 		
 		AgressoMarker mdc2 = new AgressoMarker().username("second");
 		DomainMdc.mdc(mdc2);
 		
-		AgressoMarker m = new AgressoMarker().version(123.4);
-		m.prepareForDeferredProcessing();
+		for(int i = 0; i < 100000000; i++) {
+			logger.info(new AgressoMarker().username("third"), "Marker + message inside context 1 + 2");
+		}
 		
-		logger.info(new AgressoMarker().version(123.4), "Marker + message inside context 1 + 2");
-		
-		logger.info("Message inside context DEFERRED 2");
-
 		mdc2.close();
-		logger.info(m, "Marker + message inside context DEFERRED 2");
-
+		//logger.info(m, "Marker + message inside context DEFERRED 2");
 		
-		logger.info(new AgressoMarker().version(123.4), "Marker + message outside context 2 ");
+		//logger.info(new AgressoMarker().version(123.4), "Marker + message outside context 2 ");
 		
 		mdc1.close();
 
-		logger.info(m, "Marker + message inside context DEFERRED 1");
+		//logger.info(m, "Marker + message inside context DEFERRED 1");
 	}
 	
 	@Test
@@ -112,4 +110,16 @@ public class ScratchTest {
 
 	}
 
+	@Test
+	public void testLoggerMdc5() throws Exception {
+		Logger logger = LoggerFactory.getLogger(ScratchTest.class);
+		
+		AgressoMarker mdc1 = new AgressoMarker().username("first").timestamp(1);
+		DomainMdc.mdc(mdc1);
+		
+		//for(int i = 0; i < 1000000; i++) {
+		logger.info(new AgressoMarker().username("second"), "Marker + message inside context 1 + 2");
+		
+		mdc1.close();
+	}
 }

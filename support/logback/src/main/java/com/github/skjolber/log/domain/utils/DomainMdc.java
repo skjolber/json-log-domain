@@ -35,6 +35,13 @@ public abstract class DomainMdc<T extends DomainMarker> {
 		return mdcs;
 	}
 	
+	public static void clearAll() {
+		List<DomainMdc<? extends DomainMarker>> mdcs = getMdcs();
+		for (DomainMdc<? extends DomainMarker> domainMdc : mdcs) {
+			domainMdc.clear();
+		}
+	}
+	
 	public static Closeable mdc(LogstashMarker marker) {
 		if(marker instanceof DomainMarker) {
 			DomainMarker domainMarker = (DomainMarker)marker;
