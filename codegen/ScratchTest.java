@@ -2,6 +2,8 @@ package com.github.skjolber.log.domain.codegen;
 
 import static com.example.agresso.AgressoMarkerBuilder.username;
 import static com.example.agresso.AgressoMarkerBuilder.version;
+import static com.example.global.GlobalMarkerBuilder.system;
+import static com.example.global.GlobalTag.LINUX;
 import static com.example.network.NetworkMarkerBuilder.host;
 
 import java.io.Closeable;
@@ -13,9 +15,14 @@ import org.slf4j.LoggerFactory;
 import com.example.agresso.AgressoLogger;
 import com.example.agresso.AgressoMarker;
 import com.example.agresso.AgressoMdc;
+import com.example.agresso.AgressoTag;
 import com.example.global.GlobalMarkerBuilder;
+import com.example.network.NetworkMarker;
+import com.example.network.NetworkMarkerBuilder;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainMdc;
+
+import net.logstash.logback.marker.LogstashMarker;
 public class ScratchTest {
 	
 	
@@ -113,7 +120,11 @@ public class ScratchTest {
 	@Test
 	public void testLoggerMdc5() throws Exception {
 		Logger logger = LoggerFactory.getLogger(ScratchTest.class);
-		
+	
+		logger.info(host("127.0.0.1").port(8080)
+				.and(system("fedora").tags(LINUX)).and(username("first").timestamp(1)),
+				"Hello world");
+
 		AgressoMarker mdc1 = new AgressoMarker().username("first").timestamp(1);
 		DomainMdc.mdc(mdc1);
 		
@@ -121,5 +132,31 @@ public class ScratchTest {
 		logger.info(new AgressoMarker().username("second"), "Marker + message inside context 1 + 2");
 		
 		mdc1.close();
+	}
+	
+	@Test
+	public void testLoggerMdc6() throws Exception {
+		
+		DomainMarker and = host("127.0.0.1")
+				.and(system("fedora").tags(LINUX))
+				.and(username("second").tags(AgressoTag.BLUE)
+						);
+		
+		/*
+		if(!and.hasReferences()) {
+			throw new IllegalArgumentException();
+		}
+		*/
+		
+		Logger logger = LoggerFactory.getLogger(ScratchTest.class);
+
+		logger.info(and, "ABC");
+		
+		logger.info(host("127.0.0.1")
+				.and(system("fedora").tags(LINUX))
+				.and(username("second").tags(AgressoTag.BLUE)
+				),
+				"Hello world");
+		
 	}
 }

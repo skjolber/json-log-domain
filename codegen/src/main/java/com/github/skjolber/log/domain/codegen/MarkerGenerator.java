@@ -14,6 +14,7 @@ import org.slf4j.Marker;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
+import com.github.skjolber.log.domain.model.Tag;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -48,7 +49,7 @@ public class MarkerGenerator {
 
 		com.squareup.javapoet.MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
 			.addModifiers(Modifier.PUBLIC)
-			.addStatement("super(QUALIFIER)")
+			.addStatement("super($S, QUALIFIER)", ontology.getName().toUpperCase())
 			.addStatement("$T $N = mdc.get()", name, PARENT_FIELD_NAME)
 			.beginControlFlow("if($N != null)", PARENT_FIELD_NAME);
 			
@@ -113,7 +114,10 @@ public class MarkerGenerator {
 				.addMethod(getTagsGetterMethod(tags));
 		}
 
-		builder.addMethod(getEqualToMethod(keys, name, tags, ontology.hasTags() ? ontology.getTags().size() : 0));
+		builder
+			.addMethod(getEqualToMethod(keys, name, tags, ontology.hasTags() ? ontology.getTags().size() : 0))
+			.addMethod(getToStringBuilderMethod(ontology))
+			;
 		
 		return JavaFile.builder(name.packageName(), builder.build()).build();
 	}
@@ -161,6 +165,81 @@ public class MarkerGenerator {
 			
 			.build();
 	}
+	
+	private static MethodSpec getToStringBuilderMethod(Domain ontology) {
+		// output like in map
+		ParameterSpec parameter = ParameterSpec.builder(StringBuilder.class, "builder").build();
+
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("writeToString")
+				.addModifiers(Modifier.PUBLIC)
+				.addParameter(parameter)
+				;
+
+		if(ontology.hasQualifier()) {
+			builder.addStatement("$N.append($S)", parameter, ontology.getQualifier() + "{");
+		} else {
+			builder.addStatement("$N.append($S)", parameter, "{");
+		}
+		
+		for(Key key : ontology.getKeys()) {
+			builder
+				.beginControlFlow("if(this.$N != null)", key.getId())
+					.addStatement("$N.append($S)", parameter, key.getId() + "=")
+					.addStatement("$N.append(this.$N)", parameter, key.getId())
+					.addStatement("$N.append($S)", parameter, ", ")
+				.endControlFlow();
+		}
+
+		int size;
+		if(ontology.hasQualifier()) {
+			size = ontology.getQualifier().length() + 1;
+		} else {
+			size = 1;
+		}
+		
+		if(ontology.hasTags()) {
+			ClassName tags = TagGenerator.getName(ontology);
+			// tags
+			builder
+				.beginControlFlow("if(this.$N != null)", "tags")
+				.addStatement("int mark = $N.length()", parameter)
+					.addStatement("$N.append($S)", parameter, "tags=[") // size 6
+					.beginControlFlow("for($T tag : tags)", tags)
+						.beginControlFlow("if(tag != null)")
+							.addStatement("$N.append(tag.getId())", parameter)
+							.addStatement("$N.append($S)", parameter, ", ")
+						.endControlFlow()
+					.endControlFlow()
+					.beginControlFlow("if(mark + 6 < $N.length())", parameter)
+						.addComment("at least one tag was present")
+						.addStatement("$N.setLength($N.length() - 2)", parameter, parameter)
+						.addStatement("$N.append($S)", parameter, "]")
+					.nextControlFlow("else if(mark == " + size + ")", parameter)
+						.addComment("no fields")
+						.addStatement("$N.setLength(mark)", parameter)
+					.nextControlFlow("else")
+						.addComment("at least one field was present, remove extra comma")
+						.addStatement("$N.setLength(mark - 2)", parameter)
+					.endControlFlow()
+				.nextControlFlow("else if($N.length() != " + size + ")", parameter)
+					.addStatement("$N.setLength($N.length() - 2)", parameter, parameter)
+				.endControlFlow();
+		} else {
+			builder
+			.beginControlFlow("if($N.length() != " + size + ")", parameter)
+				.addComment("remove extra comma")
+				.addStatement("$N.setLength($N.length() - 2)", parameter, parameter)
+			.endControlFlow();
+		}
+		
+		
+		
+		return builder
+				.addStatement("$N.append($S)", parameter, "}")
+				.addStatement("super.writeToString($N)", parameter)
+				.build();
+	}
+
 
 	private static MethodSpec getWriterMethod(List<Key> fields, ClassName name, ClassName tags, boolean global) {
 		ParameterSpec parameter = ParameterSpec.builder(JsonGenerator.class, "generator").build();
@@ -178,8 +257,9 @@ public class MarkerGenerator {
 			builder.addCode(CodeBlock.builder()
 					.beginControlFlow("if(this.$N != null)", key.getId())
 					.addStatement("$N.writeFieldName($S)", parameter, key.getId())
-					.addStatement("$N." + getWriteMethod(key) + "(this.$N)", parameter, key.getId()) // TODO microoptimize by checking for type
-					.endControlFlow().build());
+					.addStatement("$N." + getWriteJsonMethod(key) + "(this.$N)", parameter, key.getId()) // TODO microoptimize by checking for type
+					.endControlFlow()
+					.build());
 		}
 
 		if(tags != null) {
@@ -194,8 +274,8 @@ public class MarkerGenerator {
 					.endControlFlow()
 					.endControlFlow()
 					.addStatement("$N.writeEndArray()", parameter)
-					.addStatement("$N.writeObject(this.$N)", parameter, "tags") // TODO microoptimize by checking for type
-					.endControlFlow().build());
+					.endControlFlow()
+					.build());
 		}
 		if(!global) {
 			builder.addStatement("writeTailTo($N)", parameter);
@@ -204,11 +284,16 @@ public class MarkerGenerator {
 		return builder.build();
 	}
 
-	private static String getWriteMethod(Key key) {
+	private static String getWriteJsonMethod(Key key) {
 		// TODO more write methods
 		if(key.getType().equals("string") && key.getFormat() == null) {
 			return "writeString";
 		}
+		
+		if(key.getType().equals("integer") || key.getType().equals("number")) {
+			return "writeNumber";
+		}
+		
 		return "writeObject";
 	}
 
@@ -366,8 +451,26 @@ public class MarkerGenerator {
 					.addJavadoc(composeJavadoc(ontology, name))
 					.addModifiers(Modifier.PUBLIC);
 				
+		ClassName markerName = getName(ontology);
+		
 		for(Key key : keys) {
-			builder.addMethod(getBuilderMethod(getName(ontology), key));
+			builder.addMethod(getBuilderMethod(markerName, key));
+		}
+		
+		if(ontology.hasTags()) {
+			ClassName tagsName = TagGenerator.getName(ontology);
+			
+			ParameterSpec parameter = ParameterSpec.builder(ArrayTypeName.of(tagsName), "value").build();
+			
+			builder.addMethod(MethodSpec.methodBuilder("tags")
+					.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+					.addParameter(parameter).varargs()
+					.addStatement("$T marker = new $T()", markerName, markerName)
+					.addStatement("marker.tags($N)", parameter)
+					.returns(markerName)
+					.addStatement("return marker")
+					.build());
+			
 		}
 		
 		return JavaFile.builder(name.packageName(), builder.build()).build();
@@ -392,8 +495,8 @@ public class MarkerGenerator {
 	private static MethodSpec getPopMethod(Domain ontology) {
 		return MethodSpec.methodBuilder("popContext")
 				.addModifiers(Modifier.PUBLIC)
-				.addStatement("mdc.pop(this)")
 				.addStatement("super.popContext()")
+				.addStatement("mdc.pop(this)")
 				.build();
 	}
 	

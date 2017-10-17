@@ -15,14 +15,10 @@ package com.github.skjolber.log.domain.utils;
  */
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Marker;
@@ -72,7 +68,6 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			return;
 		}
 
-    	
 		DeferredMdcMarker deferredMarker = null;
 		Set<String> filter = new HashSet<>();
 
@@ -91,8 +86,8 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			if(next instanceof DomainMarker) {
 				DomainMarker domainMarker = (DomainMarker)next;
 				filter.add(domainMarker.getQualifier());
-			} else if(marker instanceof DeferredMdcMarker) {
-				((DeferredMdcMarker)marker).writeTo(generator);
+			} else if(next instanceof DeferredMdcMarker) {
+				((DeferredMdcMarker)next).writeTo(generator);
 				return;
 			}
 		}
