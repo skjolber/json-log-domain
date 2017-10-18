@@ -27,7 +27,7 @@ public class MarkdownGenerator {
 	}
 
 	public static void generate(Domain domain, Path outputFile, boolean javaCodeGenerated) throws IOException {
-		Writer writer = Files.newBufferedWriter(outputFile);
+		Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8);
 		try {
 			writer.write(generate(domain, javaCodeGenerated));
 		} finally {
