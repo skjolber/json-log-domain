@@ -13,6 +13,7 @@ import com.github.skjolber.log.domain.model.Tag;
 
 public class DomainFactory {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Domain parse(Reader reader) throws IOException {
 		
 	    YamlReader yamlReader = new YamlReader(reader);
@@ -23,7 +24,8 @@ public class DomainFactory {
 	    return parse(map);
 	}
 	
-	public static Domain parse(Map map) throws IOException {
+	@SuppressWarnings("unchecked")
+	public static Domain parse(Map<String, Object> map) throws IOException {
 		
 		Domain ontology = new Domain();
 		
@@ -33,24 +35,24 @@ public class DomainFactory {
 		ontology.setName((String)map.get("name"));
 		ontology.setDescription((String)map.get("description"));
 	    
-		List keys = (List) map.get("keys");
+		List<Object> keys = (List<Object>) map.get("keys");
 		if(keys != null) {
 			for(int i = 0; i < keys.size(); i++) {
-				ontology.add(parseKey((Map)keys.get(i)));
+				ontology.add(parseKey((Map<String, Object>)keys.get(i)));
 			}
 		}
 
-		List tags = (List) map.get("tags");
+		List<Object> tags = (List<Object>) map.get("tags");
 		if(tags != null) {
 			for(int i = 0; i < tags.size(); i++) {
-				ontology.add(parseTag((Map)tags.get(i)));
+				ontology.add(parseTag((Map<String, Object>)tags.get(i)));
 			}
 		}
 		
 		return ontology;
 	}
 
-	private static Tag parseTag(Map map) {
+	private static Tag parseTag(Map<String, Object> map) {
 		Tag tag = new Tag();
 		Map.Entry<String, Object> entry = (Entry<String, Object>) map.entrySet().iterator().next();
 		tag.setId((String)entry.getKey());
@@ -59,12 +61,13 @@ public class DomainFactory {
 		return tag;
 	}
 
-	private static Key parseKey(Map map) {
+	@SuppressWarnings("rawtypes")
+	private static Key parseKey(Map<String, ?> map) {
 		Key key = new Key();
 
-		Map.Entry<String, Map> entry = (Entry<String, Map>) map.entrySet().iterator().next();
+		Map.Entry<String, ?> entry = map.entrySet().iterator().next();
 		key.setId(entry.getKey());
-		Map entryMap = entry.getValue();
+		Map entryMap = (Map) entry.getValue();
 		key.setDescription((String)entryMap.get("description"));
 		key.setName((String)entryMap.get("name"));
 		key.setType((String)entryMap.get("type"));

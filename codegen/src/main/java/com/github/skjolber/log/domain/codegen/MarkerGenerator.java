@@ -14,8 +14,6 @@ import org.slf4j.Marker;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
-import com.github.skjolber.log.domain.model.Tag;
-import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;

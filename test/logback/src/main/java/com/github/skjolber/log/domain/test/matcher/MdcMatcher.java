@@ -17,6 +17,8 @@ import ch.qos.logback.core.read.ListAppender;
 
 public class MdcMatcher<T> extends BaseMatcher<T> implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static <T> Matcher<T> mdc(Class<?> cls, String key, String value) {
 		return mdc(cls, key, value, null);
 	}
@@ -30,15 +32,15 @@ public class MdcMatcher<T> extends BaseMatcher<T> implements Serializable {
 	}
 
 	public static <T> Matcher<T> mdc(Class<?> cls, String key, String value, Level level) {
-		return new MdcMatcher(cls.getName(), key, new IsEqual<String>(value), level);
+		return new MdcMatcher<T>(cls.getName(), key, new IsEqual<String>(value), level);
 	}
 
 	public static <T> Matcher<T> mdc(String key, Matcher<String> matcher) {
-		return new MdcMatcher(null, key, matcher, null);
+		return new MdcMatcher<T>(null, key, matcher, null);
 	}
 
 	public static <T> Matcher<T> mdc(String key, Matcher<String> matcher, Level level) {
-		return new MdcMatcher(null, key, matcher, level);
+		return new MdcMatcher<T>(null, key, matcher, level);
 	}
 	
 	protected final String loggerName;
@@ -87,6 +89,7 @@ public class MdcMatcher<T> extends BaseMatcher<T> implements Serializable {
         description.appendText("mdc(\"" + key + "\")");
     }
     
+	@SuppressWarnings("unchecked")
 	public boolean matches(Object actual) {
 		if(actual instanceof LogbackJUnitRule) {
 			LogbackJUnitRule rule = (LogbackJUnitRule)actual;

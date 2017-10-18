@@ -16,7 +16,6 @@ public class TagGenerator {
 	
 	public static final String TAG = "Tag";
 
-	@SuppressWarnings("restriction")
 	public static JavaFile tag(Domain ontology) {
 		
 		if(!ontology.hasTags()) {

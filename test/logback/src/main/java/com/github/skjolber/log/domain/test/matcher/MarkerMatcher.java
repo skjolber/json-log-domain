@@ -22,21 +22,19 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	protected String loggerName;
-	protected Matcher<DomainMarker> matcher;
+	protected Matcher<T> matcher;
 	protected Level level;
-	protected boolean initalized; // ensure builder pattern completes, if in use.
-	protected DomainMarker marker;
+	protected final DomainMarker marker;
 	
-	public MarkerMatcher() {
+	public MarkerMatcher(DomainMarker marker) {
+		this.marker = marker;
 	}
 	
-	public MarkerMatcher(String loggerName, DomainMarker marker, Matcher<DomainMarker> matcher, Level level) {
+	public MarkerMatcher(String loggerName, DomainMarker marker, Matcher<T> matcher, Level level) {
 		this.loggerName = loggerName;
 		this.marker = marker;
 		this.matcher = matcher;
 		this.level = level;
-		
-		this.initalized = true;
 	}
 
 	protected boolean matches(List<ILoggingEvent> appender) {
@@ -100,26 +98,12 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 
 	public void describeTo(Description description) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("marker(\"");
-		/*
-		if (qualifier != null) {
-			builder.append(qualifier);
-			builder.append(".");
-			builder.append(key);
-		} else {
-			builder.append(key);
-		}
-		*/
-		builder.append("\"");
+		marker.writeToString(builder);
 		description.appendText(builder.toString());
-		builder.append(")");
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean matches(Object actual) {
-		if(!initalized) {
-			init();
-			initalized = true;
-		}
 		if (actual instanceof LogbackJUnitRule) {
 			LogbackJUnitRule rule = (LogbackJUnitRule) actual;
 			if (matches(rule.capture())) {
@@ -146,31 +130,19 @@ public class MarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 		return false;
 	}
 
-	public MarkerMatcher loggerName(String loggerName) {
+	public MarkerMatcher<T>  loggerName(String loggerName) {
 		this.loggerName = loggerName;
 		return this;
 	}
 
-	public MarkerMatcher marker(DomainMarker marker) {
-		this.marker = marker;
-		return this;
-	}
-
-	public MarkerMatcher matcher(Matcher matcher) {
+	public MarkerMatcher<T> matcher(Matcher<T> matcher) {
 		this.matcher = matcher;
 		return this;
 	}
 
-	public MarkerMatcher level(Level level) {
+	public MarkerMatcher<T>  level(Level level) {
 		this.level = level;
 		return this;
 	}
-	
-	protected void init() {
-		
-	}
 
-	public void setMarker(DomainMarker marker) {
-		this.marker = marker;
-	}
 }

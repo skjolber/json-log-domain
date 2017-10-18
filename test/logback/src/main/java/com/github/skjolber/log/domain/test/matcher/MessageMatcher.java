@@ -18,18 +18,22 @@ public class MessageMatcher extends BaseMatcher<String> implements Serializable 
 
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unchecked")
 	public static <T> Matcher<T> message(Class<?> cls, Matcher<String> matcher, Level level) {
 		return (Matcher<T>) new MessageMatcher(cls.getName(), matcher, level);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Matcher<T> message(Class<?> cls, Matcher<String> matcher) {
 		return (Matcher<T>) new MessageMatcher(cls.getName(), matcher, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Matcher<T> message(Matcher<String> matcher) {
 		return (Matcher<T>) new MessageMatcher(null, matcher, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Matcher<T> message(String string) {
 		return (Matcher<T>) new MessageMatcher(null, new IsEqual<String>(string), null);
 	}
@@ -71,6 +75,7 @@ public class MessageMatcher extends BaseMatcher<String> implements Serializable 
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean matches(Object actual) {
 		if(actual instanceof LogbackJUnitRule) {
 			LogbackJUnitRule rule = (LogbackJUnitRule)actual;

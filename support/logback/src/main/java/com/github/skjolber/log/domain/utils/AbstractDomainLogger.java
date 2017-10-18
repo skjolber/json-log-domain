@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Level;
 /**
  * Wrapper for slf4j Logger that enables a builder pattern and JSON layout
  */
-public abstract class AbstractDomainLogger<T extends AbstractDomainLogStatement> {
+public abstract class AbstractDomainLogger<T extends AbstractDomainLogStatement<? extends DomainMarker>> {
 
 	protected org.slf4j.Logger slf4jLogger;
 

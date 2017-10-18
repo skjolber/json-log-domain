@@ -1,11 +1,8 @@
 package com.github.skjolber.log.domain.test.matcher;
 
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,13 +17,11 @@ import org.slf4j.Marker;
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
 import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
-import com.github.skjolber.log.domain.utils.DomainMdc;
 import com.github.skjolber.log.domain.utils.DomainTag;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import net.logstash.logback.marker.LogstashMarker;
 
 public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializable {
 
@@ -221,6 +216,7 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 		builder.append(")");
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean matches(Object actual) {
 		if(!initalized) {
 			init();
@@ -281,13 +277,13 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 		return this;
 	}
 
-	public GenericMarkerMatcher<T> matcher(Matcher matcher) {
+	public GenericMarkerMatcher<T> matcher(Matcher<T> matcher) {
 		this.matcher = matcher;
 		return this;
 	}
 
 	public GenericMarkerMatcher<T> value(T value) {
-		this.matcher = new IsEqual(value);
+		this.matcher = new IsEqual<T>(value);
 		return this;
 	}
 
@@ -296,6 +292,7 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void init() {
 		if(!tags.isEmpty()) {
 			if(matcher == null) {

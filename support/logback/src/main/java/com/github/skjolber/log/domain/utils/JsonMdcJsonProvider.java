@@ -40,7 +40,8 @@ import net.logstash.logback.fieldnames.LogstashFieldNames;
 
 public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent> implements FieldNamesAware<LogstashFieldNames> {
 
-    @Override
+    @SuppressWarnings("resource")
+	@Override
     public void writeTo(JsonGenerator generator, ILoggingEvent event) throws IOException {
     	// write only mdc data from domains which have no marker within the current event
     	
@@ -68,15 +69,16 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			return;
 		}
 
-		DeferredMdcMarker deferredMarker = null;
+		if(marker instanceof DeferredMdcMarker) {
+			((DeferredMdcMarker)marker).writeTo(generator);
+			return;
+		}
+		
 		Set<String> filter = new HashSet<>();
 
 		if(marker instanceof DomainMarker) {
 			DomainMarker domainMarker = (DomainMarker)marker;
 			filter.add(domainMarker.getQualifier());
-		} else if(marker instanceof DeferredMdcMarker) {
-			((DeferredMdcMarker)marker).writeTo(generator);
-			return;
 		}
 			
 		Iterator<Marker> iterator = marker.iterator();
@@ -118,7 +120,8 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
     	super.prepareForDeferredProcessing(event);
     }
 
-    public static void captureContext(ILoggingEvent event) {
+    @SuppressWarnings("resource")
+	public static void captureContext(ILoggingEvent event) {
 		// add a holder for domains which have no marker within the current event
 		Marker marker = event.getMarker();
 		

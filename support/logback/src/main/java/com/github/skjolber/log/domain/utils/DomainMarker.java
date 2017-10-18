@@ -3,7 +3,6 @@ package com.github.skjolber.log.domain.utils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Objects;
 
 import org.slf4j.Marker;
 
@@ -55,6 +54,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 		generator.writeEndObject();
 	}
 
+	@SuppressWarnings("resource")
 	public void pushContext() {
 		// actual operation on this instance delegated to subclass
 		if(hasReferences()) {
@@ -70,6 +70,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public void popContext() {
 		// actual operation on this instance delegated to subclass
 		if(hasReferences()) {

@@ -213,7 +213,7 @@ try {
 }
 ```
 
-Unlike the build-in MDC, the JSON MDC works like a stack.
+Unlike the built-in SLF4J MDC, the JSON MDC works like a stack.
 
 ## Markdown documentation
 By default, a [markdown file] will also be generated for online documentation. 
@@ -259,12 +259,13 @@ optionally also using `Class` and `Level` filtering. Import the library using
 
 # History
 
- - [1.0.0]: Initial version
+ - [1.0.1]: Added MDC support.
+ - 1.0.0: Initial version
 
 [Apache 2.0]:				http://www.apache.org/licenses/LICENSE-2.0.html
 [issue-tracker]:			https://github.com/skjolber/log-domain/issues
 [Maven]:					http://maven.apache.org/
-[1.0.0]:					https://github.com/skjolber/log-domain/releases/tag/log-domain-1.0.0
+[1.0.1]:					https://github.com/skjolber/log-domain/releases/tag/log-domain-1.0.1
 [Logback]:					https://logback.qos.ch/
 [logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:	https://github.com/swagger-api/swagger-codegen
