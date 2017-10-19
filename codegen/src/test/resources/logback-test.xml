@@ -8,7 +8,7 @@
 			<provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
 			
 			<!-- add pretty-printing for testing -->
-			<jsonGeneratorDecorator class="com.github.skjolber.log.domain.codegen.test.PrettyPrintingDecorator"/>
+			<jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
 		</encoder>
     </appender>
 

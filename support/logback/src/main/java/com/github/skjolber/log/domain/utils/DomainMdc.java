@@ -35,14 +35,14 @@ public abstract class DomainMdc<T extends DomainMarker> {
 		return mdcs;
 	}
 	
-	public static void clearAll() {
+	public static void removeAll() {
 		List<DomainMdc<? extends DomainMarker>> mdcs = getMdcs();
 		for (DomainMdc<? extends DomainMarker> domainMdc : mdcs) {
-			domainMdc.clear();
+			domainMdc.remove();
 		}
 	}
 	
-	public static Closeable mdc(LogstashMarker marker) {
+	public static DomainMarker mdc(LogstashMarker marker) {
 		if(marker instanceof DomainMarker) {
 			DomainMarker domainMarker = (DomainMarker)marker;
 			domainMarker.pushContext();
@@ -107,11 +107,12 @@ public abstract class DomainMdc<T extends DomainMarker> {
 	    	inheritableThreadLocal.remove();
 		}
     }
-	
-    public void clear() {
+    
+    public void remove() {
     	inheritableThreadLocal.remove();
     }
-    
+
+	
 	public void register() {
 		DomainMdc.register(this);
 	}

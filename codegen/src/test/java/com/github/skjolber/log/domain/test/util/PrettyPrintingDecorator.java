@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen.test;
+package com.github.skjolber.log.domain.test.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 

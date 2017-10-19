@@ -65,7 +65,7 @@ public class MarkerGenerator {
 			.endControlFlow();
 		
 		builder.addMethod(constructor.build());
-		
+
 		boolean global = !ontology.hasQualifier();
 		
 		// private static final long serialVersionUID = 1L;
@@ -77,7 +77,13 @@ public class MarkerGenerator {
 		builder.addField(FieldSpec.builder(mdcName, "mdc", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).build());
 
 		builder.addStaticBlock(CodeBlock.builder().addStatement("mdc = new $T()", mdcName).addStatement("mdc.register()").build());
-				
+
+		builder.addMethod(MethodSpec.methodBuilder("getMdc")
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+				.addStatement("return mdc")
+				.returns(mdcName)
+				.build());
+		
 		ClassName tags;
 		if(ontology.hasTags()) {
 			tags = TagGenerator.getName(ontology);
