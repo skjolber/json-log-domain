@@ -144,7 +144,7 @@ Each tag is defined by:
  - `description` - textual description of the tag
 
 # Generating Java helper sources
-YAML files are converted to helper classes using `log-domain-maven-plugin`.
+YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 
 ```xml
 <plugin>
@@ -191,7 +191,6 @@ To enable MDC-style JSON logging, enable a [JsonProvider] in the configuration:
     <!-- add provider for JSON MDC -->
     <provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
 </encoder>
-
 ```
 
 and create `AutoClosable` scopes using
@@ -221,7 +220,7 @@ Unlike the built-in SLF4J MDC, the JSON MDC works like a stack.
 By default, a [markdown file] will also be generated for online documentation. 
 
 ## Elasticsearch configuration files
-
+Elastic mapping-files can be generated programmatically. 
 
 # Testing
 Verify that testing is performed using the test library. 
@@ -237,12 +236,7 @@ and verify logging using
 ```java
 assertThat(rule, message("Hello world"));
 
-assertThat(rule, qualifier("language").key("name").value("java"));
-assertThat(rule, qualifier("network").key("host").value("127.0.0.1"));
-assertThat(rule, key("system").value("fedora"));
-
-// multiple tags (from single domain)
-assertThat(rule, qualifier("language").tags(LanguageTag.JIT, LanguageTag.BYTECODE));
+assertThat(rule, logs(host("localhost").port(8080)));
 
 // check non-JSON value MDC
 assertThat(rule, mdc("uname", "magnus"));

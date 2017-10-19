@@ -33,6 +33,8 @@ import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.*;
+
 public class LoggingTest {
 
 	private static Logger logger = LoggerFactory.getLogger(LoggingTest.class);
@@ -131,7 +133,7 @@ public class LoggingTest {
 			assertThat(rule, key("system").value("fedora"));
 			assertThat(rule, qualifier("network").key("host").value("localhost"));
 
-			assertThat(rule, is(MarkerMatcherBuilder.matcher(system("fedora").tags(LINUX))));
+			assertThat(rule, contains(system("fedora").tags(LINUX)));
 
 			// single tag from global domain
 			assertThat(rule, tags(LINUX));

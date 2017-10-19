@@ -6,7 +6,7 @@
 	<packaging>pom</packaging>
 	<name>log-domain-parent</name>
 	<description>Parent for log-domain modules</description>
-	<url>https://github.com/skjolber/log-domain</url>
+	<url>https://github.com/skjolber/slf4j-json-log-domain</url>
 	<organization>
 		<name>Media Skjolberg</name>
 		<url>http://skjolber.github.io</url>
@@ -28,20 +28,20 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git@github.com:skjolber/log-domain.git</connection>
-		<developerConnection>scm:git:git@github.com:skjolber/log-domain.git</developerConnection>
-		<url>git@github.com:skjolber/log-domain.git</url>
+		<connection>scm:git:git@github.com:skjolber/slf4j-json-log-domain.git</connection>
+		<developerConnection>scm:git:git@github.com:skjolber/slf4j-json-log-domain.git</developerConnection>
+		<url>git@github.com:skjolber/slf4j-json-log-domain.git</url>
 	  <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/skjolber/log-domain/issues</url>
+		<url>https://github.com/skjolber/slf4j-json-log-domain/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>https://build.skjolber.com/job/log-domain</url>
+		<url>https://build.skjolber.com/job/slf4j-json-log-domain</url>
 	</ciManagement>
 
 	<properties>

@@ -5,9 +5,8 @@ import com.github.skjolber.log.domain.utils.DomainMarker;
 public class MarkerMatcherBuilder {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> MarkerMatcher<T> matcher(DomainMarker marker) {
-		MarkerMatcher matcher = new MarkerMatcher(marker);
-		return matcher;
+	public static <T> LogbackJUnitRuleMatcher<T> contains(DomainMarker marker) {
+		return new LogbackJUnitRuleMatcher(new ContainsMarkerMatcher<>(marker));
 	}
 
 }

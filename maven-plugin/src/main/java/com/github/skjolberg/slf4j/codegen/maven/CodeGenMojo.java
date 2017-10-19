@@ -49,6 +49,8 @@ public class CodeGenMojo extends AbstractMojo {
 		    	if(!Files.exists(markdownOutput)) Files.createDirectory(markdownOutput);
 
 		        for(Domain domain : domains) {
+		            getLog().info("Processing " + domain.getPath());
+
 	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
 
 	        		JavaGenerator.generate(result, javaOutput);
@@ -61,9 +63,10 @@ public class CodeGenMojo extends AbstractMojo {
 			} catch (IOException e) {
 				throw new MojoExecutionException("Problem generating sources", e);
 			}
+        } else {
+            getLog().info("No files found");
         }
         
-        getLog().info("Got " + domains);
     }
 
 }

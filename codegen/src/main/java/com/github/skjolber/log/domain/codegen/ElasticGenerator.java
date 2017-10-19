@@ -32,14 +32,20 @@ public class ElasticGenerator {
 	public static void generate(Domain domain, File outputDirectory) throws IOException {
 		Writer writer = new OutputStreamWriter(new FileOutputStream(outputDirectory));
 		try {
-			writer.write(generate(domain));
+			writer.write(generateFieldMapping(domain));
 		} finally {
 			writer.close();
 		}
 	}
 
-	public static String generate(Domain domain) throws IOException {
+	public static String generateFieldMapping(Domain domain) throws IOException {
 		return generateJson(domain).toString();
+	}
+	
+	public static String generateTemplate(Domain domain) throws IOException {
+		JSONObject template = generateJson(domain);
+		
+		return template.toString();
 	}
 
 	public static JSONObject generateJson(Domain domain) throws IOException {

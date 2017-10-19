@@ -18,7 +18,7 @@ public class ElasticTest {
 	public void generateSources() throws Exception {
 	    Domain domain = DomainFactory.parse(new FileReader(new File("src/test/resources/yaml/network.yaml")));
 	    
-		String generate = ElasticGenerator.generate(domain);
+		String generate = ElasticGenerator.generateFieldMapping(domain);
 		
 		assertThat(generate, containsString("host"));
 		
