@@ -13,7 +13,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
-public class LogbackJUnitRuleMatcher<T> extends BaseMatcher<T> implements Serializable {
+public class AbstractMatcher<T> extends BaseMatcher<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -21,11 +21,11 @@ public class LogbackJUnitRuleMatcher<T> extends BaseMatcher<T> implements Serial
 	protected Matcher<T> matcher;
 	protected Level level;
 
-	public LogbackJUnitRuleMatcher(Matcher<T> matcher) {
+	public AbstractMatcher(Matcher<T> matcher) {
 		this.matcher = matcher;
 	}
 
-	public LogbackJUnitRuleMatcher(String loggerName, Matcher<T> matcher, Level level) {
+	public AbstractMatcher(String loggerName, Matcher<T> matcher, Level level) {
 		this.loggerName = loggerName;
 		this.matcher = matcher;
 		this.level = level;
@@ -87,17 +87,17 @@ public class LogbackJUnitRuleMatcher<T> extends BaseMatcher<T> implements Serial
 		return false;
 	}
 
-	public LogbackJUnitRuleMatcher<T>  loggerName(String loggerName) {
+	public AbstractMatcher<T>  loggerName(String loggerName) {
 		this.loggerName = loggerName;
 		return this;
 	}
 
-	public LogbackJUnitRuleMatcher<T> matcher(Matcher<T> matcher) {
+	public AbstractMatcher<T> matcher(Matcher<T> matcher) {
 		this.matcher = matcher;
 		return this;
 	}
 
-	public LogbackJUnitRuleMatcher<T>  level(Level level) {
+	public AbstractMatcher<T>  level(Level level) {
 		this.level = level;
 		return this;
 	}

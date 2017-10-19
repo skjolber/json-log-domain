@@ -236,7 +236,7 @@ and verify logging using
 ```java
 assertThat(rule, message("Hello world"));
 
-assertThat(rule, logs(host("localhost").port(8080)));
+assertThat(rule, contains(host("localhost").port(8080)));
 
 // check non-JSON value MDC
 assertThat(rule, mdc("uname", "magnus"));
