@@ -1,13 +1,15 @@
 [![Build Status](https://travis-ci.org/skjolber/log-domain.svg?branch=master)](https://travis-ci.org/skjolber/log-domain)
 
-# log-domain
+# slf4j-json-log-domain
 Library supporting JSON-logging with [Logback] and [logstash-logback-encoder].
 
 Users will benefit from
 
  * JSON-logging with domain-specific subtrees
  * User-friendly helper-classes generated via [Maven] plugin
- * Simple YAML-based definition format  
+ * Simple YAML-based definition format
+ * Markdown documentation generator
+ * Elastic configuration generator
 
 Multiple domains can be combined in the same log statement.
 
