@@ -123,7 +123,7 @@ public class LoggingTest {
 	}
 
 	@Test
-	public void singleDomainMDC() throws IOException {
+	public void multipleDomainsMDC() throws IOException {
 		Closeable mdc = DomainMdc.mdc(host("localhost"));
 		try {
 			logger.info(system("fedora").tags(LINUX), "Hello world");
