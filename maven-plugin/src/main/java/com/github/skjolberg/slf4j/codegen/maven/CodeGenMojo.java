@@ -1,6 +1,7 @@
 package com.github.skjolberg.slf4j.codegen.maven;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +49,7 @@ public class CodeGenMojo extends AbstractMojo {
 		    	if(!Files.exists(markdownOutput)) Files.createDirectory(markdownOutput);
 
 		        for(Domain domain : domains) {
-	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath())));
+	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
 
 	        		JavaGenerator.generate(result, javaOutput);
 	        		MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), true);
