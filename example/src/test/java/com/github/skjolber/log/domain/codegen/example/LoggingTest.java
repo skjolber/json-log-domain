@@ -133,7 +133,7 @@ public class LoggingTest {
 			assertThat(rule, key("system").value("fedora"));
 			assertThat(rule, qualifier("network").key("host").value("localhost"));
 
-			assertThat(rule, contains(system("fedora").tags(LINUX)));
+			assertThat(rule.capture(LoggingTest.class), contains(system("fedora").tags(LINUX)));
 			assertThat(rule, containsMdc(host("localhost")));
 
 			// single tag from global domain

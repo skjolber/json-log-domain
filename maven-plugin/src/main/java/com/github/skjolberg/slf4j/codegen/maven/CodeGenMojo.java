@@ -16,6 +16,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
+import com.github.skjolber.log.domain.codegen.ElasticGenerator;
 import com.github.skjolber.log.domain.codegen.JavaGenerator;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
@@ -44,17 +45,42 @@ public class CodeGenMojo extends AbstractMojo {
         	
 		    	Path javaOutput = Paths.get(outputDirectory, "java/");
 		    	Path markdownOutput = Paths.get(outputDirectory, "markdown/");
+		    	Path elasticOutput = Paths.get(outputDirectory, "elastic/");
 		    	
 		    	if(!Files.exists(javaOutput)) Files.createDirectory(javaOutput);
 		    	if(!Files.exists(markdownOutput)) Files.createDirectory(markdownOutput);
+		    	if(!Files.exists(elasticOutput)) Files.createDirectory(elasticOutput);
 
 		        for(Domain domain : domains) {
 		            getLog().info("Processing " + domain.getPath());
 
+		            Configuration configuration = domain.getConfiguration();
+		            
+		            if(configuration == null) {
+		            	configuration = new Configuration();
+		            	configuration.setElastic(false);
+		            	configuration.setJava(true);
+		            	configuration.setMarkdown(false);
+		            }
+		            
 	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
 
-	        		JavaGenerator.generate(result, javaOutput);
-	        		MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), true);
+	        		boolean java = configuration.getJava() != null && configuration.getJava();
+	        		if(java) {
+	        			JavaGenerator.generate(result, javaOutput);
+	        			
+	        			getLog().info("Generating Java output to " + javaOutput.toAbsolutePath());
+	        		}
+	        		if(configuration.getMarkdown() != null && configuration.getMarkdown()) {
+	        			MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), java);
+	        			
+	        			getLog().info("Generating Markdown output to " + markdownOutput.toAbsolutePath());
+	        		}
+	        		if(configuration.getElastic() != null && configuration.getElastic()) {
+	        			ElasticGenerator.generate(result, elasticOutput.resolve(result.getName() + ".mapping.json"));
+	        			
+	        			getLog().info("Generating Elastic output to " + elasticOutput.toAbsolutePath());
+	        		}
 		        }
 				
 				if(project != null) {

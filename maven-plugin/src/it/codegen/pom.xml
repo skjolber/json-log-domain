@@ -82,6 +82,10 @@
 					<outputDirectory>target/generated-sources-it/log-domain-codegen</outputDirectory>
 					<domains>
 						<domain>
+							<configuration>
+								<markdown>true</markdown>
+								<java>true</java>
+							</configuration>
 							<path>${basedir}/src/test/resources/network.yaml</path>
 						</domain>
 					</domains>

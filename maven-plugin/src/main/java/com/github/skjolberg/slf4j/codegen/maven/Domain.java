@@ -3,6 +3,9 @@ package com.github.skjolberg.slf4j.codegen.maven;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public class Domain {
+	
+	@Parameter(property = "configuration")
+	private Configuration configuration;
 
 	@Parameter(property = "path")
 	private String path;
@@ -20,5 +23,7 @@ public class Domain {
 		return "Domain [path=" + path + "]";
 	}
 	
-	
+	public Configuration getConfiguration() {
+		return configuration;
+	}
 }

@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.json.JSONObject;
 
@@ -23,14 +26,14 @@ import com.github.skjolber.log.domain.model.Key;
 
 public class ElasticGenerator {
 
-	public static void generate(File file, File outputDirectory) throws IOException {
-		Domain domain = DomainFactory.parse(new FileReader(file));
+	public static void generate(Path file, Path outputDirectory) throws IOException {
+		Domain domain = DomainFactory.parse(Files.newBufferedReader(file, StandardCharsets.UTF_8));
 
 		generate(domain, outputDirectory);
 	}
 
-	public static void generate(Domain domain, File outputDirectory) throws IOException {
-		Writer writer = new OutputStreamWriter(new FileOutputStream(outputDirectory));
+	public static void generate(Domain domain, Path outputFile) throws IOException {
+		Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8);
 		try {
 			writer.write(generateFieldMapping(domain));
 		} finally {
