@@ -1,6 +1,6 @@
 package com.github.skjolber.log.domain.test;
 
-import com.github.skjolber.log.domain.utils.JsonMdcJsonProvider;
+import com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 

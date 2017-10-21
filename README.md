@@ -189,7 +189,7 @@ To enable MDC-style JSON logging, enable a [JsonProvider] in the configuration:
 ```xml
 <encoder class="net.logstash.logback.encoder.LogstashEncoder">
     <!-- add provider for JSON MDC -->
-    <provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
+    <provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
 </encoder>
 ```
 
@@ -215,6 +215,10 @@ try {
 ```
 
 Unlike the built-in SLF4J MDC, the JSON MDC works like a stack.
+
+### Async logger + MDC
+As MDC data must be captured before the logging event leaves the thread, so if you are using a multi-threaded approach, like `AsyncAppender`, make sure to include a call to capture the MDC data like [this example].
+
 
 ## Markdown documentation
 By default, a [markdown file] will also be generated for online documentation. 
@@ -253,6 +257,19 @@ optionally also using `Class` and `Level` filtering. Import the library using
 </dependency>
 ```
 
+## Pretty-printer
+The test library also contains a JSON [pretty-printer] which is more friendly on the eyes if you are logging JSON to console during testing. For your `logback-test.xml` file, use for example
+
+```xml
+<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+	<!-- add provider for custom JSON MDC -->
+	<provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
+	
+	<!-- add pretty-printing for testing -->
+	<jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
+</encoder>
+```
+
 # History
 
  - [1.0.1]: Added MDC support.
@@ -268,3 +285,5 @@ optionally also using `Class` and `Level` filtering. Import the library using
 [JUnit Rule]:				https://github.com/junit-team/junit4/wiki/rules
 [markdown file]:			https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
 [JsonProvider]:			https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
+[this example]:			support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
+[pretty-printer]:			test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java

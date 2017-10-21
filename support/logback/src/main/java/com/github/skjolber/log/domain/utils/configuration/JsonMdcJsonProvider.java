@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.utils;
+package com.github.skjolber.log.domain.utils.configuration;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,9 @@ import java.util.Set;
 import org.slf4j.Marker;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
+import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;

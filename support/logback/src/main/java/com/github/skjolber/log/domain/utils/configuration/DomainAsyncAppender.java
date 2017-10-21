@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.utils;
+package com.github.skjolber.log.domain.utils.configuration;
 
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.spi.ILoggingEvent;

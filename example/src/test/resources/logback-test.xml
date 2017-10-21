@@ -5,7 +5,7 @@
 			<includeCallerData>true</includeCallerData>
 			
 			<!-- add provider for custom JSON MDC-style -->
-			<provider class="com.github.skjolber.log.domain.utils.JsonMdcJsonProvider"/>
+			<provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
 			
 			<!-- add pretty-printing for testing -->
 			<jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
