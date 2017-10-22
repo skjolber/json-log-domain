@@ -224,7 +224,7 @@ As MDC data must be captured before the logging event leaves the thread, so if y
 By default, a [markdown file] will also be generated for online documentation. 
 
 ## Elasticsearch configuration files
-Elastic mapping-files can be generated programmatically. 
+Elasticsearch properties can be generated programmatically. One or more of these files can be combined into an index mapping. See [Elastic example].
 
 # Testing
 Verify that testing is performed using the test library. 
@@ -272,18 +272,19 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
 
 # History
 
- - [1.0.1]: Added MDC support.
+ - [1.0.1]: Added MDC support, various improvements.
  - 1.0.0: Initial version
 
-[Apache 2.0]:				http://www.apache.org/licenses/LICENSE-2.0.html
-[issue-tracker]:			https://github.com/skjolber/log-domain/issues
-[Maven]:					http://maven.apache.org/
-[1.0.1]:					https://github.com/skjolber/log-domain/releases/tag/log-domain-1.0.1
-[Logback]:					https://logback.qos.ch/
+[Apache 2.0]:					http://www.apache.org/licenses/LICENSE-2.0.html
+[issue-tracker]:				https://github.com/skjolber/log-domain/issues
+[Maven]:						http://maven.apache.org/
+[1.0.1]:						https://github.com/skjolber/log-domain/releases/tag/log-domain-1.0.1
+[Logback]:						https://logback.qos.ch/
 [logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
-[Swagger Code Generator]:	https://github.com/swagger-api/swagger-codegen
-[JUnit Rule]:				https://github.com/junit-team/junit4/wiki/rules
-[markdown file]:			https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
-[JsonProvider]:			https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
-[this example]:			support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
-[pretty-printer]:			test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
+[Swagger Code Generator]:		https://github.com/swagger-api/swagger-codegen
+[JUnit Rule]:					https://github.com/junit-team/junit4/wiki/rules
+[markdown file]:				https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
+[JsonProvider]:				https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
+[this example]:				support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
+[pretty-printer]:				test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
+[Elastic example]: 			examples/elastic-example
