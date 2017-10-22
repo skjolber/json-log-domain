@@ -295,7 +295,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>example</module>
+				<module>examples/maven-plugin-example</module>
+				<module>examples/elastic-example</module>
 			</modules>			
 		</profile>
 	</profiles>

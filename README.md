@@ -9,7 +9,7 @@ Users will benefit from
  * User-friendly helper-classes generated via [Maven] plugin
  * Simple YAML-based definition format
  * Markdown documentation generator
- * Elastic configuration generator
+ * Elasticsearch configuration generator
 
 Multiple domains can be combined in the same log statement.
 

@@ -2,9 +2,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.skjolber</groupId>
-    <artifactId>log-domain-maven-example</artifactId>
+    <artifactId>log-domain-maven-plugin-example</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-	<name>log-domain-maven-example</name>
+	<name>log-domain-maven-plugin-example</name>
 	<description>Example project for maven plugin</description>
 	
     <properties>

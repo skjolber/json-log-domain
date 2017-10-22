@@ -1,10 +1,6 @@
 package com.github.skjolber.log.domain.codegen;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,7 +13,7 @@ import com.github.skjolber.log.domain.model.Key;
 
 /**
  * 
- * Generator for adding mapping to Elastic Search.
+ * Generator for adding mapping to Elastic Search. Generates properties.
  * 
  * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">Elastic field mapping</a>
  * 
@@ -35,24 +31,13 @@ public class ElasticGenerator {
 	public static void generate(Domain domain, Path outputFile) throws IOException {
 		Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8);
 		try {
-			writer.write(generateFieldMapping(domain));
+			writer.write(generateProperties(domain).toString());
 		} finally {
 			writer.close();
 		}
 	}
 
-	public static String generateFieldMapping(Domain domain) throws IOException {
-		return generateJson(domain).toString();
-	}
-	
-	public static String generateTemplate(Domain domain) throws IOException {
-		JSONObject template = generateJson(domain);
-		
-		return template.toString();
-	}
-
-	public static JSONObject generateJson(Domain domain) throws IOException {
-
+	public static JSONObject generateProperties(Domain domain) {
 		JSONObject properties = new JSONObject();
 
 		for(Key key : domain.getKeys()) {
@@ -71,7 +56,11 @@ public class ElasticGenerator {
 			properties.put("tags", property);
 		}
 		
-		return new JSONObject().put("mappings", new JSONObject().put(domain.getQualifier(), new JSONObject().put("properties", properties)));
+		if(!domain.hasQualifier()) {
+			return properties;
+		}
+
+		return new JSONObject().put(domain.getQualifier(), new JSONObject().put("properties", properties)); 
 	}
 	
 	/**
