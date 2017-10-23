@@ -11,6 +11,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
 import org.junit.Test;
+
+import com.github.skjolber.log.domain.codegen.logstash.JavaGenerator;
 public class YamlTest {
 	
 	@Test

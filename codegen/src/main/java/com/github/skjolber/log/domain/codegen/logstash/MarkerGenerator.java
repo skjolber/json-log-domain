@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen;
+package com.github.skjolber.log.domain.codegen.logstash;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Marker;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.github.skjolber.log.domain.codegen.TagGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
 import com.squareup.javapoet.ArrayTypeName;
@@ -27,8 +28,8 @@ import com.squareup.javapoet.TypeSpec.Builder;
 
 public class MarkerGenerator {
 	
-	protected static final String MARKER = "Marker";
-	protected static final String MARKER_BUILDER = "MarkerBuilder";
+	public static final String MARKER = "Marker";
+	public static final String MARKER_BUILDER = "MarkerBuilder";
 	protected static final String PARENT_FIELD_NAME = "parent";
 
 	public static JavaFile marker(Domain ontology) {

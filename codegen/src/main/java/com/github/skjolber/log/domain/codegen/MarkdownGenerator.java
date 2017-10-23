@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.skjolber.log.domain.codegen.logstash.MarkerGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
 import com.github.skjolber.log.domain.model.Tag;

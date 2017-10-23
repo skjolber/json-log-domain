@@ -17,8 +17,8 @@ import org.apache.maven.project.MavenProject;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.ElasticGenerator;
-import com.github.skjolber.log.domain.codegen.JavaGenerator;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
+import com.github.skjolber.log.domain.codegen.logstash.JavaGenerator;
 
 @Mojo(name = "generate",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES,

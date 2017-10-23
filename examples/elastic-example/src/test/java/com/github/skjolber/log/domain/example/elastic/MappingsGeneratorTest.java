@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 /**
- * This example uses multiple mappings files locally, normally there would also be mappings available on the classpath which then would be included too.
+ * This example uses multiple mappings files locally, 
+ * normally there would also be mappings available on the classpath which then would be included too.
  * 
  */
 

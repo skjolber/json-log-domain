@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen;
+package com.github.skjolber.log.domain.codegen.logstash;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -8,6 +8,8 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
 
+import com.github.skjolber.log.domain.codegen.DomainFactory;
+import com.github.skjolber.log.domain.codegen.TagGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.squareup.javapoet.JavaFile;
 
