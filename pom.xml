@@ -6,7 +6,7 @@
 	<packaging>pom</packaging>
 	<name>log-domain-parent</name>
 	<description>Parent for log-domain modules</description>
-	<url>https://github.com/skjolber/slf4j-json-log-domain</url>
+	<url>https://github.com/skjolber/json-log-domain</url>
 	<organization>
 		<name>Media Skjolberg</name>
 		<url>http://skjolber.github.io</url>
@@ -28,20 +28,20 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git@github.com:skjolber/slf4j-json-log-domain.git</connection>
-		<developerConnection>scm:git:git@github.com:skjolber/slf4j-json-log-domain.git</developerConnection>
-		<url>git@github.com:skjolber/slf4j-json-log-domain.git</url>
+		<connection>scm:git:git@github.com:skjolber/json-log-domain.git</connection>
+		<developerConnection>scm:git:git@github.com:skjolber/json-log-domain.git</developerConnection>
+		<url>git@github.com:skjolber/json-log-domain.git</url>
 	  <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/skjolber/slf4j-json-log-domain/issues</url>
+		<url>https://github.com/skjolber/json-log-domain/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>https://build.skjolber.com/job/slf4j-json-log-domain</url>
+		<url>https://build.skjolber.com/job/json-log-domain</url>
 	</ciManagement>
 
 	<properties>
@@ -54,7 +54,7 @@
 		<!-- dependencies -->
 		<slf4j.version>1.7.25</slf4j.version>
 		<logback.version>1.2.3</logback.version>
-		<logstash-logback-encoder.version>4.10</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
 		<json.version>20170516</json.version>
 
 		<junit.version>4.12</junit.version>
@@ -99,7 +99,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
+				<artifactId>api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>

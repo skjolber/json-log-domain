@@ -1,13 +1,13 @@
-[![Build Status](https://travis-ci.org/skjolber/slf4j-json-log-domain.svg?branch=master)](https://travis-ci.org/skjolber/slf4j-json-log-domain)
+[![Build Status](https://travis-ci.org/skjolber/json-log-domain.svg?branch=master)](https://travis-ci.org/skjolber/json-log-domain)
 
-# slf4j-json-log-domain
-Library supporting JSON-logging with [Logback] and [logstash-logback-encoder].
+# json-log-domain
+Library supporting JSON-logging. Currently working with [Logback] and [logstash-logback-encoder].
 
 Users will benefit from
 
  * JSON-logging with domain-specific subtrees
- * User-friendly helper-classes generated via [Maven] plugin
  * Simple YAML-based definition format
+ * User-friendly helper-classes generated via [Maven] plugin
  * Markdown documentation generator
  * Elasticsearch configuration generator
 
@@ -88,6 +88,7 @@ outputs domain-specific subtrees:
 }
 ```
 
+where the `global` fields are at the root of the message. 
 # YAML definition format
 The relevant fields and tags are defined in a YAML file, from which Java sources are generated. Example definition:
 
@@ -135,7 +136,7 @@ Each key is defined by:
  * `description` - textual description of key
  * `example` - example of legal value
 
-The list item itself is the key in the logged key-value. The type/format datatype definition is borrowed from [Swagger Code Generator]. 
+The list item itself is the key in the logged key-value. The type/format datatype definition is borrowed from [Swagger Code Generator]. The intention is that log statements and REST services use the exact same definition for the same data type. Furthermore, framework-level interceptors should be able to pick up interesting fields in JSON objects and/or paths and automatically add those as context to a service invocation, saving the developer valuable time.
 
 ### Tags
 Each tag is defined by:
@@ -224,7 +225,7 @@ As MDC data must be captured before the logging event leaves the thread, so if y
 By default, a [markdown file] will also be generated for online documentation. 
 
 ## Elasticsearch configuration files
-Elasticsearch properties can be generated programmatically. One or more of these files can be combined into an index mapping. See [Elastic example].
+Elasticsearch properties can be generated programmatically. One or more of these files can be combined into an application-specific message field mapping, typically at deploy time. See [Elastic example].
 
 # Testing
 Verify that testing is performed using the test library. 
@@ -278,7 +279,7 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
 [Apache 2.0]:					http://www.apache.org/licenses/LICENSE-2.0.html
 [issue-tracker]:				https://github.com/skjolber/log-domain/issues
 [Maven]:						http://maven.apache.org/
-[1.0.1]:						https://github.com/skjolber/log-domain/releases/tag/log-domain-1.0.1
+[1.0.1]:						https://github.com/skjolber/json-log-domain/releases/tag/log-domain-1.0.1
 [Logback]:						https://logback.qos.ch/
 [logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:		https://github.com/swagger-api/swagger-codegen
