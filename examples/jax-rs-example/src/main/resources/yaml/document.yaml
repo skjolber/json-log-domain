@@ -1,0 +1,27 @@
+version: '1.0'
+name: DocumentStore
+package: com.example.document
+qualifier: document
+description: Document store
+keys:
+  - id:
+      name: Document id
+      type: string
+      description: The internal id of the document
+      example: abc
+  - size:
+      name: Size
+      type: integer
+      format: int64
+      description: The size of document in bytes
+      example: 1024
+  - owner:
+      name: Document owner
+      type: string
+      description: The name of the document owner system
+      example: Football
+
+tags:
+ - BINARY: Binary payload
+ - METADATA: Metadata payload
+ 

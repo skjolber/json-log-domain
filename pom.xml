@@ -297,6 +297,7 @@
 			<modules>
 				<module>examples/maven-plugin-example</module>
 				<module>examples/elastic-example</module>
+				<module>examples/jax-rs-example</module>
 			</modules>			
 		</profile>
 	</profiles>
