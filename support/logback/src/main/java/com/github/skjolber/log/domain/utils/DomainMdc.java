@@ -1,9 +1,9 @@
 package com.github.skjolber.log.domain.utils;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Marker;
 
@@ -34,7 +34,27 @@ public abstract class DomainMdc<T extends DomainMarker> {
 	public static List<DomainMdc<? extends DomainMarker>> getMdcs() {
 		return mdcs;
 	}
-	
+
+	public static DomainMdc<? extends DomainMarker> getMdc(String qualifier) {
+		List<DomainMdc<? extends DomainMarker>> mdcs = getMdcs();
+		for (DomainMdc<? extends DomainMarker> domainMdc : mdcs) {
+			if(Objects.equals(domainMdc.getQualifier(), qualifier)) {
+				return domainMdc;
+			}
+		}
+		return null;
+	}
+
+	public static <T extends DomainMarker> DomainMdc<? extends DomainMarker> mdcForType(Class<T> type) {
+		List<DomainMdc<? extends DomainMarker>> mdcs = getMdcs();
+		for (DomainMdc<? extends DomainMarker> domainMdc : mdcs) {
+			if(domainMdc.supports(type)) {
+				return domainMdc;
+			}
+		}
+		return null;
+	}
+
 	public static void removeAll() {
 		List<DomainMdc<? extends DomainMarker>> mdcs = getMdcs();
 		for (DomainMdc<? extends DomainMarker> domainMdc : mdcs) {
@@ -121,4 +141,10 @@ public abstract class DomainMdc<T extends DomainMarker> {
 		DomainMdc.unregister(this);
 	}
 	
+	public abstract T createMarker();
+	
+	public abstract boolean supports(Class<? extends DomainMarker> type);
+	
+	public abstract boolean definesKey(String key);
+
 }

@@ -21,10 +21,14 @@ public class SampleJerseyApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	public void contextLoads1() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/123/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
-
+	@Test
+	public void contextLoads2() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/some/456/hello", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
 }

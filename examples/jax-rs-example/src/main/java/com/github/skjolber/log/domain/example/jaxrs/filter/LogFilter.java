@@ -9,22 +9,22 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.Provider;
 
-import com.example.document.DocumentStoreMarker;
-import com.example.document.DocumentStoreMarkerBuilder;
-import com.example.document.DocumentStoreMdc;
+import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainMdc;
 
 // https://blog.dejavu.sk/2014/01/08/binding-jax-rs-providers-to-resource-methods/
 
-@Provider
-@Logged
 public class LogFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-	private final int index;
+	private final int[] indexes;
+	private final String[] keys;
+	private final DomainMdc<? extends DomainMarker> mdc;
 	
-    public LogFilter(int index) {
-		this.index = index;
+	public LogFilter(String[] keys, int[] indexes, DomainMdc<? extends DomainMarker> mdc) {
+		this.keys = keys;
+		this.indexes = indexes;
+		this.mdc = mdc;
 	}
 
 	@Override
@@ -33,7 +33,11 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
         List<PathSegment> pathSegments = uriInfo.getPathSegments();
         if(pathSegments != null && !pathSegments.isEmpty()) {
             // http://memorynotfound.com/jaxrs-path-segments-matrix-parameters/
-        	DocumentStoreMdc.mdc(DocumentStoreMarkerBuilder.id(pathSegments.get(index).toString()));
+        	DomainMarker marker = mdc.createMarker();
+        	for(int i = 0; i < indexes.length; i++) {
+        		marker.setKey(keys[i], pathSegments.get(indexes[i]).toString());
+        	}
+        	marker.pushContext();
         }
     }
 
@@ -43,7 +47,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
         
         List<PathSegment> pathSegments = uriInfo.getPathSegments();
         if(pathSegments != null && !pathSegments.isEmpty()) {
-            DocumentStoreMarker.getMdc().remove();
+        	mdc.remove();
         }
     }
     

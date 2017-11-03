@@ -111,8 +111,10 @@ public class MarkerGenerator {
 		builder
 			.addMethod(getWriterMethod(keys, name, tags, global))
 			.addMethod(getPopMethod(ontology))
-			.addMethod(getPushMethod(ontology));
-
+			.addMethod(getPushMethod(ontology))
+			.addMethod(getSetKeyMethod(keys))
+			;
+		
 		if(ontology.hasTags()) {
 			builder
 				.addMethod(getTagsBuilderMethod(name, tags, ontology.getTags().size()))
@@ -405,7 +407,7 @@ public class MarkerGenerator {
 				.build();
 	}
 
-	private static Class<?> parseTypeFormat(String type, String format) {
+	protected static Class<?> parseTypeFormat(String type, String format) {
 		switch(type) {
 			case "integer" : {
 				if(format != null) {
@@ -513,4 +515,38 @@ public class MarkerGenerator {
 				.build();
 	}
 
+	private static MethodSpec getSetKeyMethod(List<Key> fields) {
+		ParameterSpec keyParameter = ParameterSpec.builder(String.class, "key").build();
+		ParameterSpec valueParameter = ParameterSpec.builder(Object.class, "value").build();
+		
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("setKey")
+				.addModifiers(Modifier.PUBLIC)
+				.addParameter(keyParameter)
+				.addParameter(valueParameter);
+				;
+				
+		com.squareup.javapoet.CodeBlock.Builder switchBlock = CodeBlock.builder();
+		
+		switchBlock.beginControlFlow("switch($N)", keyParameter);
+				
+		for(Key key : fields) {
+			Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
+			if(type.isPrimitive()) {
+				type = ClassUtils.primitiveToWrapper(type);
+			}
+			
+			switchBlock
+					.beginControlFlow("case $S :", key.getId())
+					.addStatement("this.$N = ($T)$N", key.getId(), type, valueParameter) // TODO microoptimize by checking for type
+					.addStatement("break")
+					.endControlFlow();
+		}
+		
+		switchBlock.endControlFlow();
+
+		builder.addCode(switchBlock.build());
+
+		return builder.build();
+	}
+	
 }
