@@ -10,6 +10,7 @@ Users will benefit from
  * User-friendly helper-classes generated via [Maven] plugin
  * Markdown documentation generator
  * Elasticsearch configuration generator
+ * JAX-RS log-annotation for [automatic MDC population]
 
 Multiple domains can be combined in the same log statement.
 
@@ -289,3 +290,4 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
 [this example]:				support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
 [pretty-printer]:				test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
 [Elastic example]: 			examples/elastic-example
+[automatic MDC population]:	examples/jax-rs-example

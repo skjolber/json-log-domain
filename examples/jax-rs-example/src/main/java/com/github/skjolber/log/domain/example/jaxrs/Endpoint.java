@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.example.document.DocumentStoreMarker;
-import com.github.skjolber.log.domain.example.jaxrs.filter.Logged;
+import com.github.skjolber.log.domain.logback.jaxrs.Logged;
 
 @Component
 @Path("/")
@@ -21,7 +21,7 @@ public class Endpoint {
     @Path("/{id}/hello")
 	@Logged(value = DocumentStoreMarker.class)
 	public String message(@PathParam("id") String id) {
-		logger.warn("Say hello");
+		logger.info("Say hello");
 		
 		return "Hello " + id;
 	}

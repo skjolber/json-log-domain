@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.example.jaxrs.filter;
+package com.github.skjolber.log.domain.logback.jaxrs;
 
 import java.io.IOException;
 import java.util.List;

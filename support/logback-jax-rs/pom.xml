@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.skjolber.log-domain</groupId>
+        <artifactId>log-domain-parent</artifactId>
+        <version>1.0.2-SNAPSHOT</version> 
+        <relativePath>../..</relativePath>   
+    </parent>
+    
+    <artifactId>log-domain-support-logback-jax-rs</artifactId>
+	<name>log-domain-support-logback-jax-rs</name>
+	<description>JAX-RS MDC mapping support</description>
+	<packaging>jar</packaging>
+	
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+
+		<jax-rs.version>2.1</jax-rs.version>
+
+        <junit.version>4.12</junit.version>
+        <mockito.version>2.8.47</mockito.version>
+        <hamcrest.version>1.3</hamcrest.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.skjolber.log-domain</groupId>
+            <artifactId>log-domain-support-logback</artifactId>    
+        </dependency>
+		<dependency>
+		    <groupId>javax.ws.rs</groupId>
+		    <artifactId>javax.ws.rs-api</artifactId>
+		    <version>${jax-rs.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+   
+</project>
