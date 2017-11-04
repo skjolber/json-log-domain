@@ -110,7 +110,21 @@ public abstract class DomainMdc<T extends DomainMarker> {
     public void push(T child) {
 		inheritableThreadLocal.set(child);
     }
-    
+
+	public void pop() {
+    	T tail = inheritableThreadLocal.get();
+    	if(tail == null) {
+    		throw new IllegalArgumentException("Cannot pop MDC stack, already empty");
+    	}
+    	
+		T parent = (T) tail.getParent();
+		if(parent != null) {
+			inheritableThreadLocal.set(parent);
+		} else {
+	    	inheritableThreadLocal.remove();
+		}
+	}
+
     @SuppressWarnings("unchecked")
 	public void pop(T item) {
     	T tail = inheritableThreadLocal.get();

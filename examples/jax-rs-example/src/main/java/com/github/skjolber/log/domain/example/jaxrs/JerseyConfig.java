@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
-		register(Endpoint.class);
+		register(DocumentEndpoint.class);
         packages("com.github.skjolber.log.domain.example.jaxrs", "com.github.skjolber.log.domain.logback.jaxrs");
 
 	}

@@ -131,4 +131,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 	}
 	
 	public abstract void setKey(String key, Object value);
+	
+	public abstract boolean definesKey(String key);
+
 }

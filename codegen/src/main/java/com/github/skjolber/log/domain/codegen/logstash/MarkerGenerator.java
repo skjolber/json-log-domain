@@ -113,6 +113,7 @@ public class MarkerGenerator {
 			.addMethod(getPopMethod(ontology))
 			.addMethod(getPushMethod(ontology))
 			.addMethod(getSetKeyMethod(keys))
+			.addMethod(MdcGenerator.getDefinesKeyMethod(keys))
 			;
 		
 		if(ontology.hasTags()) {

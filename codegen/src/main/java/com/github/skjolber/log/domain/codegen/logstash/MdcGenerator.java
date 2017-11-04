@@ -66,7 +66,7 @@ public class MdcGenerator {
 		return ClassName.get(ontology.getTargetPackage(), ontology.getName() + MARKER_MDC);
 	}
 	
-	private static MethodSpec getDefinesKeyMethod(List<Key> fields) {
+	protected static MethodSpec getDefinesKeyMethod(List<Key> fields) {
 		ParameterSpec keyParameter = ParameterSpec.builder(String.class, "key").build();
 		
 		MethodSpec.Builder builder = MethodSpec.methodBuilder("definesKey")

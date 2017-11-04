@@ -35,12 +35,12 @@ public class LoggingFeature implements DynamicFeature {
         	if(annotation != null) {
 	        	Class<? extends DomainMarker> value = annotation.value();
 	        	
+	        	DomainMarker marker;
 	        	try {
-					value.newInstance();
+					marker = value.newInstance();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-	        	DomainMdc<? extends DomainMarker> mdc = DomainMdc.mdcForType(value);
 	        	
 	        	List<String> keys = new ArrayList<>();
 	        	List<Integer> indexes = new ArrayList<>();
@@ -51,7 +51,7 @@ public class LoggingFeature implements DynamicFeature {
 	                Matcher m = pattern.matcher(paths[i]);
 		            if(m.matches()) {
 		            	String key = m.group("key");
-		            	if(mdc.definesKey(key)) {
+		            	if(marker.definesKey(key)) {
 			            	keys.add(key);
 			            	indexes.add(i - 1);
 		            	}
@@ -63,7 +63,7 @@ public class LoggingFeature implements DynamicFeature {
 	        		indexArray[i] = indexes.get(i);
 	        	}
 	        	
-	        	context.register(new LogFilter(keys.toArray(new String[keys.size()]), indexArray, mdc));
+	        	context.register(new LogFilter(keys.toArray(new String[keys.size()]), indexArray, value));
         	}
         }
         

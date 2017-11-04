@@ -13,13 +13,13 @@ import com.github.skjolber.log.domain.logback.jaxrs.Logged;
 
 @Component
 @Path("/")
-public class Endpoint {
+public class DocumentEndpoint {
 
-    private final static Logger logger = LoggerFactory.getLogger(Endpoint.class);
+    private final static Logger logger = LoggerFactory.getLogger(DocumentEndpoint.class);
 
 	@GET
     @Path("/{id}/hello")
-	@Logged(value = DocumentStoreMarker.class)
+	@Logged(DocumentStoreMarker.class)
 	public String message(@PathParam("id") String id) {
 		logger.info("Say hello");
 		
@@ -30,7 +30,7 @@ public class Endpoint {
     @Path("/some/{id}/hello")
 	@Logged(value = DocumentStoreMarker.class)
 	public String someMessage(@PathParam("id") String id) {
-		logger.warn("Say some hello");
+		logger.info("Say some hello");
 		
 		return "Some hello " + id;
 	}

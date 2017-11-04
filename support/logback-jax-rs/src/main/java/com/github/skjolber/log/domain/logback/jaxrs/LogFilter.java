@@ -21,10 +21,10 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
 	private final String[] keys;
 	private final DomainMdc<? extends DomainMarker> mdc;
 	
-	public LogFilter(String[] keys, int[] indexes, DomainMdc<? extends DomainMarker> mdc) {
+	public LogFilter(String[] keys, int[] indexes, Class<? extends DomainMarker> type) {
 		this.keys = keys;
 		this.indexes = indexes;
-		this.mdc = mdc;
+		this.mdc = DomainMdc.mdcForType(type);
 	}
 
 	@Override
