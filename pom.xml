@@ -257,6 +257,7 @@
 		<module>test/logback</module>
 		<module>codegen</module>
 		<module>maven-plugin</module>
+		<module>support/logback-jax-rs</module>
 	</modules>
 
 	<profiles>
