@@ -93,7 +93,7 @@ public class LogInterceptor implements HandlerInterceptor {
 					            if(m.matches()) {
 					            	String key = m.group("key");
 					            	if(marker.definesKey(key)) {
-					            		marker.setKey(key, values[i]);
+					            		marker.parseAndSetKey(key, values[i]);
 					            	}
 					            }
 				        	}

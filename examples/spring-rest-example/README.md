@@ -1,5 +1,5 @@
-# JAX-RS automatic MDC-logging
-This example show how to automatically populate MDC values from the `Path` expression of a JAX-RS service. In other words, a log definition file `document` containing a key
+# Spring automatic MDC-logging
+This example show how to automatically populate MDC values from the `RequestMapping` expression of a Spring REST service. In other words, a log definition file `document` containing a key
 
 ```yaml
 keys
@@ -22,6 +22,7 @@ public String message(@PathParam("id") String id) {
 	return "Hello " + id;
 }
 ```
+
 will automatically populate the MDC with the `id`. An HTTP request to `/123/hello` will result in log output.
 
 ```json
@@ -35,4 +36,4 @@ will automatically populate the MDC with the `id`. An HTTP request to `/123/hell
 
 
 ## Constraints
-The path identifiers must match keys used in the log definiton.
+The path identifiers must match keys used in the log definiton. In addition, `Date` types are not supported.

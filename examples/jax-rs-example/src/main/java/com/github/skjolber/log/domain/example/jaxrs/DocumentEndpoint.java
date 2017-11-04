@@ -12,7 +12,7 @@ import com.example.document.DocumentStoreMarker;
 import com.github.skjolber.log.domain.logback.jaxrs.Logged;
 
 @Component
-@Path("/")
+@Path("/document")
 public class DocumentEndpoint {
 
     private final static Logger logger = LoggerFactory.getLogger(DocumentEndpoint.class);

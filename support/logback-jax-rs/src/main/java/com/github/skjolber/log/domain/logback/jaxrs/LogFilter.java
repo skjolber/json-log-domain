@@ -35,7 +35,7 @@ public class LogFilter implements ContainerRequestFilter, ContainerResponseFilte
             // http://memorynotfound.com/jaxrs-path-segments-matrix-parameters/
         	DomainMarker marker = mdc.createMarker();
         	for(int i = 0; i < indexes.length; i++) {
-        		marker.setKey(keys[i], pathSegments.get(indexes[i]).toString());
+        		marker.parseAndSetKey(keys[i], pathSegments.get(indexes[i]).toString());
         	}
         	marker.pushContext();
         }

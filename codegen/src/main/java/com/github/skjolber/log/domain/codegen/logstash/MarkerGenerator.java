@@ -113,6 +113,7 @@ public class MarkerGenerator {
 			.addMethod(getPopMethod(ontology))
 			.addMethod(getPushMethod(ontology))
 			.addMethod(getSetKeyMethod(keys))
+			.addMethod(getParseAndSetKeyMethod(keys))
 			.addMethod(MdcGenerator.getDefinesKeyMethod(keys))
 			;
 		
@@ -128,6 +129,55 @@ public class MarkerGenerator {
 			;
 		
 		return JavaFile.builder(name.packageName(), builder.build()).build();
+	}
+
+	private static MethodSpec getParseAndSetKeyMethod(List<Key> keys) {
+		ParameterSpec keyParameter = ParameterSpec.builder(String.class, "key").build();
+		ParameterSpec valueParameter = ParameterSpec.builder(Object.class, "value").build();
+		
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("parseAndSetKey")
+				.addModifiers(Modifier.PUBLIC)
+				.addParameter(keyParameter)
+				.addParameter(valueParameter);
+				;
+				
+		com.squareup.javapoet.CodeBlock.Builder switchBlock = CodeBlock.builder();
+		
+		switchBlock.beginControlFlow("switch($N)", keyParameter);
+				
+		for(Key key : keys) {
+			Class<?> type = parseTypeFormat(key.getType(), key.getFormat());
+			if(type.isPrimitive()) {
+				type = ClassUtils.primitiveToWrapper(type);
+			}
+			
+			switchBlock.beginControlFlow("case $S :", key.getId());
+			
+			
+			if(type == Date.class || type == String.class) {
+				switchBlock.addStatement("this.$N = ($T)$N", key.getId(), type, valueParameter);
+			} else if(type == Integer.class){
+				switchBlock.addStatement("this.$N = asInteger($N)", key.getId(), valueParameter);
+			} else if(type == Long.class){
+				switchBlock.addStatement("this.$N = asLong($N)", key.getId(), valueParameter);
+			} else if(type == Float.class){
+				switchBlock.addStatement("this.$N = asFloat($N)", key.getId(), valueParameter);
+			} else if(type == Double.class){
+				switchBlock.addStatement("this.$N = asDouble($N)", key.getId(), valueParameter);
+			} else {
+				throw new IllegalArgumentException("Unknown type " + type.getName());
+			}
+					
+			switchBlock
+					.addStatement("break")
+					.endControlFlow();
+		}
+		
+		switchBlock.endControlFlow();
+
+		builder.addCode(switchBlock.build());
+
+		return builder.build();
 	}
 
 	public static ClassName getName(Domain ontology) {
@@ -413,9 +463,9 @@ public class MarkerGenerator {
 			case "integer" : {
 				if(format != null) {
 					if(format.equals("int32")) {
-						return int.class;
+						return Integer.class;
 					} else if(format.equals("int64")) {
-						return long.class;
+						return Long.class;
 					}
 				}
 				break;
@@ -439,9 +489,9 @@ public class MarkerGenerator {
 			case "number" : {
 				if(format != null) {
 					if(format.equals("float")) {
-						return float.class;
+						return Float.class;
 					} else if(format.equals("double")) {
-						return double.class;
+						return Double.class;
 					}
 				}
 				break;

@@ -22,13 +22,13 @@ public class SampleJerseyApplicationTests {
 
 	@Test
 	public void contextLoads1() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/123/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/document/123/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void contextLoads2() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/some/456/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/document/some/456/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 }

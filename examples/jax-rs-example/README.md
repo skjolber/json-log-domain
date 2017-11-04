@@ -22,6 +22,7 @@ public String message(@PathParam("id") String id) {
 	return "Hello " + id;
 }
 ```
+
 will automatically populate the MDC with the `id`. An HTTP request to `/123/hello` will result in log output.
 
 ```json
@@ -33,6 +34,5 @@ will automatically populate the MDC with the `id`. An HTTP request to `/123/hell
 }
 ```
 
-
 ## Constraints
-The path identifiers must match keys used in the log definiton.
+The path identifiers must match keys used in the log definiton. In addition, `Date` types are not supported.

@@ -16,6 +16,46 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 
 	private static final long serialVersionUID = 1L;
 
+	protected static final Long asLong(Object object) {
+		if(object instanceof Long) {
+			return (Long)object;
+		}
+		if(object instanceof String) {
+			return Long.parseLong((String)object);
+		}
+		throw new IllegalArgumentException("Expected " + Long.class.getName() + " or " + String.class.getName());
+	}
+
+	protected static final Integer asInteger(Object object) {
+		if(object instanceof Integer) {
+			return (Integer)object;
+		}
+		if(object instanceof String) {
+			return Integer.parseInt((String)object);
+		}
+		throw new IllegalArgumentException("Expected " + Integer.class.getName() + " or " + String.class.getName());
+	}
+
+	protected static final Double asDouble(Object object) {
+		if(object instanceof Double) {
+			return (Double)object;
+		}
+		if(object instanceof String) {
+			return Double.parseDouble((String)object);
+		}
+		throw new IllegalArgumentException("Expected " + Double.class.getName() + " or " + String.class.getName());
+	}
+	
+	protected static final Float asFloat(Object object) {
+		if(object instanceof Float) {
+			return (Float)object;
+		}
+		if(object instanceof String) {
+			return Float.parseFloat((String)object);
+		}
+		throw new IllegalArgumentException("Expected " + Float.class.getName() + " or " + String.class.getName());
+	}
+
 	protected final String qualifier;
 	protected DomainMarker parent;
 
@@ -133,5 +173,6 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 	public abstract void setKey(String key, Object value);
 	
 	public abstract boolean definesKey(String key);
-
+	
+	public abstract void parseAndSetKey(String key, Object value);
 }
