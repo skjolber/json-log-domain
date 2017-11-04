@@ -48,6 +48,7 @@ public class LogInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) throws Exception {
 		log.info("Before process request");
 		
+		mdc:
 		if(object instanceof HandlerMethod) {
 			HandlerMethod handlerMethod = (HandlerMethod)object;
 			
@@ -59,9 +60,10 @@ public class LogInterceptor implements HandlerInterceptor {
 			if(annotation != null) {
 				Class<? extends DomainMarker> value = annotation.value();
 				
-				RequestMapping requestMapping = handlerMethod.getMethod().getAnnotation(RequestMapping.class);
-				if(requestMapping != null) {
-					String[] requestMappingValue = requestMapping.value();
+				RequestMapping methodRequestMapping = handlerMethod.getMethod().getAnnotation(RequestMapping.class);
+				if(methodRequestMapping != null) {
+
+					String[] requestMappingValue = methodRequestMapping.value();
 					if(requestMappingValue.length == 1) {
 						DomainMarker marker;
 			        	try {
@@ -69,8 +71,20 @@ public class LogInterceptor implements HandlerInterceptor {
 						} catch (Exception e) {
 							throw new RuntimeException(e);
 						}
-			        	// assumes full path available in annotation TODO
-						String values[] = request.getRequestURI().split("/");
+			        	
+			        	// slash the controller path, if present
+			        	String requestURI = request.getRequestURI();
+						RequestMapping classRequestMapping = handlerMethod.getBeanType().getAnnotation(RequestMapping.class);
+						if(classRequestMapping != null) {
+							String[] classValues = classRequestMapping.value();
+							if(classValues.length == 1) {
+								requestURI = requestURI.substring(classValues[0].length());
+							} else {
+								break mdc;
+							}
+						}
+						
+						String values[] = requestURI.split("/");
 			        	String keys[] = requestMappingValue[0].split("/"); // assume /a/b/c
 			        	if(values.length == keys.length) {
 				        	for(int i = 0; i < keys.length; i++) {
@@ -83,12 +97,13 @@ public class LogInterceptor implements HandlerInterceptor {
 					            	}
 					            }
 				        	}
+				        	
+				        	marker.pushContext();
+				        	
+				        	threadLocal.set(marker);
+				        	
+				        	return true;
 			        	}
-			        	marker.pushContext();
-			        	
-			        	threadLocal.set(marker);
-			        	
-			        	return true;
 					}
 				}
 			}

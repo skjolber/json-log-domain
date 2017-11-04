@@ -158,7 +158,5 @@ public abstract class DomainMdc<T extends DomainMarker> {
 	public abstract T createMarker();
 	
 	public abstract boolean supports(Class<? extends DomainMarker> type);
-	
-	public abstract boolean definesKey(String key);
 
 }

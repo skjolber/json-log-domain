@@ -12,6 +12,7 @@ import com.example.document.DocumentStoreMarker;
 import com.github.skjolber.log.domain.example.spring.config.Logged;
 
 @RestController
+@RequestMapping("/greeting")
 public class GreetingController {
 
     private final static Logger logger = LoggerFactory.getLogger(GreetingController.class);

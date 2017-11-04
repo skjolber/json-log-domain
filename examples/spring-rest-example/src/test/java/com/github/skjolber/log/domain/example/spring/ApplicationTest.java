@@ -22,7 +22,7 @@ public class ApplicationTest {
 
 	@Test
 	public void contextLoads1() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/123/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/greeting/123/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

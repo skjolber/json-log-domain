@@ -56,7 +56,6 @@ public class MdcGenerator {
 							.returns(boolean.class)
 							.build()
 						)
-					.addMethod(getDefinesKeyMethod(ontology.getKeys()))
 					.build())
 				
 				.build();
