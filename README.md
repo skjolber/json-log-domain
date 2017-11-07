@@ -3,8 +3,6 @@
 # json-log-domain
 Library supporting JSON-logging. Currently working with [Logback] and [logstash-logback-encoder].
 
-![alt text][intro1.png]
-
 Users will benefit from
 
  * JSON-logging with domain-specific subtrees
@@ -93,7 +91,9 @@ outputs domain-specific subtrees:
 
 where the `global` fields are at the root of the message. 
 # YAML definition format
-The relevant fields and tags are defined in a YAML file, from which Java sources are generated. Example definition:
+The relevant fields and tags are defined in a YAML file, from which Java, Markdown and Elastic sources are generated. 
+
+Example definition:
 
 ```yaml
 version: '1.0'
@@ -147,7 +147,13 @@ Each tag is defined by:
  - `name` - a valid Java Enum name
  - `description` - textual description of the tag
 
-# Generating Java helper sources
+# Maven plugin
+Files in the above YAML format can be used to generate Java helper classes, Elastic message configuration and/or Markdown documents.
+
+![alt text][intro1.png]
+
+## Generating Java helper sources
+
 YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 
 ```xml
