@@ -14,7 +14,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.github.skjolber.log.domain.utils.DomainMarker;
-import com.github.skjolber.log.domain.utils.DomainMdc;
 
 @Component
 public class LogInterceptor implements HandlerInterceptor {
