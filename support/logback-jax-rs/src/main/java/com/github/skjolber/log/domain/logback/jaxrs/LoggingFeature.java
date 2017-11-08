@@ -58,12 +58,14 @@ public class LoggingFeature implements DynamicFeature {
 		            }
 	        	}
 	        	
-	        	int[] indexArray = new int[indexes.size()];
-	        	for(int i = 0; i < indexArray.length; i++) {
-	        		indexArray[i] = indexes.get(i);
+	        	if(!keys.isEmpty()) {
+    	        	int[] indexArray = new int[indexes.size()];
+    	        	for(int i = 0; i < indexArray.length; i++) {
+    	        		indexArray[i] = indexes.get(i);
+    	        	}
+    	        	
+    	        	context.register(new LogFilter(keys.toArray(new String[keys.size()]), indexArray, value));
 	        	}
-	        	
-	        	context.register(new LogFilter(keys.toArray(new String[keys.size()]), indexArray, value));
         	}
         }
         
