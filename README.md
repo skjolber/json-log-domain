@@ -160,7 +160,7 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 <plugin>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-maven-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <executions>
         <execution>
             <id>generate</id>
@@ -189,7 +189,7 @@ A few common classes are not part of the generated sources:
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-support-logback</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -262,7 +262,7 @@ optionally also using `Class` and `Level` filtering. Import the library using
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-test-logback</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <scope>test</scope>
 </dependency>
 ```
