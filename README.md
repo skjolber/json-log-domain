@@ -280,23 +280,34 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
 </encoder>
 ```
 
+# Alternatives
+If you do not like this prosject, maybe you'll like
+
+  * [godaddy-logger]
+  * [slf4jtesting]
+  * [slf4j-json-logger]
+
 # History
 
- - [1.0.1]: Added MDC support, various improvements.
+ - [1.0.2]: JAX-RS helper library, various improvements.
+ - 1.0.1: Added MDC support, various improvements.
  - 1.0.0: Initial version
 
 [Apache 2.0]:					http://www.apache.org/licenses/LICENSE-2.0.html
 [issue-tracker]:				https://github.com/skjolber/log-domain/issues
 [Maven]:						http://maven.apache.org/
-[1.0.1]:						https://github.com/skjolber/json-log-domain/releases/tag/log-domain-1.0.1
+[1.0.2]:						https://github.com/skjolber/json-log-domain/releases/tag/log-domain-1.0.2
 [Logback]:						https://logback.qos.ch/
-[logstash-logback-encoder]:		https://github.com/logstash/logstash-logback-encoder
+[logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:		https://github.com/swagger-api/swagger-codegen
 [JUnit Rule]:					https://github.com/junit-team/junit4/wiki/rules
 [markdown file]:				https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
-[JsonProvider]:					https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
-[this example]:					support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
+[JsonProvider]:				https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
+[this example]:				support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
 [pretty-printer]:				test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
-[Elastic example]: 				examples/elastic-example
-[automatic MDC population]:		examples/jax-rs-example
-[intro1.png]: 						https://raw.githubusercontent.com/skjolber/json-log-domain/master/docs/images/intro1.png "YAML to multiple formats"
+[Elastic example]: 			examples/elastic-example
+[automatic MDC population]:	examples/jax-rs-example
+[intro1.png]: 					https://raw.githubusercontent.com/skjolber/json-log-domain/master/docs/images/intro1.png "YAML to multiple formats"
+[godaddy-logger]:				https://github.com/godaddy/godaddy-logger
+[slf4jtesting]:				https://github.com/portingle/slf4jtesting
+[slf4j-json-logger]:			https://github.com/savoirtech/slf4j-json-logger

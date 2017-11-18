@@ -37,7 +37,6 @@ public abstract class AbstractMarkerMatcher<T> extends BaseMatcher<T> implements
 		description.appendText(builder.toString());
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean matches(Object actual) {
 		if (actual instanceof ILoggingEvent) {
 			return matches((ILoggingEvent) actual);

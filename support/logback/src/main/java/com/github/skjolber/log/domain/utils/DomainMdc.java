@@ -117,6 +117,7 @@ public abstract class DomainMdc<T extends DomainMarker> {
     		throw new IllegalArgumentException("Cannot pop MDC stack, already empty");
     	}
     	
+		@SuppressWarnings("unchecked")
 		T parent = (T) tail.getParent();
 		if(parent != null) {
 			inheritableThreadLocal.set(parent);

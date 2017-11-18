@@ -8,6 +8,8 @@ import static com.example.network.NetworkMarkerBuilder.host;
 import static com.github.skjolber.log.domain.test.matcher.GenericMarkerMatcherBuilder.key;
 import static com.github.skjolber.log.domain.test.matcher.GenericMarkerMatcherBuilder.qualifier;
 import static com.github.skjolber.log.domain.test.matcher.GenericMarkerMatcherBuilder.tags;
+import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.contains;
+import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.containsMdc;
 import static com.github.skjolber.log.domain.test.matcher.MdcMatcher.mdc;
 import static com.github.skjolber.log.domain.test.matcher.MessageMatcher.message;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,12 +30,9 @@ import com.example.global.GlobalTag;
 import com.example.language.LanguageLogger;
 import com.example.language.LanguageTag;
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
-import com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder;
 import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-
-import static com.github.skjolber.log.domain.test.matcher.MarkerMatcherBuilder.*;
 
 public class LoggingTest {
 

@@ -13,7 +13,6 @@ import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
 import com.github.skjolber.log.domain.utils.DomainMarker;
-import com.github.skjolber.log.domain.utils.DomainMdc;
 
 @Provider
 public class LoggingFeature implements DynamicFeature {
