@@ -2,14 +2,14 @@ package com.github.skjolberg.slf4j.codegen.maven;
 
 public class Configuration {
 
-	private Boolean java;
+	private Java java;
 	private Boolean elastic;
 	private Boolean markdown;
 	
-	public Boolean getJava() {
+	public Java getJava() {
 		return java;
 	}
-	public void setJava(Boolean java) {
+	public void setJava(Java java) {
 		this.java = java;
 	}
 	public Boolean getElastic() {

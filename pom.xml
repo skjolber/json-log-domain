@@ -56,7 +56,11 @@
 		<logback.version>1.2.3</logback.version>
 		<logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
 		<json.version>20170516</json.version>
-
+		
+		<fluency.version>1.6.0</fluency.version>
+		<stackdriver.version>1.14.0</stackdriver.version>
+		<google-cloud-logging-logback.version>0.32.0-alpha</google-cloud-logging-logback.version>
+		
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.11.0</mockito.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -89,6 +93,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.skjolber.log-domain</groupId>
+				<artifactId>log-domain-support-stackdriver</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.skjolber.log-domain</groupId>
 				<artifactId>log-domain-maven-plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -96,6 +105,11 @@
 				<groupId>com.github.skjolber.log-domain</groupId>
 				<artifactId>log-domain-test-logback</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.komamitsu</groupId>
+			    <artifactId>fluency</artifactId>
+			    <version>${fluency.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -127,6 +141,16 @@
 				<artifactId>json</artifactId>
 				<version>${json.version}</version>
 			</dependency>
+			<dependency>
+			  <groupId>com.google.cloud</groupId>
+			  <artifactId>google-cloud-logging</artifactId>
+			  <version>${stackdriver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.cloud</groupId>
+				<artifactId>google-cloud-logging-logback</artifactId>
+				<version>${google-cloud-logging-logback.version}</version>
+			</dependency>			
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -254,6 +278,7 @@
 
 	<modules>
 		<module>support/logback</module>
+		<module>support/stackdriver</module>
 		<module>test/logback</module>
 		<module>codegen</module>
 		<module>maven-plugin</module>

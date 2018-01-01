@@ -84,7 +84,10 @@
 						<domain>
 							<configuration>
 								<markdown>true</markdown>
-								<java>true</java>
+								<java>
+									<logback>true</logback>
+									<stackDriver>true</stackDriver>
+								</java>
 							</configuration>
 							<path>${basedir}/src/test/resources/network.yaml</path>
 						</domain>

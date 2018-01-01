@@ -15,7 +15,11 @@
         <dependency>
             <groupId>com.github.skjolber.log-domain</groupId>
             <artifactId>log-domain-support-logback</artifactId>    
-        </dependency>        
+        </dependency>
+        <dependency>
+            <groupId>com.github.skjolber.log-domain</groupId>
+            <artifactId>log-domain-support-stackdriver</artifactId>    
+        </dependency>            
         <dependency>
             <groupId>com.esotericsoftware.yamlbeans</groupId>
             <artifactId>yamlbeans</artifactId>

@@ -59,20 +59,25 @@ public class CodeGenMojo extends AbstractMojo {
 		            if(configuration == null) {
 		            	configuration = new Configuration();
 		            	configuration.setElastic(false);
-		            	configuration.setJava(true);
+		            	Java java = new Java();
+		            	java.setLogback(true);
+		            	configuration.setJava(java);
 		            	configuration.setMarkdown(false);
 		            }
 		            
 	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
 
-	        		boolean java = configuration.getJava() != null && configuration.getJava();
-	        		if(java) {
-	        			JavaGenerator.generate(result, javaOutput);
-	        			
-	        			getLog().info("Generating Java output to " + javaOutput.toAbsolutePath());
+	        		Java java = configuration.getJava();
+	        		if(java != null) {
+		        		boolean logback = java.getLogback() != null && java.getLogback();
+		        		if(logback) {
+		        			JavaGenerator.generate(result, javaOutput);
+		        			
+		        			getLog().info("Generating Java output to " + javaOutput.toAbsolutePath());
+		        		}
 	        		}
 	        		if(configuration.getMarkdown() != null && configuration.getMarkdown()) {
-	        			MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), java);
+	        			MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), java.getLogback() != null && java.getLogback());
 	        			
 	        			getLog().info("Generating Markdown output to " + markdownOutput.toAbsolutePath());
 	        		}

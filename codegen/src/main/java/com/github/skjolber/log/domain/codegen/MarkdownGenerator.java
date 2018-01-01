@@ -21,22 +21,22 @@ import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class MarkdownGenerator {
 
-	public static void generate(Path file, Path outputFile, boolean javaCodeGenerated) throws IOException {
+	public static void generate(Path file, Path outputFile, boolean logbackCodeGenerated) throws IOException {
 		Domain domain = DomainFactory.parse(Files.newBufferedReader(file, StandardCharsets.UTF_8));
 
-		generate(domain, outputFile, javaCodeGenerated);
+		generate(domain, outputFile, logbackCodeGenerated);
 	}
 
-	public static void generate(Domain domain, Path outputFile, boolean javaCodeGenerated) throws IOException {
+	public static void generate(Domain domain, Path outputFile, boolean logbackCodeGenerated) throws IOException {
 		Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8);
 		try {
-			writer.write(generate(domain, javaCodeGenerated));
+			writer.write(generate(domain, logbackCodeGenerated));
 		} finally {
 			writer.close();
 		}
 	}
 	
-	public static String generate(Domain domain, boolean javaCodeGenerated) throws IOException {
+	public static String generate(Domain domain, boolean logbackCodeGenerated) throws IOException {
 		StringBuilder sb = new StringBuilder();
 				
 		sb.append(new Heading(domain.getName(), 2));
@@ -83,7 +83,7 @@ public class MarkdownGenerator {
 		sb.append(tableViewer.build());
 		sb.append("\n");
 		sb.append("\n");
-		if(javaCodeGenerated) {
+		if(logbackCodeGenerated) {
 			sb.append(new Text("Add the following import:"));
 			sb.append("\n");
 			sb.append("\n");
@@ -109,7 +109,7 @@ public class MarkdownGenerator {
 			sb.append(tableViewer.build());
 			sb.append("\n");
 			sb.append("\n");
-			if(javaCodeGenerated) {
+			if(logbackCodeGenerated) {
 				sb.append(new Text("Add the following import:"));
 				sb.append("\n");
 				sb.append("\n");
