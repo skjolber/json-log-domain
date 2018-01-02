@@ -64,23 +64,23 @@ logging.write(Collections.singleton(entry));
 and the result should be statements like
 
 ```json
-{
- insertId:  "1efylig9drkvsh1"  
- jsonPayload: {
-  network: {
-   host:  "localhost"    
-   port:  123    
-  }
- }
- logName:  "projects/abcdef/logs/global"  
- receiveTimestamp:  "2018-01-02T14:05:56.176942353Z"  
- resource: {
-  labels: {
-   project_id:  "abcdef"    
-  }
-  type:  "global"   
- }
- severity:  "INFO"  
- timestamp:  "2018-01-02T14:05:56.176942353Z"  
+{  
+   "insertId":"1efylig9drkvsh1",
+   "jsonPayload":{  
+      "network":{  
+         "host":"localhost",
+         "port":123
+      }
+   },
+   "logName":"projects/abcdef/logs/global",
+   "receiveTimestamp":"2018-01-02T14:05:56.176942353Z",
+   "resource":{  
+      "labels":{  
+         "project_id":"abcdef"
+      },
+      "type":"global"
+   },
+   "severity":"INFO",
+   "timestamp":"2018-01-02T14:05:56.176942353Z"
 }
 ```
