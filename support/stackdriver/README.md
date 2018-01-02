@@ -44,13 +44,20 @@ After generating code, add static imports
 import static com.example.network.NetworkPayloadBuilder.*;
 ```
 
-and create a `LogEntry`.
+and create a `LogEntry` with a JSON payload type.
 
 ```java
-DomainLogEntry entry = DomainLogEntry.newBuilder(port(123).host("localhost"))
+
+// obtain logging instance
+Logging logging = ..;
+
+LogEntry entry = DomainLogEntry.newBuilder(port(123).host("localhost"))
     .setSeverity(Severity.INFO)
     .setLogName(logName)
     .setResource(MonitoredResource.newBuilder("global").build())
     .build();
+    
+// Write log entry
+logging.write(Collections.singleton(entry));
 ```
 
