@@ -1,20 +1,20 @@
-package com.github.skjolber.log.domain.codegen.logstash;
+package com.github.skjolber.log.domain.codegen.stackdriver;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.lang.model.element.Modifier;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.slf4j.Marker;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
-import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.stackdriver.utils.DomainPayload;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -22,16 +22,16 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
 
-public class MarkerGenerator {
+public class PayloadGenerator {
 	
-	public static final String MARKER = "Marker";
-	public static final String MARKER_BUILDER = "MarkerBuilder";
+	public static final String MARKER = "Payload";
+	public static final String MARKER_BUILDER = "PayloadBuilder";
 	protected static final String PARENT_FIELD_NAME = "parent";
-	
 	private static TagGenerator tagGenerator = new TagGenerator();
 
 	public static JavaFile marker(Domain ontology) {
@@ -41,7 +41,7 @@ public class MarkerGenerator {
 		
 		ClassName name = getName(ontology);
 
-		ClassName superClassName = ClassName.get(DomainMarker.class);
+		ClassName superClassName = ClassName.get(DomainPayload.class);
 
 		Builder builder = TypeSpec.classBuilder(name)
 					.superclass(superClassName)
@@ -50,7 +50,7 @@ public class MarkerGenerator {
 
 		com.squareup.javapoet.MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
 			.addModifiers(Modifier.PUBLIC)
-			.addStatement("super($S, QUALIFIER)", ontology.getName().toUpperCase())
+			.addStatement("super(QUALIFIER)")
 			.addStatement("$T $N = mdc.get()", name, PARENT_FIELD_NAME)
 			.beginControlFlow("if($N != null)", PARENT_FIELD_NAME);
 			
@@ -187,7 +187,7 @@ public class MarkerGenerator {
 	}
 
 	private static MethodSpec getEqualToMethod(List<Key> fields, ClassName name, ClassName tags, int size) {
-		ParameterSpec parameter = ParameterSpec.builder(Marker.class, "marker").build();
+		ParameterSpec parameter = ParameterSpec.builder(DomainPayload.class, "marker").build();
 
 		MethodSpec.Builder builder = MethodSpec.methodBuilder("equalTo")
 				.addModifiers(Modifier.PUBLIC)
@@ -302,45 +302,67 @@ public class MarkerGenerator {
 
 
 	private static MethodSpec getWriterMethod(List<Key> fields, ClassName name, ClassName tags, boolean global) {
-		ParameterSpec parameter = ParameterSpec.builder(JsonGenerator.class, "generator").build();
 		
-		MethodSpec.Builder builder = MethodSpec.methodBuilder("writeTo")
+		ParameterizedTypeName map = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),  ClassName.get(Object.class));
+
+		ParameterSpec parameter = ParameterSpec.builder(map, "parent").build();
+		
+		//public abstract void build(Map<String, ?> map);
+
+		
+		MethodSpec.Builder builder = MethodSpec.methodBuilder("build")
 				.addModifiers(Modifier.PUBLIC)
-				.addException(IOException.class)
 				.addParameter(parameter);
-		
+
+		ParameterSpec mapParameter;
 		if(!global) {
-			builder.addStatement("writeHeadTo($N)", parameter);
+			ParameterizedTypeName hashMap = ParameterizedTypeName.get(ClassName.get(HashMap.class), ClassName.get(String.class),  ClassName.get(Object.class));
+
+			mapParameter = ParameterSpec.builder(map, "map").build();
+			
+			builder.addStatement("$T $N = new $T()", map, mapParameter, hashMap);
+		} else {
+			mapParameter = parameter;
 		}
 		
 		for(Key key : fields) {
 			builder.addCode(CodeBlock.builder()
 					.beginControlFlow("if(this.$N != null)", key.getId())
-					.addStatement("$N.writeFieldName($S)", parameter, key.getId())
-					.addStatement("$N." + getWriteJsonMethod(key) + "(this.$N)", parameter, key.getId()) // TODO microoptimize by checking for type
+					.addStatement("$N.put($S, this.$N)", mapParameter, key.getId(), key.getId())
 					.endControlFlow()
 					.build());
 		}
 
 		if(tags != null) {
 			// tags
+			ParameterizedTypeName list = ParameterizedTypeName.get(ClassName.get(List.class), ClassName.get(String.class));
+			ParameterizedTypeName arrayList = ParameterizedTypeName.get(ClassName.get(ArrayList.class), ClassName.get(String.class));
+			
+			ParameterSpec listParameter = ParameterSpec.builder(list, "list").build();
+			
 			builder.addCode(CodeBlock.builder()
 					.beginControlFlow("if(this.$N != null)", "tags")
-					.addStatement("$N.writeFieldName($S)", parameter, "tags")
-					.addStatement("$N.writeStartArray()", parameter)
+					.addStatement("$T $N = new $T()", list, listParameter, arrayList)
 					.beginControlFlow("for($T tag : tags)", tags)
 					.beginControlFlow("if(tag != null)")
-					.addStatement("generator.writeString(tag.getId())", parameter)
+					.addStatement("$N.add(tag.getId())", listParameter)
 					.endControlFlow()
 					.endControlFlow()
-					.addStatement("$N.writeEndArray()", parameter)
+					.beginControlFlow("if(!$N.isEmpty())", listParameter)
+					.addStatement("$N.put($S, $N)", mapParameter, "tags", listParameter)
+					.endControlFlow()
+
 					.endControlFlow()
 					.build());
 		}
-		if(!global) {
-			builder.addStatement("writeTailTo($N)", parameter);
-		}
 		
+		if(!global) {
+			builder.addCode(CodeBlock.builder()
+					.beginControlFlow("if(!$N.isEmpty())", mapParameter)
+					.addStatement("$N.put($N, $N)", parameter, "QUALIFIER", mapParameter)
+					.endControlFlow()
+					.build());
+		}
 		return builder.build();
 	}
 

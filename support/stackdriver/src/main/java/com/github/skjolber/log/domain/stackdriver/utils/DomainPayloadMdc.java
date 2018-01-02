@@ -4,35 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class DomainMdc<T extends DomainPayload> {
+public abstract class DomainPayloadMdc<T extends DomainPayload> {
 
-	private static volatile List<DomainMdc<? extends DomainPayload>> mdcs = new ArrayList<>();
+	private static volatile List<DomainPayloadMdc<? extends DomainPayload>> mdcs = new ArrayList<>();
 
-	public static void register(DomainMdc<? extends DomainPayload> mdc) {
+	public static void register(DomainPayloadMdc<? extends DomainPayload> mdc) {
 		// defensive copy operation
-		List<DomainMdc<? extends DomainPayload>> next = new ArrayList<>(DomainMdc.mdcs);
+		List<DomainPayloadMdc<? extends DomainPayload>> next = new ArrayList<>(DomainPayloadMdc.mdcs);
 		
 		next.add(mdc);
 		
-		DomainMdc.mdcs = next;
+		DomainPayloadMdc.mdcs = next;
 	}
 
-	public static void unregister(DomainMdc<? extends DomainPayload> mdc) {
+	public static void unregister(DomainPayloadMdc<? extends DomainPayload> mdc) {
 		// defensive copy operation
-		List<DomainMdc<? extends DomainPayload>> next = new ArrayList<>(DomainMdc.mdcs);
+		List<DomainPayloadMdc<? extends DomainPayload>> next = new ArrayList<>(DomainPayloadMdc.mdcs);
 
 		next.remove(mdc);
 
-		DomainMdc.mdcs = next;
+		DomainPayloadMdc.mdcs = next;
 	}
 
-	public static List<DomainMdc<? extends DomainPayload>> getMdcs() {
+	public static List<DomainPayloadMdc<? extends DomainPayload>> getMdcs() {
 		return mdcs;
 	}
 
-	public static DomainMdc<? extends DomainPayload> getMdc(String qualifier) {
-		List<DomainMdc<? extends DomainPayload>> mdcs = getMdcs();
-		for (DomainMdc<? extends DomainPayload> domainMdc : mdcs) {
+	public static DomainPayloadMdc<? extends DomainPayload> getMdc(String qualifier) {
+		List<DomainPayloadMdc<? extends DomainPayload>> mdcs = getMdcs();
+		for (DomainPayloadMdc<? extends DomainPayload> domainMdc : mdcs) {
 			if(Objects.equals(domainMdc.getQualifier(), qualifier)) {
 				return domainMdc;
 			}
@@ -40,9 +40,9 @@ public abstract class DomainMdc<T extends DomainPayload> {
 		return null;
 	}
 
-	public static <T extends DomainPayload> DomainMdc<? extends DomainPayload> mdcForType(Class<T> type) {
-		List<DomainMdc<? extends DomainPayload>> mdcs = getMdcs();
-		for (DomainMdc<? extends DomainPayload> domainMdc : mdcs) {
+	public static <T extends DomainPayload> DomainPayloadMdc<? extends DomainPayload> mdcForType(Class<T> type) {
+		List<DomainPayloadMdc<? extends DomainPayload>> mdcs = getMdcs();
+		for (DomainPayloadMdc<? extends DomainPayload> domainMdc : mdcs) {
 			if(domainMdc.supports(type)) {
 				return domainMdc;
 			}
@@ -51,8 +51,8 @@ public abstract class DomainMdc<T extends DomainPayload> {
 	}
 
 	public static void removeAll() {
-		List<DomainMdc<? extends DomainPayload>> mdcs = getMdcs();
-		for (DomainMdc<? extends DomainPayload> domainMdc : mdcs) {
+		List<DomainPayloadMdc<? extends DomainPayload>> mdcs = getMdcs();
+		for (DomainPayloadMdc<? extends DomainPayload> domainMdc : mdcs) {
 			domainMdc.remove();
 		}
 	}
@@ -82,7 +82,7 @@ public abstract class DomainMdc<T extends DomainPayload> {
 
 	protected String qualifier;
 
-	public DomainMdc(String qualifier) {
+	public DomainPayloadMdc(String qualifier) {
 		this.qualifier = qualifier;
 	}
 	
@@ -136,11 +136,11 @@ public abstract class DomainMdc<T extends DomainPayload> {
 
 	
 	public void register() {
-		DomainMdc.register(this);
+		DomainPayloadMdc.register(this);
 	}
 	
 	public void unregister() {
-		DomainMdc.unregister(this);
+		DomainPayloadMdc.unregister(this);
 	}
 	
 	public abstract T createPayload();

@@ -116,23 +116,17 @@
                 </executions>
                 <configuration>
                     <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+                   	<types>
+                   		<elastic>true</elastic>
+                   	</types>
                     <domains>
                         <domain>
-                        	<configuration>
-                        		<elastic>true</elastic>
-                        	</configuration>
                             <path>${basedir}/src/main/resources/yaml/network.yaml</path>
                         </domain>
                         <domain>
-                        	<configuration>
-                        		<elastic>true</elastic>
-                        	</configuration>
                             <path>${basedir}/src/main/resources/yaml/global.yaml</path>
                         </domain>
                         <domain>
-                        	<configuration>
-                        		<elastic>true</elastic>
-                        	</configuration>
                             <path>${basedir}/src/main/resources/yaml/language.yaml</path>
                         </domain>
                     </domains>

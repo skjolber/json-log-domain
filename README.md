@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/skjolber/json-log-domain.svg?branch=master)](https://travis-ci.org/skjolber/json-log-domain)
 
 # json-log-domain
-Library supporting JSON-logging. Currently working with [Logback] and [logstash-logback-encoder].
+Library supporting JSON-logging. Currently working with [Logback] and [logstash-logback-encoder] and native [Google Stackdriver].
 
 Users will benefit from
 
@@ -20,9 +20,12 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 [Apache 2.0]
 
 # Obtain
-The project is based on [Maven] and is available from central Maven repository. Se further down for dependencies.
+The project is based on [Maven] and is available from central Maven repository. See further down for dependencies.
 
 # Usage
+The instructions below focuses on Logback. Go [here](support/stackdriver) for Stackdriver.
+
+## SLF4J / Logback
 The generated sources allow for writing statements like
 
 ```java
@@ -160,7 +163,7 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 <plugin>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-maven-plugin</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <executions>
         <execution>
             <id>generate</id>
@@ -171,6 +174,14 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
     </executions>
     <configuration>
         <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+        <types>
+            <markdown>true</markdown>
+            <java>
+                <logback>true</logback>
+                <!-- OR -->
+                <stackDriver>true</stackDriver>
+            </java>
+        </types>    
         <domains>
             <domain>
                 <path>${basedir}/src/main/resources/yaml/network.yaml</path>
@@ -189,7 +200,18 @@ A few common classes are not part of the generated sources:
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-support-logback</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
+</dependency>
+```
+
+or
+
+
+```xml
+<dependency>
+    <groupId>com.github.skjolber.log-domain</groupId>
+    <artifactId>log-domain-support-stackdriver</artifactId>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -262,7 +284,7 @@ optionally also using `Class` and `Level` filtering. Import the library using
 <dependency>
     <groupId>com.github.skjolber.log-domain</groupId>
     <artifactId>log-domain-test-logback</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -272,11 +294,11 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
 
 ```xml
 <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-	<!-- add provider for custom JSON MDC -->
-	<provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
-	
-	<!-- add pretty-printing for testing -->
-	<jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
+    <!-- add provider for custom JSON MDC -->
+    <provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
+    
+    <!-- add pretty-printing for testing -->
+    <jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
 </encoder>
 ```
 
@@ -286,10 +308,12 @@ If you do not like this prosject, maybe you'll like
   * [godaddy-logger]
   * [slf4jtesting]
   * [slf4j-json-logger]
+  * [logback-more-appenders]
 
 # History
 
- - [1.0.2]: JAX-RS helper library, various improvements.
+ - [1.0.3]: Stackdriver support, minor improvements.
+ - 1.0.2: JAX-RS helper library, various improvements.
  - 1.0.1: Added MDC support, various improvements.
  - 1.0.0: Initial version
 
@@ -298,16 +322,18 @@ If you do not like this prosject, maybe you'll like
 [Maven]:						http://maven.apache.org/
 [1.0.2]:						https://github.com/skjolber/json-log-domain/releases/tag/log-domain-1.0.2
 [Logback]:						https://logback.qos.ch/
-[logstash-logback-encoder]:	https://github.com/logstash/logstash-logback-encoder
+[logstash-logback-encoder]:		https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:		https://github.com/swagger-api/swagger-codegen
 [JUnit Rule]:					https://github.com/junit-team/junit4/wiki/rules
 [markdown file]:				https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
-[JsonProvider]:				https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
-[this example]:				support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
+[JsonProvider]:					https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
+[this example]:					support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
 [pretty-printer]:				test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
-[Elastic example]: 			examples/elastic-example
-[automatic MDC population]:	examples/jax-rs-example
+[Elastic example]: 				examples/elastic-example
+[automatic MDC population]:		examples/jax-rs-example
 [intro1.png]: 					https://raw.githubusercontent.com/skjolber/json-log-domain/master/docs/images/intro1.png "YAML to multiple formats"
 [godaddy-logger]:				https://github.com/godaddy/godaddy-logger
-[slf4jtesting]:				https://github.com/portingle/slf4jtesting
+[slf4jtesting]:					https://github.com/portingle/slf4jtesting
 [slf4j-json-logger]:			https://github.com/savoirtech/slf4j-json-logger
+[Google Stackdriver]:			https://cloud.google.com/stackdriver
+[logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders

@@ -1,4 +1,4 @@
-package com.github.skjolber.log.domain.codegen.logstash;
+package com.github.skjolber.log.domain.codegen.stackdriver;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
-import com.github.skjolber.log.domain.utils.DomainMarker;
-import com.github.skjolber.log.domain.utils.DomainMdc;
+import com.github.skjolber.log.domain.stackdriver.utils.DomainPayloadMdc;
+import com.github.skjolber.log.domain.stackdriver.utils.DomainPayload;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -22,28 +22,28 @@ import com.squareup.javapoet.WildcardTypeName;
 
 public class MdcGenerator {
 	
-	protected static final String MARKER_MDC = "MarkerMdc";
+	protected static final String MARKER_MDC = "PayloadMdc";
 	
 	public static JavaFile statement(Domain ontology) {
 		
 		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName() + MARKER_MDC);
 
-		ClassName markerName = MarkerGenerator.getName(ontology);
+		ClassName markerName = PayloadGenerator.getName(ontology);
 		
-	    TypeName wildcard = WildcardTypeName.subtypeOf(DomainMarker.class);
+	    TypeName wildcard = WildcardTypeName.subtypeOf(DomainPayload.class);
 	    TypeName classOfAny = ParameterizedTypeName.get(ClassName.get(Class.class), wildcard);
 	    
 		ParameterSpec type = ParameterSpec.builder(classOfAny, "type").build();
 
 		return JavaFile.builder(name.packageName(), TypeSpec.classBuilder(name)
-					.superclass(ParameterizedTypeName.get( ClassName.get(DomainMdc.class), markerName))
+					.superclass(ParameterizedTypeName.get( ClassName.get(DomainPayloadMdc.class), markerName))
 					.addModifiers(Modifier.PUBLIC)
 					.addMethod(MethodSpec.constructorBuilder()
 						.addModifiers(Modifier.PUBLIC)
 						.addStatement("super($T.QUALIFIER)", markerName)
 						.build()
 					)
-					.addMethod(MethodSpec.methodBuilder("createMarker")
+					.addMethod(MethodSpec.methodBuilder("createPayload")
 							.addModifiers(Modifier.PUBLIC)
 							.addStatement("return new $T()", markerName)
 							.returns(markerName)
@@ -78,7 +78,7 @@ public class MdcGenerator {
 		switchBlock.beginControlFlow("switch($N)", keyParameter);
 				
 		for(Key key : fields) {
-			Class<?> type = MarkerGenerator.parseTypeFormat(key.getType(), key.getFormat());
+			Class<?> type = PayloadGenerator.parseTypeFormat(key.getType(), key.getFormat());
 			if(type.isPrimitive()) {
 				type = ClassUtils.primitiveToWrapper(type);
 			}

@@ -150,6 +150,11 @@
                 </executions>
                 <configuration>
                     <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+					<types>
+						<java>
+							<logback>true</logback>
+						</java>
+					</types>                    
                     <domains>
                         <domain>
                             <path>${basedir}/src/main/resources/yaml/document.yaml</path>

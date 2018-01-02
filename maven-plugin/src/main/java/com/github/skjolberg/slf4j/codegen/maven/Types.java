@@ -1,6 +1,6 @@
 package com.github.skjolberg.slf4j.codegen.maven;
 
-public class Configuration {
+public class Types {
 
 	private Java java;
 	private Boolean elastic;

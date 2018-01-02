@@ -1,7 +1,56 @@
-# fluentd support library
+# google stackdriver support library
 
-Legg til jackson serializer modul. 
+Base classes for generated code.
 
-https://github.com/komamitsu/fluency#register-jackson-modules
+## Generating Java helper sources
 
-Trenger uansett å lage et map i builderen. Men det blir veldig tynt.
+YAML-files are converted to helper classes using `log-domain-maven-plugin`.
+
+```xml
+<plugin>
+    <groupId>com.github.skjolber.log-domain</groupId>
+    <artifactId>log-domain-maven-plugin</artifactId>
+    <version>1.0.3</version>
+    <executions>
+        <execution>
+            <id>generate</id>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+        <configuration>
+            <markdown>true</markdown>
+            <java>
+                <stackDriver>true</stackDriver>
+            </java>
+        </configuration>        
+        <domains>
+            <domain>
+                <path>${basedir}/src/main/resources/yaml/network.yaml</path>
+            </domain>
+        </domains>
+    </configuration>
+</plugin>
+```
+
+## Logging
+After generating code, add static imports
+
+
+```java
+import static com.example.network.NetworkPayloadBuilder.*;
+```
+
+and create a `LogEntry`.
+
+```java
+DomainLogEntry entry = DomainLogEntry.newBuilder(port(123).host("localhost"))
+    .setSeverity(Severity.INFO)
+    .setLogName(logName)
+    .setResource(MonitoredResource.newBuilder("global").build())
+    .build();
+```
+

@@ -1,10 +1,12 @@
 package com.google.cloud.logging;
 
-public abstract class DefaultLogEntry extends LogEntry {
+/**
+ * Class for public constructors in {@linkplain LogEntry}.
+ * 
+ */
 
-	/**
-	 * 
-	 */
+public class DefaultLogEntry extends LogEntry {
+
 	private static final long serialVersionUID = 1L;
 
 	public DefaultLogEntry(Builder builder) {

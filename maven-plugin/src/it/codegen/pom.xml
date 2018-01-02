@@ -20,7 +20,12 @@
 			<groupId>com.github.skjolber.log-domain</groupId>
 			<artifactId>log-domain-support-logback</artifactId>	
 			<version>${project.version}</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+			<groupId>com.github.skjolber.log-domain</groupId>
+			<artifactId>log-domain-support-stackdriver</artifactId>	
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -80,15 +85,15 @@
 				</executions>				
 				<configuration>
 					<outputDirectory>target/generated-sources-it/log-domain-codegen</outputDirectory>
+					<types>
+						<markdown>true</markdown>
+						<java>
+							<logback>true</logback>
+							<stackDriver>true</stackDriver>
+						</java>
+					</types>
 					<domains>
 						<domain>
-							<configuration>
-								<markdown>true</markdown>
-								<java>
-									<logback>true</logback>
-									<stackDriver>true</stackDriver>
-								</java>
-							</configuration>
 							<path>${basedir}/src/test/resources/network.yaml</path>
 						</domain>
 					</domains>

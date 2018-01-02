@@ -45,16 +45,16 @@
 				<version>1.0.3-SNAPSHOT</version>
 				<configuration>
 					<outputDirectory>target/generated-sources/log-domain-codegen</outputDirectory>
+					<types>
+						<markdown>true</markdown>
+						<java>
+							<logback>true</logback>
+							<stackDriver>true</stackDriver>
+						</java>
+						<elastic>true</elastic>
+					</types>
 					<domains>
 						<domain>
-							<configuration>
-								<markdown>true</markdown>
-								<java>
-									<logback>true</logback>
-									<stackDriver>true</stackDriver>
-								</java>
-								<elastic>true</elastic>
-							</configuration>
 							<path>${basedir}/src/test/resources/network.yaml</path>
 						</domain>
 					</domains>

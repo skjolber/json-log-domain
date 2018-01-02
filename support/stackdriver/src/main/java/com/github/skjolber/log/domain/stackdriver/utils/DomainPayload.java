@@ -129,9 +129,7 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 	
 	public abstract void parseAndSetKey(String key, Object value);
 	
-	public void build(Map<String, ?> map) {
-		
-	}
+	public abstract void build(Map<String, Object> map);
 	
     public <T extends DomainPayload> T and(DomainPayload reference) {
         add(reference);

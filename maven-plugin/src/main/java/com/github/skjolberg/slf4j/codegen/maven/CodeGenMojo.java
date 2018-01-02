@@ -18,7 +18,8 @@ import org.apache.maven.project.MavenProject;
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.ElasticGenerator;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
-import com.github.skjolber.log.domain.codegen.logstash.JavaGenerator;
+import com.github.skjolber.log.domain.codegen.logstash.LogbackGenerator;
+import com.github.skjolber.log.domain.codegen.stackdriver.StackDriverGenerator;
 
 @Mojo(name = "generate",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES,
@@ -31,6 +32,9 @@ public class CodeGenMojo extends AbstractMojo {
     
     @Parameter(property = "domains", required = true)
     protected List<Domain> domains;
+    
+    @Parameter(property = "types", required = false)
+    protected Types types;
 
     @Parameter(defaultValue = "${project}")
     private MavenProject project;
@@ -38,6 +42,17 @@ public class CodeGenMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
 
         if(!domains.isEmpty()) {
+        	
+            if(types == null) {
+            	types = new Types();
+            	types.setElastic(false);
+            	Java java = new Java();
+            	java.setLogback(false);
+            	java.setStackDriver(false);
+            	types.setJava(java);
+            	types.setMarkdown(false);
+            }
+        	
 		    try {
 	        	Path outputDirectoryPath = Paths.get(outputDirectory);
 	        	
@@ -54,15 +69,10 @@ public class CodeGenMojo extends AbstractMojo {
 		        for(Domain domain : domains) {
 		            getLog().info("Processing " + domain.getPath());
 
-		            Configuration configuration = domain.getConfiguration();
+		            Types configuration = domain.getTypes();
 		            
 		            if(configuration == null) {
-		            	configuration = new Configuration();
-		            	configuration.setElastic(false);
-		            	Java java = new Java();
-		            	java.setLogback(true);
-		            	configuration.setJava(java);
-		            	configuration.setMarkdown(false);
+		            	configuration = this.types;
 		            }
 		            
 	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
@@ -71,9 +81,15 @@ public class CodeGenMojo extends AbstractMojo {
 	        		if(java != null) {
 		        		boolean logback = java.getLogback() != null && java.getLogback();
 		        		if(logback) {
-		        			JavaGenerator.generate(result, javaOutput);
+		        			new LogbackGenerator().generate(result, javaOutput);
 		        			
-		        			getLog().info("Generating Java output to " + javaOutput.toAbsolutePath());
+		        			getLog().info("Generating Logback Java output to " + javaOutput.toAbsolutePath());
+		        		}
+		        		boolean stackdriver = java.getStackDriver() != null && java.getStackDriver();
+		        		if(stackdriver) {
+		        			new StackDriverGenerator().generate(result, javaOutput);
+		        			
+		        			getLog().info("Generating Stackdriver Java output to " + javaOutput.toAbsolutePath());
 		        		}
 	        		}
 	        		if(configuration.getMarkdown() != null && configuration.getMarkdown()) {

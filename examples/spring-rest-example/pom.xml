@@ -122,6 +122,12 @@
                 </executions>
                 <configuration>
                     <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+                    <types>
+                    	<markdown>true</markdown>
+                    	<java>
+                    		<logback>true</logback>
+                    	</java>
+                    </types>
                     <domains>
                         <domain>
                             <path>${basedir}/src/main/resources/yaml/document.yaml</path>

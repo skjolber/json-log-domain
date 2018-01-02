@@ -153,7 +153,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			if(marker instanceof DomainMarker) {
 				DomainMarker domainMarker = (DomainMarker)marker;
 				domainMarker.prepareForDeferredProcessing();
-				filter.add(domainMarker.getQualifier());
+				filter.add(domainMarker.getClass().getName());
 			}
 			
 			if(marker.hasReferences()) {
@@ -164,7 +164,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 					if(next instanceof DomainMarker) {
 						DomainMarker domainMarker = (DomainMarker)next;
 						domainMarker.prepareForDeferredProcessing();
-						filter.add(domainMarker.getQualifier());
+						filter.add(domainMarker.getClass().getName());
 					}
 				}
 			}
@@ -172,7 +172,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			List<DomainMdc<? extends DomainMarker>> mdcs = DomainMdc.getMdcs(); // list of possible MDCs
 			List<DomainMarker> deferredMarkers = new ArrayList<>(mdcs.size());
 			for (DomainMdc<? extends DomainMarker> abstractMdc : mdcs) {
-				if(!filter.contains(abstractMdc.getQualifier())) {
+				if(!filter.contains(abstractMdc.getClass().getName())) {
 					DomainMarker domainMarker = abstractMdc.get();
 					if(domainMarker != null) {
 						deferredMarkers.add(domainMarker);

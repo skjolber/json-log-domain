@@ -1,22 +1,22 @@
-package com.github.skjolber.log.domain.codegen;
+package com.github.skjolber.log.domain.codegen.java;
+
+import java.lang.reflect.Type;
 
 import javax.lang.model.element.Modifier;
 
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Tag;
-import com.github.skjolber.log.domain.utils.DomainTag;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
 
-public class TagGenerator {
+public abstract class AbstractTagGenerator {
 	
-	public static final String TAG = "Tag";
-
-	public static JavaFile tag(Domain ontology) {
+	public JavaFile tag(Domain ontology) {
 		
 		if(!ontology.hasTags()) {
 			return null;
@@ -27,7 +27,7 @@ public class TagGenerator {
 		Builder builder = TypeSpec.enumBuilder(name)
 					.addModifiers(Modifier.PUBLIC)
 					.addJavadoc(composeJavadoc(ontology, name))
-					.addSuperinterface(DomainTag.class);
+					.addSuperinterface(getSuperInterface());
 
 		for(Tag tag : ontology.getTags()) {
 			builder.addEnumConstant(tag.getId().toUpperCase(), TypeSpec.anonymousClassBuilder("$S, $S", tag.getId(), tag.getDescription()).addJavadoc(tag.getDescription()).build());
@@ -52,9 +52,9 @@ public class TagGenerator {
 		return JavaFile.builder(name.packageName(), builder.build()).build();
 	}
 
-	public static ClassName getName(Domain ontology) {
-		return ClassName.get(ontology.getTargetPackage(), ontology.getName() + TAG);
-	}
+	protected abstract Type getSuperInterface();
+
+	public abstract ClassName getName(Domain ontology);
 
 	private static MethodSpec getter(String methodName, FieldSpec field) {
 		return MethodSpec.methodBuilder(methodName)

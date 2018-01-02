@@ -205,10 +205,10 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 				}
 			}
 			
-			List<DomainMdc<? extends DomainPayload>> mdcs = DomainMdc.getMdcs(); // list of possible MDCs
+			List<DomainPayloadMdc<? extends DomainPayload>> mdcs = DomainPayloadMdc.getMdcs(); // list of possible MDCs
 			List<DomainPayload> deferredMarkers = new ArrayList<>(mdcs.size());
-			for (DomainMdc<? extends DomainPayload> abstractMdc : mdcs) {
-				if(!filter.contains(abstractMdc.getQualifier())) {
+			for (DomainPayloadMdc<? extends DomainPayload> abstractMdc : mdcs) {
+				if(!filter.contains(abstractMdc.getClass().getName())) {
 					DomainPayload domainMarker = abstractMdc.get();
 					if(domainMarker != null) {
 						deferredMarkers.add(domainMarker);

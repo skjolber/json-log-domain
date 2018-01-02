@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
-import com.github.skjolber.log.domain.codegen.TagGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
 import com.github.skjolber.log.domain.utils.AbstractDomainLogger;

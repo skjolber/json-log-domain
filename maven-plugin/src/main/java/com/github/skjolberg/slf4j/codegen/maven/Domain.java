@@ -4,8 +4,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public class Domain {
 	
-	@Parameter(property = "configuration")
-	private Configuration configuration;
+	@Parameter(property = "types")
+	private Types types;
 
 	@Parameter(property = "path")
 	private String path;
@@ -23,7 +23,11 @@ public class Domain {
 		return "Domain [path=" + path + "]";
 	}
 	
-	public Configuration getConfiguration() {
-		return configuration;
+	public Types getTypes() {
+		return types;
+	}
+	
+	public void setTypes(Types types) {
+		this.types = types;
 	}
 }
