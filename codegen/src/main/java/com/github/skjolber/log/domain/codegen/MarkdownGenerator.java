@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.github.skjolber.log.domain.codegen.logstash.MarkerGenerator;
 import com.github.skjolber.log.domain.codegen.logstash.TagGenerator;
+import com.github.skjolber.log.domain.codegen.stackdriver.PayloadGenerator;
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
 import com.github.skjolber.log.domain.model.Tag;
@@ -22,22 +23,22 @@ import net.steppschuh.markdowngenerator.text.heading.Heading;
 
 public class MarkdownGenerator {
 
-	public static void generate(Path file, Path outputFile, boolean logbackCodeGenerated) throws IOException {
+	public static void generate(Path file, Path outputFile, boolean logbackCodeGenerated, boolean stackDriverCodeGenerated) throws IOException {
 		Domain domain = DomainFactory.parse(Files.newBufferedReader(file, StandardCharsets.UTF_8));
 
-		generate(domain, outputFile, logbackCodeGenerated);
+		generate(domain, outputFile, logbackCodeGenerated, stackDriverCodeGenerated);
 	}
 
-	public static void generate(Domain domain, Path outputFile, boolean logbackCodeGenerated) throws IOException {
+	public static void generate(Domain domain, Path outputFile, boolean logbackCodeGenerated, boolean stackDriverCodeGenerated) throws IOException {
 		Writer writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8);
 		try {
-			writer.write(generate(domain, logbackCodeGenerated));
+			writer.write(generate(domain, logbackCodeGenerated, stackDriverCodeGenerated));
 		} finally {
 			writer.close();
 		}
 	}
 	
-	public static String generate(Domain domain, boolean logbackCodeGenerated) throws IOException {
+	public static String generate(Domain domain, boolean logbackCodeGenerated, boolean stackDriverCodeGenerated) throws IOException {
 		StringBuilder sb = new StringBuilder();
 				
 		sb.append(new Heading(domain.getName(), 2));
@@ -84,11 +85,22 @@ public class MarkdownGenerator {
 		sb.append(tableViewer.build());
 		sb.append("\n");
 		sb.append("\n");
-		if(logbackCodeGenerated) {
+		
+		if(logbackCodeGenerated || stackDriverCodeGenerated) {
 			sb.append(new Text("Add the following import:"));
 			sb.append("\n");
 			sb.append("\n");
+		}
+
+		if(logbackCodeGenerated) {
 			String code = String.format("import static %1s.%2s.*;", domain.getTargetPackage(), domain.getName() + MarkerGenerator.MARKER_BUILDER);
+			
+			sb.append(new CodeBlock(code, "java"));
+			sb.append("\n");
+			sb.append("\n");
+		}
+		if(stackDriverCodeGenerated) {
+			String code = String.format("import static %1s.%2s.*;", domain.getTargetPackage(), domain.getName() + PayloadGenerator.BUILDER);
 			
 			sb.append(new CodeBlock(code, "java"));
 			sb.append("\n");
@@ -110,7 +122,7 @@ public class MarkdownGenerator {
 			sb.append(tableViewer.build());
 			sb.append("\n");
 			sb.append("\n");
-			if(logbackCodeGenerated) {
+			if(logbackCodeGenerated || stackDriverCodeGenerated) {
 				sb.append(new Text("Add the following import:"));
 				sb.append("\n");
 				sb.append("\n");

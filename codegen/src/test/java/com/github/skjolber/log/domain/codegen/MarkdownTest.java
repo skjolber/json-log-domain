@@ -18,7 +18,7 @@ public class MarkdownTest {
 	public void generateSources() throws Exception {
 	    Domain domain = DomainFactory.parse(new FileReader(new File("src/test/resources/yaml/network.yaml")));
 	    
-		String generate = MarkdownGenerator.generate(domain, true);
+		String generate = MarkdownGenerator.generate(domain, true, true);
 		
 		assertThat(generate, containsString("hostname"));
 		

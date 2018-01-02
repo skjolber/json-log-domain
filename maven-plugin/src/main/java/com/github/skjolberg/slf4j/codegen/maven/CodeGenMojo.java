@@ -77,15 +77,18 @@ public class CodeGenMojo extends AbstractMojo {
 		            
 	        		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(Paths.get(domain.getPath()), StandardCharsets.UTF_8));
 
+	        		boolean logback = false;
+	        		boolean stackdriver = false;
+	        		
 	        		Java java = configuration.getJava();
 	        		if(java != null) {
-		        		boolean logback = java.getLogback() != null && java.getLogback();
+		        		logback = java.getLogback() != null && java.getLogback();
 		        		if(logback) {
 		        			new LogbackGenerator().generate(result, javaOutput);
 		        			
 		        			getLog().info("Generating Logback Java output to " + javaOutput.toAbsolutePath());
 		        		}
-		        		boolean stackdriver = java.getStackDriver() != null && java.getStackDriver();
+		        		stackdriver = java.getStackDriver() != null && java.getStackDriver();
 		        		if(stackdriver) {
 		        			new StackDriverGenerator().generate(result, javaOutput);
 		        			
@@ -93,7 +96,7 @@ public class CodeGenMojo extends AbstractMojo {
 		        		}
 	        		}
 	        		if(configuration.getMarkdown() != null && configuration.getMarkdown()) {
-	        			MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), java.getLogback() != null && java.getLogback());
+	        			MarkdownGenerator.generate(result, markdownOutput.resolve(result.getName() + ".md"), logback, stackdriver);
 	        			
 	        			getLog().info("Generating Markdown output to " + markdownOutput.toAbsolutePath());
 	        		}

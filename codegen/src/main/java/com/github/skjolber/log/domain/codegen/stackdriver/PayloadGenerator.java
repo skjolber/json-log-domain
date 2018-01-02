@@ -30,7 +30,7 @@ import com.squareup.javapoet.TypeSpec.Builder;
 public class PayloadGenerator {
 	
 	public static final String MARKER = "Payload";
-	public static final String MARKER_BUILDER = "PayloadBuilder";
+	public static final String BUILDER = "PayloadBuilder";
 	protected static final String PARENT_FIELD_NAME = "parent";
 	private static TagGenerator tagGenerator = new TagGenerator();
 
@@ -527,7 +527,7 @@ public class PayloadGenerator {
 	public static JavaFile markerBuilder(Domain ontology) {
 		List<Key> keys = ontology.getKeys();
 		
-		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName()+ MARKER_BUILDER);
+		ClassName name = ClassName.get(ontology.getTargetPackage(), ontology.getName()+ BUILDER);
 		
 		Builder builder = TypeSpec.classBuilder(name)
 					.addJavadoc(composeJavadoc(ontology, name))
