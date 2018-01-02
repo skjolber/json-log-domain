@@ -312,7 +312,7 @@ If you do not like this prosject, maybe you'll like
 
 # History
 
- - [1.0.3]: Stackdriver support, minor improvements.
+ - [1.0.3-SNAPSHOT]: Stackdriver support, minor improvements.
  - 1.0.2: JAX-RS helper library, various improvements.
  - 1.0.1: Added MDC support, various improvements.
  - 1.0.0: Initial version
@@ -320,7 +320,7 @@ If you do not like this prosject, maybe you'll like
 [Apache 2.0]:					http://www.apache.org/licenses/LICENSE-2.0.html
 [issue-tracker]:				https://github.com/skjolber/log-domain/issues
 [Maven]:						http://maven.apache.org/
-[1.0.2]:						https://github.com/skjolber/json-log-domain/releases/tag/log-domain-1.0.2
+[1.0.3]:						https://github.com/skjolber/json-log-domain/releases
 [Logback]:						https://logback.qos.ch/
 [logstash-logback-encoder]:		https://github.com/logstash/logstash-logback-encoder
 [Swagger Code Generator]:		https://github.com/swagger-api/swagger-codegen
