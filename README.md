@@ -23,22 +23,24 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 The project is based on [Maven] and is available from central Maven repository. See further down for dependencies.
 
 # Usage
-The instructions below focuses on Logback. Go [here](support/stackdriver) for Stackdriver.
+Using `static` imports, log expressions can be simplified to (usually) a single line.
 
-## SLF4J / Logback
 The generated sources allow for writing statements like
 
 ```java
 logger.info(system("fedora").tags(LINUX), "Hello world");
 ```
 
-or
+for `SLF4J`, or
 
 ```java
-logger.info().system("fedora").tags(LINUX).message("Hello world");
+LogEntry entry = DomainLogEntry.newBuilder(system("fedora").tags(LINUX).message("Hello world"))
+    .setSeverity(Severity.INFO)
+    .setLogName(logName)
+    .setResource(MonitoredResource.newBuilder("global").build())
+    .build();
 ```
-
-with log output
+for `Stackdriver`. Resulting in
 
 ```json
 {
@@ -46,12 +48,6 @@ with log output
   "system": "fedora",
   "tags": ["linux"]
 }
-```
-using `static` imports 
-
-```java
-import static com.example.global.GlobalMarkerBuilder.*;
-import static com.example.global.GlobalTag.*;
 ```
 
 #### Multiple domains
@@ -61,19 +57,22 @@ Combine multiple domains in a single log statement via `and(..)`:
 logger.info(name("java").version(1.7).tags(JIT) // programming language
         .and(host("127.0.0.1").port(8080)) // network
         .and(system("Fedora").tags(LINUX)), // global
-        "Hello world");
+        "Hello world"); 
 ```
 
-or
+for `SLF4J` or
 
 ```java
-logger.info().name("java").version(1.7).tags(JIT)  // programming language
-        .and(host("127.0.0.1").port(8080)) // network
-        .and(system("Fedora").tags(LINUX)) // global
-        .message("Hello world");
+LogEntry entry = DomainLogEntry.newBuilder(
+            name("java").version(1.7).tags(JIT)  // programming language
+            .and(host("127.0.0.1").port(8080)) // network
+            .and(system("Fedora").tags(LINUX).message("Hello world")) // global
+        .setSeverity(Severity.INFO)
+        .setLogName(logName)
+        .setResource(MonitoredResource.newBuilder("global").build())
+        .build();
 ```
-
-outputs domain-specific subtrees:
+for `Stackdriver`. This outputs domain-specific subtrees:
 
 ```json
 {
@@ -93,6 +92,31 @@ outputs domain-specific subtrees:
 ```
 
 where the `global` fields are at the root of the message. 
+
+## MDC-style logging
+Create `AutoClosable` scopes using
+
+```java
+try (AutoCloseable a =  mdc(host("localhost").port(8080))) { // network
+    logger.info().name("java").version(1.7).tags(JIT)  // programming language
+        .and(system("Fedora").tags(LINUX)) // global
+        .message("Hello world");
+}
+```
+
+or the equivalent using try-finally; 
+
+```java
+Closeable mdc = mdc(host("localhost").port(8080); // network
+try {
+    ...
+} finally {
+    mdc.close();
+}
+```
+
+Unlike the built-in SLF4J MDC, the JSON MDC works like a stack. For Logback, see [Logback support] artifact for configuration.
+
 # YAML definition format
 The relevant fields and tags are defined in a YAML file, from which Java, Markdown and Elastic sources are generated. 
 
@@ -156,7 +180,6 @@ Files in the above YAML format can be used to generate Java helper classes, Elas
 ![alt text][intro1.png]
 
 ## Generating Java helper sources
-
 YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 
 ```xml
@@ -184,7 +207,7 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
         </types>    
         <domains>
             <domain>
-                <path>${basedir}/src/main/resources/yaml/network.yaml</path>
+                <path>${basedir}/src/main/resources/yaml/network.yaml</path>logger
             </domain>
         </domains>
     </configuration>
@@ -215,92 +238,14 @@ or
 </dependency>
 ```
 
-## MDC-style logging
-To enable MDC-style JSON logging, enable a [JsonProvider] in the configuration:
-
-```xml
-<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-    <!-- add provider for JSON MDC -->
-    <provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
-</encoder>
-```
-
-and create `AutoClosable` scopes using
-
-```java
-try (AutoCloseable a =  mdc(host("localhost").port(8080))) { // network
-    logger.info().name("java").version(1.7).tags(JIT)  // programming language
-        .and(system("Fedora").tags(LINUX)) // global
-        .message("Hello world");
-}
-```
-
-or the equivalent using try-finally; 
-
-```java
-Closeable mdc = mdc(host("localhost").port(8080); // network
-try {
-    ...
-} finally {
-    mdc.close();
-}
-```
-
-Unlike the built-in SLF4J MDC, the JSON MDC works like a stack.
-
-### Async logger + MDC
-As MDC data must be captured before the logging event leaves the thread, so if you are using a multi-threaded approach, like `AsyncAppender`, make sure to include a call to capture the MDC data like [this example].
-
-
 ## Markdown documentation
-By default, a [markdown file] will also be generated for online documentation. 
+A [markdown file] can also be generated for online documentation. 
 
 ## Elasticsearch configuration files
-Elasticsearch properties can be generated programmatically. One or more of these files can be combined into an application-specific message field mapping, typically at deploy time. See [Elastic example].
+Elasticsearch properties can be generated. One or more of these files can be combined into an application-specific message field mapping, typically at deploy time. See [Elastic example].
 
 # Testing
-Verify that testing is performed using the test library. 
-
-Capture log statements using a [JUnit Rule]
-
-```java
-public LogbackJUnitRule rule = LogbackJUnitRule.newInstance();
-```
-
-and verify logging using
-
-```java
-assertThat(rule, message("Hello world"));
-
-assertThat(rule, contains(host("localhost").port(8080)));
-
-// check non-JSON value MDC
-assertThat(rule, mdc("uname", "magnus"));
-```
-
-optionally also using `Class` and `Level` filtering. Import the library using
-
-```xml
-<dependency>
-    <groupId>com.github.skjolber.log-domain</groupId>
-    <artifactId>log-domain-test-logback</artifactId>
-    <version>1.0.3</version>
-    <scope>test</scope>
-</dependency>
-```
-
-## Pretty-printer
-The test library also contains a JSON [pretty-printer] which is more friendly on the eyes if you are logging JSON to console during testing. For your `logback-test.xml` file, use for example
-
-```xml
-<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-    <!-- add provider for custom JSON MDC -->
-    <provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
-    
-    <!-- add pretty-printing for testing -->
-    <jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
-</encoder>
-```
+Logging is an essential part of any application, verify that logging is performed during unit testing using the [test] libraries.
 
 # Alternatives
 If you do not like this prosject, maybe you'll like
@@ -327,7 +272,6 @@ If you do not like this prosject, maybe you'll like
 [JUnit Rule]:					https://github.com/junit-team/junit4/wiki/rules
 [markdown file]:				https://gist.github.com/skjolber/b79b5c7e4ae40d50305d8d1c9b0c1f71
 [JsonProvider]:					https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents
-[this example]:					support/logback/src/main/java/com/github/skjolber/log/domain/utils/configuration/DomainAsyncAppender.java
 [pretty-printer]:				test/logback/src/main/java/com/github/skjolber/log/domain/test/util/PrettyPrintingDecorator.java
 [Elastic example]: 				examples/elastic-example
 [automatic MDC population]:		examples/jax-rs-example
@@ -337,3 +281,5 @@ If you do not like this prosject, maybe you'll like
 [slf4j-json-logger]:			https://github.com/savoirtech/slf4j-json-logger
 [Google Stackdriver]:			https://cloud.google.com/stackdriver
 [logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders
+[Logback support]:              support/logback
+[test]:                         test
