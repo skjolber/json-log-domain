@@ -1,6 +1,6 @@
 # Google Stackdriver support library
 
-Artifact containing base-classes for generated code.
+Artifact containing base-classes for generated code and a custom `LogEntry` builder.
 
 ## Generating Java helper sources
 
@@ -21,12 +21,12 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
     </executions>
     <configuration>
         <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
-        <configuration>
+        <types>
             <markdown>true</markdown>
             <java>
                 <stackDriver>true</stackDriver>
             </java>
-        </configuration>        
+        </types>        
         <domains>
             <domain>
                 <path>${basedir}/src/main/resources/yaml/network.yaml</path>
