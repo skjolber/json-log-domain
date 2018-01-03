@@ -120,6 +120,8 @@ Unlike the built-in SLF4J MDC, the JSON MDC works like a stack. For Logback, see
 # YAML definition format
 The relevant fields and tags are defined in a YAML file, from which Java, Markdown and Elastic sources are generated. 
 
+![alt text][intro1.png]
+
 Example definition:
 
 ```yaml
@@ -176,8 +178,6 @@ Each tag is defined by:
 
 # Maven plugin
 Files in the above YAML format can be used to generate Java helper classes, Elastic message configuration and/or Markdown documents.
-
-![alt text][intro1.png]
 
 ## Generating Java helper sources
 YAML-files are converted to helper classes using `log-domain-maven-plugin`.
