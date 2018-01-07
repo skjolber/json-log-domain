@@ -1,0 +1,40 @@
+plugins {
+  id 'java-gradle-plugin'
+  id 'maven-publish'
+  id 'ivy-publish'
+  id 'eclipse'
+  id 'idea'
+  id 'java'
+}
+
+apply from: "$rootDir/gradle/integration-test.gradle"
+apply from: "$rootDir/gradle/functional-test.gradle"
+
+group 'com.github.skjolber.json-log-domain.gradle'
+version '1.0.0'
+
+gradlePlugin {
+  plugins {
+    jsonLogDomain {
+      id = "com.github.skjolber.json-log-domain"
+      implementationClass = "com.github.skjolberg.log.domain.codegen.gradle.JsonLogDomainPlugin"
+    }
+  }
+}
+
+dependencies {
+    // Use JUnit test framework
+    compile('com.github.skjolber.log-domain:log-domain-codegen:1.0.3-SNAPSHOT'){
+	    exclude module: "logback-classic"
+    }
+
+    testCompile gradleTestKit()
+    testCompile 'junit:junit:4+'
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+	mavenLocal()
+    jcenter()
+}
+
