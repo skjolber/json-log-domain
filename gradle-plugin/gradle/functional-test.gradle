@@ -12,13 +12,8 @@ task functionalTest(type: Test) {
     group = 'verification'
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
-    mustRunAfter test, integrationTest
+    mustRunAfter test
 }
 
 check.dependsOn functionalTest
 
-// tag::source-set-config[]
-gradlePlugin {
-    testSourceSets sourceSets.functionalTest
-}
-// end::source-set-config[]

@@ -1,6 +1,12 @@
 # Logback support library
 Artifact containing base-classes for generated code and some logger configuration.
 
+Note that the `DomainMarker` (parent for generated classes) can be combined with other markers using `and(..)`, like
+
+```java
+logger.info(system("fedora").tags(LINUX).and(Markers.append("my", object)), "Hello world");
+```
+
 ## MDC-style logging
 To enable MDC-style JSON logging for Logback, enable a [JsonProvider] in the configuration:
 

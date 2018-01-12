@@ -1,0 +1,19 @@
+version: '1.0'
+package: com.example.network
+qualifier: network
+name: Network
+description: Network-related values
+keys:
+  - host:
+      name: hostname
+      description: textual name of network address
+      type: string
+  - port:
+      name: port number
+      description: TCP network port
+      type: integer
+      format: int32
+tags:
+ - tx100mbit: 0.1 gb/s network
+ - tx1gb: 1 gb/s network
+ - tx10gb: 10 gb/s network

@@ -2,6 +2,7 @@ package com.github.skjolberg.log.domain.codegen.gradle;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import java.util.Set;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
 
@@ -39,14 +41,14 @@ public class JsonLogDomainTask extends DefaultTask {
 
     @TaskAction
     public void generate() throws IOException {
-    	System.out.println("Logging task generating");
+    	System.out.println("Generating..");
     	
     	Set<File> files = definitions.getFiles();
     	for(File file : files) {
     		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8));
 
-        	if(logback != null) {
-        		File destination = logback.getOutputDirectory().getOrElse(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_DIR));
+        	if(logback.isAction() && logback.getEnabled()) {
+        		File destination = logback.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_DIR));
         		
         		Path javaOutput = destination.toPath();
 		    	
@@ -61,8 +63,8 @@ public class JsonLogDomainTask extends DefaultTask {
     			sourceSets.getByName("main").getJava().getSrcDirs().add(javaOutput.toFile());
         	}
         	
-        	if(stackDriver != null) {
-        		File destination = stackDriver.getOutputDirectory().getOrElse(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_DIR));
+        	if(stackDriver.isAction() && stackDriver.getEnabled()) {
+        		File destination = stackDriver.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_DIR));
         		
         		Path javaOutput = destination.toPath();
 		    	
@@ -77,23 +79,23 @@ public class JsonLogDomainTask extends DefaultTask {
     			sourceSets.getByName("main").getJava().getSrcDirs().add(javaOutput.toFile());
         	}
 
-        	if(markdown != null) {
-        		File destination = markdown.getOutputDirectory().getOrElse(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
+        	if(markdown.isAction() && markdown.getEnabled()) {
+        		File destination = markdown.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
         		
         		Path output = destination.toPath().resolve(result.getName() + ".md");
 		    	
 		    	if(!Files.exists(output.getParent())) Files.createDirectories(output.getParent());
 
-		    	boolean logbackCodeGenerated = markdown.getLogback().getOrElse(logback != null);
-		    	boolean stackDriverCodeGenerated = markdown.getStackDriver().getOrElse(stackDriver != null);
+		    	boolean logbackCodeGenerated = markdown.getEnabled();
+		    	boolean stackDriverCodeGenerated = markdown.getEnabled();
 		    	
     			MarkdownGenerator.generate(result, output, logbackCodeGenerated, stackDriverCodeGenerated);
     			
     			System.out.println("Wrote Markdown output to " + output.toAbsolutePath() + " for " + result.getName());
         	}
 
-        	if(elastic != null) {
-        		File destination = elastic.getOutputDirectory().getOrElse(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
+        	if(elastic.isAction() && elastic.getEnabled()) {
+        		File destination = elastic.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
         		
         		Path output = destination.toPath().resolve(result.getName() + ".mapping.json");
 		    	
@@ -116,6 +118,7 @@ public class JsonLogDomainTask extends DefaultTask {
 	}
 
     @Input
+	@Optional
 	public Markdown getMarkdown() {
 		return markdown;
 	}
@@ -125,6 +128,7 @@ public class JsonLogDomainTask extends DefaultTask {
 	}
 
     @Input
+	@Optional
 	public Logback getLogback() {
 		return logback;
 	}
@@ -134,6 +138,7 @@ public class JsonLogDomainTask extends DefaultTask {
 	}
 
     @Input
+	@Optional
 	public Elastic getElastic() {
 		return elastic;
 	}
@@ -143,6 +148,7 @@ public class JsonLogDomainTask extends DefaultTask {
 	}
 
     @Input
+	@Optional
 	public StackDriver getStackDriver() {
 		return stackDriver;
 	}

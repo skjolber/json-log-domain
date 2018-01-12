@@ -7,7 +7,6 @@ plugins {
   id 'java'
 }
 
-apply from: "$rootDir/gradle/integration-test.gradle"
 apply from: "$rootDir/gradle/functional-test.gradle"
 
 group 'com.github.skjolber.json-log-domain.gradle'

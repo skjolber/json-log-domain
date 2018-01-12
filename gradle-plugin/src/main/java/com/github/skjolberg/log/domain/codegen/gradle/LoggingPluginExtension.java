@@ -8,6 +8,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 
 import com.github.skjolberg.log.domain.codegen.gradle.ext.Elastic;
 import com.github.skjolberg.log.domain.codegen.gradle.ext.Logback;
@@ -23,7 +24,7 @@ public class LoggingPluginExtension {
 	final Logback logback;
 	final Elastic elastic;
 	final StackDriver stackDriver;
-    
+	
 	final Property<String> version;
 
     @javax.inject.Inject
@@ -38,22 +39,32 @@ public class LoggingPluginExtension {
     }
 
     void markdown(Action<? super Markdown> action) {
+    	System.out.println("Markdown action");
         action.execute(markdown);
+        markdown.setAction(true);
     }
     
     void logback(Action<? super Logback> action) {
+        //logback.setEnabled(true);
+    	System.out.println("Logback action");
         action.execute(logback);
+        logback.setAction(true);
     }
 
     void elastic(Action<? super Elastic> action) {
+    	System.out.println("Elastic action");
         action.execute(elastic);
+        elastic.setAction(true);
     }
 
     void stackDriver(Action<? super StackDriver> action) {
+    	System.out.println("Stackdriver action");
         action.execute(stackDriver);
+        stackDriver.setAction(true);
     }
     
     void definitions(Action<? super ConfigurableFileCollection> action) {
+    	System.out.println("Defnintios action");
         action.execute(definitions);
     }
     

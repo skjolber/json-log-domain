@@ -33,6 +33,7 @@ import com.github.skjolber.log.domain.test.LogbackJUnitRule;
 import com.github.skjolber.log.domain.utils.DomainMdc;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import net.logstash.logback.marker.Markers;
 
 public class LoggingTest {
 
@@ -142,5 +143,23 @@ public class LoggingTest {
 		}
 	}
 	
+	/**
+	 * 
+	 * Combine with various built-in markers for deep object support.
+	 * 
+	 */
 	
+	@Test
+	public void withObjectFieldsAppendingMarker() {
+		
+		MyObject object = new MyObject("key", "value");
+		
+		logger.info(system("fedora").tags(LINUX).and(Markers.append("my", object)), "Hello world");
+		
+		assertThat(rule, key("system").value("fedora"));
+		
+		// single tag from global domain
+		assertThat(rule, tags(LINUX));
+
+	}
 }

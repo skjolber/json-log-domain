@@ -7,40 +7,40 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 
-public class Markdown {
+public class Markdown extends Actionable {
 
 	final Property<File> outputDirectory;
 	final Property<Boolean> logback;
 	final Property<Boolean> stackDriver;
+	final Property<Boolean> enabled;
 	
     @javax.inject.Inject
     public Markdown(ObjectFactory objectFactory) {
     	outputDirectory = objectFactory.property(File.class);
     	logback = objectFactory.property(Boolean.class);
     	stackDriver = objectFactory.property(Boolean.class);
+    	enabled = objectFactory.property(Boolean.class);
+    	enabled.set(true);
     }
     
-	public Property<File> getOutputDirectory() {
-		return outputDirectory;
-	}
-	public void setOutputDirectory(Property<File> outputDirectory) {
+	public void setOutputDirectory(File outputDirectory) {
 		this.outputDirectory.set(outputDirectory);
 	}
-    @Input
-	public Property<Boolean> getLogback() {
-		return logback;
+	
+	public File getOutputDirectory() {
+		return outputDirectory.getOrNull();
 	}
-	public void setLogback(Property<Boolean> logback) {
-		this.logback.set(logback);
+	public File getOutputDirectory(File file) {
+		return outputDirectory.getOrElse(file);
 	}
-    @Input
-	public Property<Boolean> getStackDriver() {
-		return stackDriver;
-	}
-	public void setStackDriver(Property<Boolean> stackDriver) {
-		this.stackDriver.set(stackDriver);
+
+	public boolean getEnabled() {
+		return enabled.get();
 	}
 	
-	
+	public void setEnabled(boolean enabled) {
+		this.enabled.set(enabled);
+	}
+
 	
 }
