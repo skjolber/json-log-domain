@@ -44,11 +44,11 @@ public class PluginProjectTest {
 	}
 
 	@Test
-	public void testBuild() throws Exception {
+	public void testBuildLogback() throws Exception {
 
 		Writer writer = new OutputStreamWriter(new FileOutputStream(buildFile, true), StandardCharsets.UTF_8);
 		try {
-			writer.write("jsonLogDomain { definitions = files('src/main/resources/network.yaml') }\n");
+			writer.write("jsonLogDomain { definitions = files('src/main/resources/network.yaml') \n logback {} }\n");
 		} finally {
 			writer.close();
 		}
@@ -56,14 +56,74 @@ public class PluginProjectTest {
 		// https://gradle.github.io/gradle-script-kotlin-docs/userguide/custom_plugins.html
 		BuildResult result = GradleRunner.create()
 				.withProjectDir(testProjectDir.getRoot())
-				.withArguments("jsonLogDomain")
+				.withArguments("generateLogbackJavaHelpers")
 				.withPluginClasspath()
 				.build();
 
-		assertTrue(result.getOutput().contains("Logging task"));
-		assertEquals(result.task(":jsonLogDomain").getOutcome(), TaskOutcome.SUCCESS);
-
-		System.out.println(result.getOutput());
+		assertTrue(result.getOutput().contains("Generating"));
+		assertEquals(result.task(":generateLogbackJavaHelpers").getOutcome(), TaskOutcome.SUCCESS);
 	}
 
+	@Test
+	public void testBuildMarkdown() throws Exception {
+
+		Writer writer = new OutputStreamWriter(new FileOutputStream(buildFile, true), StandardCharsets.UTF_8);
+		try {
+			writer.write("jsonLogDomain { definitions = files('src/main/resources/network.yaml') \n markdown {} }\n");
+		} finally {
+			writer.close();
+		}
+
+		// https://gradle.github.io/gradle-script-kotlin-docs/userguide/custom_plugins.html
+		BuildResult result = GradleRunner.create()
+				.withProjectDir(testProjectDir.getRoot())
+				.withArguments("generateMarkdownDocumentation")
+				.withPluginClasspath()
+				.build();
+
+		assertTrue(result.getOutput().contains("Generating"));
+		assertEquals(result.task(":generateMarkdownDocumentation").getOutcome(), TaskOutcome.SUCCESS);
+	}
+
+	@Test
+	public void testBuildStackdriver() throws Exception {
+
+		Writer writer = new OutputStreamWriter(new FileOutputStream(buildFile, true), StandardCharsets.UTF_8);
+		try {
+			writer.write("jsonLogDomain { definitions = files('src/main/resources/network.yaml') \n stackDriver{} }\n");
+		} finally {
+			writer.close();
+		}
+
+		// https://gradle.github.io/gradle-script-kotlin-docs/userguide/custom_plugins.html
+		BuildResult result = GradleRunner.create()
+				.withProjectDir(testProjectDir.getRoot())
+				.withArguments("generateStackDriverJavaHelpers")
+				.withPluginClasspath()
+				.build();
+
+		assertTrue(result.getOutput().contains("Generating"));
+		assertEquals(result.task(":generateStackDriverJavaHelpers").getOutcome(), TaskOutcome.SUCCESS);
+	}
+	
+	@Test
+	public void testBuildElastic() throws Exception {
+
+		Writer writer = new OutputStreamWriter(new FileOutputStream(buildFile, true), StandardCharsets.UTF_8);
+		try {
+			writer.write("jsonLogDomain { definitions = files('src/main/resources/network.yaml') \n elastic {} }\n");
+		} finally {
+			writer.close();
+		}
+
+		// https://gradle.github.io/gradle-script-kotlin-docs/userguide/custom_plugins.html
+		BuildResult result = GradleRunner.create()
+				.withProjectDir(testProjectDir.getRoot())
+				.withArguments("generateElasticConfiguration")
+				.withPluginClasspath()
+				.build();
+
+		assertTrue(result.getOutput().contains("Generating"));
+		assertEquals(result.task(":generateElasticConfiguration").getOutcome(), TaskOutcome.SUCCESS);
+	}	
 }

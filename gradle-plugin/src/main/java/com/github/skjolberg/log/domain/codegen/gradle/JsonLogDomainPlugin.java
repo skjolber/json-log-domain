@@ -30,29 +30,75 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
                 .setVisible(false)
                 .setDescription("The data artifacts to be processed for this plugin.");
 
-    	LoggingPluginExtension extension = project.getExtensions().create("jsonLogDomain", LoggingPluginExtension.class, project);
+    	final LoggingPluginExtension extension = project.getExtensions().create("jsonLogDomain", LoggingPluginExtension.class, project);
 
     	String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
-    	
-        JsonLogDomainTask logging = project.getTasks().create("jsonLogDomain", JsonLogDomainTask.class, (task) -> { 
-        	System.out.println("Logging task created");
-        	
+
+        MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
         	task.definitions = extension.getDefinitions();
         	task.markdown = extension.getMarkdown();
         	task.logback = extension.getLogback();
         	task.elastic = extension.getElastic();
+        });        
+        CleanTask markdownCleanTask = project.getTasks().create("cleanMarkdownDocumentation", CleanTask.class, (task) -> { 
+        	task.outputDirectory = extension.getMarkdown().outputDirectory;
+        	task.defaultValue = MarkdownTask.DEFAULT_DESTINATION_RESOURCE_DIR;
+        });
+        
+        ElasticTask elasticTask = project.getTasks().create("generateElasticConfiguration", ElasticTask.class, (task) -> { 
+        	task.definitions = extension.getDefinitions();
+        	task.elastic = extension.getElastic();
+        });
+        CleanTask elasticCleanTask = project.getTasks().create("cleanElasticDocumentation", CleanTask.class, (task) -> { 
+        	task.outputDirectory = extension.getElastic().outputDirectory;
+        	task.defaultValue = ElasticTask.DEFAULT_DESTINATION_RESOURCE_DIR;
+        });
+        
+        StackDriverTask stackDriverTask = project.getTasks().create("generateStackDriverJavaHelpers", StackDriverTask.class, (task) -> { 
+        	task.definitions = extension.getDefinitions();
         	task.stackDriver = extension.getStackDriver();
         });
-
+        CleanTask stackDriverCleanTask = project.getTasks().create("cleanStackDriverJavaHelpers", CleanTask.class, (task) -> { 
+        	task.outputDirectory = extension.getStackDriver().outputDirectory;
+        	task.defaultValue = StackDriverTask.DEFAULT_DESTINATION_DIR;
+        });
+        
+        LogbackTask logbackTask = project.getTasks().create("generateLogbackJavaHelpers", LogbackTask.class, (task) -> { 
+        	task.definitions = extension.getDefinitions();
+        	task.logback = extension.getLogback();
+        });           
+        
+        CleanTask logbackCleanTask = project.getTasks().create("cleanLogbackJavaHelpers", CleanTask.class, (task) -> { 
+        	task.outputDirectory = extension.getLogback().outputDirectory;
+        	task.defaultValue = LogbackTask.DEFAULT_DESTINATION_DIR;
+        });
+        
         // make sure task runs before compile
         Task compileJava = project.getTasks().findByName("compileJava");
-        compileJava.dependsOn(logging);
-        	
+        compileJava.dependsOn(stackDriverTask);
+        compileJava.dependsOn(logbackTask);
+        
+        Task assemble = project.getTasks().findByName("assemble");
+        assemble.dependsOn(markdownTask);
+        assemble.dependsOn(elasticTask);
+        
+        Task clean = project.getTasks().findByName("assemble");
+        clean.dependsOn(markdownCleanTask);
+        clean.dependsOn(elasticCleanTask);
+        clean.dependsOn(logbackCleanTask);
+        clean.dependsOn(stackDriverCleanTask);
+        
         // add support-library as dependency
         project.afterEvaluate(new Action<Project>() {
 			@Override
 			public void execute(Project project) {
-				project.getDependencies().add(config.getName(), "com.github.skjolber.log-domain:log-domain-support-logback:" + version);
+				// add support dependencies
+				if(extension.logback.isAction() && extension.logback.getGenerate()) {
+					project.getDependencies().add(config.getName(), "com.github.skjolber.log-domain:log-domain-support-logback:" + version);
+				}
+				if(extension.stackDriver.isAction() && extension.stackDriver.getGenerate()) {
+					project.getDependencies().add(config.getName(), "com.github.skjolber.log-domain:log-domain-support-stackdriver:" + version);
+				}
 			}
 		});
     }

@@ -176,10 +176,10 @@ Each tag is defined by:
  - `name` - a valid Java Enum name
  - `description` - textual description of the tag
 
-# Maven plugin
+# Generating outputs using
 Files in the above YAML format can be used to generate Java helper classes, Elastic message configuration and/or Markdown documents.
 
-## Generating Java helper sources
+## Maven plugin
 YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 
 ```xml
@@ -214,6 +214,26 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 </plugin>
 ```
 
+## Gradle plugin
+Add plugin using
+```groovy
+apply plugin: 'com.github.skjolber.json-log-domain'
+```
+
+and configure a `jsonLogDomain` task
+
+```groovy
+jsonLogDomain { 
+	definitions = files('src/main/resources/network.yaml')
+	
+	logback {
+	    outputDirectory = ...
+	}
+}
+```
+with the addition of markdown, elastic and stackDriver scopes for additional generation.
+
+## Generating Java helper sources
 In a multi-domain setup, the recommended approach is to generate per-domain artifacts, so that each project only generates helper classes for its own application-specific YAML file and accesses the helper classes for the other domains via a Gradle/Maven dependency.
 
 ## Support-library

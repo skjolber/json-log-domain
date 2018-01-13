@@ -10,11 +10,6 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 
-import com.github.skjolberg.log.domain.codegen.gradle.ext.Elastic;
-import com.github.skjolberg.log.domain.codegen.gradle.ext.Logback;
-import com.github.skjolberg.log.domain.codegen.gradle.ext.Markdown;
-import com.github.skjolberg.log.domain.codegen.gradle.ext.StackDriver;
-
 // https://docs.gradle.org/4.4.1/userguide/custom_plugins.html#sec:getting_input_from_the_build
 public class LoggingPluginExtension {
 	
@@ -39,32 +34,26 @@ public class LoggingPluginExtension {
     }
 
     void markdown(Action<? super Markdown> action) {
-    	System.out.println("Markdown action");
         action.execute(markdown);
         markdown.setAction(true);
     }
     
     void logback(Action<? super Logback> action) {
-        //logback.setEnabled(true);
-    	System.out.println("Logback action");
         action.execute(logback);
         logback.setAction(true);
     }
 
     void elastic(Action<? super Elastic> action) {
-    	System.out.println("Elastic action");
         action.execute(elastic);
         elastic.setAction(true);
     }
 
     void stackDriver(Action<? super StackDriver> action) {
-    	System.out.println("Stackdriver action");
         action.execute(stackDriver);
         stackDriver.setAction(true);
     }
     
     void definitions(Action<? super ConfigurableFileCollection> action) {
-    	System.out.println("Defnintios action");
         action.execute(definitions);
     }
     

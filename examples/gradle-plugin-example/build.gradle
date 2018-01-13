@@ -18,6 +18,15 @@ jsonLogDomain {
 	
 	logback {
 	}
+	
+	markdown {
+	}
+	
+	elastic {
+	}
+
+	stackDriver {
+	}
 
 }
 

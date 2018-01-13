@@ -20,7 +20,7 @@ public class PluginTest {
 		Project project = ProjectBuilder.builder().build();
         project.getPluginManager().apply("com.github.skjolber.json-log-domain");
 
-        JsonLogDomainTask task = (JsonLogDomainTask)project.getTasks().getByName("jsonLogDomain");
+        LogbackTask task = (LogbackTask)project.getTasks().getByName("generateLogbackJavaHelpers");
         assertNotNull(task);
 	}
 
