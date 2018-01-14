@@ -176,7 +176,7 @@ Each tag is defined by:
  - `name` - a valid Java Enum name
  - `description` - textual description of the tag
 
-# Generating outputs using
+# Generating useful outputs
 Files in the above YAML format can be used to generate Java helper classes, Elastic message configuration and/or Markdown documents.
 
 ## Maven plugin
@@ -231,7 +231,7 @@ jsonLogDomain {
 	}
 }
 ```
-with the addition of markdown, elastic and stackDriver scopes for additional generation.
+with the addition of `markdown`, `elastic` and `stackDriver` configurations for additional generation.
 
 ## Generating Java helper sources
 In a multi-domain setup, the recommended approach is to generate per-domain artifacts, so that each project only generates helper classes for its own application-specific YAML file and accesses the helper classes for the other domains via a Gradle/Maven dependency.
