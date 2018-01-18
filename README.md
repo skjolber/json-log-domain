@@ -7,7 +7,7 @@ Users will benefit from
 
  * JSON-logging with domain-specific subtrees
  * Simple YAML-based definition format
- * User-friendly helper-classes generated via [Maven] plugin
+ * User-friendly helper-classes generated via [Maven] or [gradle] plugin
  * Markdown documentation generator
  * Elasticsearch configuration generator
  * JAX-RS log-annotation for [automatic MDC population]
@@ -227,13 +227,16 @@ jsonLogDomain {
 	definitions = files('src/main/resources/network.yaml')
 	
 	logback {
-	    outputDirectory = ...
 	}
+}
+
+sourceSets {
+    main.java.srcDirs += [jsonLogDomain.logback.outputDirectory]
 }
 ```
 with the addition of `markdown`, `elastic` and `stackDriver` configurations for additional generation.
 
-## Generating Java helper sources
+## Interconnected libraries
 In a multi-domain setup, the recommended approach is to generate per-domain artifacts, so that each project only generates helper classes for its own application-specific YAML file and accesses the helper classes for the other domains via a Gradle/Maven dependency.
 
 ## Support-library
@@ -261,7 +264,7 @@ or
 ## Markdown documentation
 A [markdown file] can also be generated for online documentation. 
 
-## Elasticsearch configuration files
+## Elasticsearch configuration
 Elasticsearch properties can be generated. One or more of these files can be combined into an application-specific message field mapping, typically at deploy time. See [Elastic example].
 
 # Testing
@@ -303,3 +306,4 @@ If you do not like this prosject, maybe you'll like
 [logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders
 [Logback support]:              support/logback
 [test]:                         test
+[gradle]						gradle-plugin

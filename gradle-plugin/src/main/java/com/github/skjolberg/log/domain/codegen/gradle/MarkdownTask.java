@@ -2,26 +2,19 @@ package com.github.skjolberg.log.domain.codegen.gradle;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
-import com.github.skjolber.log.domain.codegen.ElasticGenerator;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
-import com.github.skjolber.log.domain.codegen.logstash.LogbackGenerator;
-import com.github.skjolber.log.domain.codegen.stackdriver.StackDriverGenerator;
 
 public class MarkdownTask extends DefaultTask {
 
@@ -39,7 +32,7 @@ public class MarkdownTask extends DefaultTask {
 	    		
     		File destination = markdown.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
 
-	    	System.out.println("Generating markdown to " + destination.getAbsolutePath() + "..");
+	    	System.out.println("Generating markdown to " + destination.getAbsolutePath());
 
 	    	Set<File> files = definitions.getFiles();
 	    	for(File file : files) {

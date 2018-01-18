@@ -11,7 +11,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.DependencySet;
 
 public class JsonLogDomainPlugin implements Plugin<Project> {
 	
@@ -30,7 +29,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
                 .setVisible(false)
                 .setDescription("The data artifacts to be processed for this plugin.");
 
-    	final LoggingPluginExtension extension = project.getExtensions().create("jsonLogDomain", LoggingPluginExtension.class, project);
+    	final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
 
     	String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
 

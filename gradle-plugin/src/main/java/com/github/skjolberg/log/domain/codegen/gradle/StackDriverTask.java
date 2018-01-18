@@ -20,7 +20,6 @@ import com.github.skjolber.log.domain.codegen.stackdriver.StackDriverGenerator;
 public class StackDriverTask extends DefaultTask {
 
 	public static final String DEFAULT_DESTINATION_DIR = "/generatedSources/src/main/java";
-	public static final String DEFAULT_DESTINATION_RESOURCE_DIR = "/generatedSources/src/main/resources";
 			
 	protected ConfigurableFileCollection definitions;
 	
@@ -29,7 +28,7 @@ public class StackDriverTask extends DefaultTask {
     @TaskAction
     public void generate() throws IOException {
     	if(stackDriver.isAction() && stackDriver.getGenerate()) {
-    		File destination = stackDriver.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_DIR));
+    		File destination = stackDriver.getOutputDirectory();
     		Path javaOutput = destination.toPath();
 	    	if(!Files.exists(javaOutput)) Files.createDirectories(javaOutput);
 

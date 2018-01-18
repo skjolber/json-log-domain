@@ -5,13 +5,11 @@ import java.io.File;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Optional;
 
 // https://docs.gradle.org/4.4.1/userguide/custom_plugins.html#sec:getting_input_from_the_build
-public class LoggingPluginExtension {
+public class JsonLogDomainPluginExtension {
 	
 	final ConfigurableFileCollection definitions;
 	
@@ -23,12 +21,20 @@ public class LoggingPluginExtension {
 	final Property<String> version;
 
     @javax.inject.Inject
-    public LoggingPluginExtension(Project project) {
+    public JsonLogDomainPluginExtension(Project project) {
         // Create a Person instance
     	markdown = project.getObjects().newInstance(Markdown.class);
+    	markdown.setOutputDirectory(new File(project.getBuildDir() + MarkdownTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	
     	logback = project.getObjects().newInstance(Logback.class);
+    	logback.setOutputDirectory(new File(project.getBuildDir() + LogbackTask.DEFAULT_DESTINATION_DIR));
+    	
     	elastic = project.getObjects().newInstance(Elastic.class);
+    	elastic.setOutputDirectory(new File(project.getBuildDir() + ElasticTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	
     	stackDriver = project.getObjects().newInstance(StackDriver.class);
+    	stackDriver.setOutputDirectory(new File(project.getBuildDir() + StackDriverTask.DEFAULT_DESTINATION_DIR));
+    	
     	definitions = project.files();
     	version = project.getObjects().property(String.class);
     }

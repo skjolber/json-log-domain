@@ -1,0 +1,22 @@
+version: '1.0'
+name: Global
+package: com.example.global
+qualifier: 
+description: Global values
+keys:
+  - system:
+      name: system
+      type: string
+      description: The system name
+      example: x86 server
+  - memory:
+      name: physical memory
+      type: integer
+      format: int32
+      description: Physical memory in megabytes
+      example: 1024, 2048, 16384      
+tags:
+ - linux: Linux operating system
+ - mac: Apple operating system
+ - windows: Microsoft windows operating system
+ 

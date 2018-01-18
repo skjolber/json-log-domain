@@ -1,0 +1,21 @@
+version: '1.0'
+name: Language
+package: com.example.language
+qualifier: language
+description: Language values
+keys:
+  - name:
+      name: name
+      description: The programming language name
+      type: string
+  - version:
+      name: version
+      description: language version
+      type: number
+      format: double
+
+tags:
+ - jit: just-in-time compiler
+ - bytecode: bytecode
+ - native: native code
+ 

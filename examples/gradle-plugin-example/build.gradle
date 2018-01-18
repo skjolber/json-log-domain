@@ -14,7 +14,11 @@ apply plugin: 'java'
 apply plugin: 'com.github.skjolber.json-log-domain'
 
 jsonLogDomain { 
-	definitions = files('src/main/resources/network.yaml')
+	definitions = files(
+		'src/main/resources/network.yaml', 
+		'src/main/resources/language.yaml', 
+		'src/main/resources/global.yaml'
+		)
 	
 	logback {
 	}
@@ -25,10 +29,8 @@ jsonLogDomain {
 	elastic {
 	}
 
-	stackDriver {
-	}
-
 }
+
 
 repositories {
 	mavenLocal()
@@ -36,9 +38,21 @@ repositories {
 }
 
 dependencies {
-    testCompile 'junit:junit:+'
+	compile "com.github.skjolber.log-domain:log-domain-support-logback:${version}"
+	compile "org.slf4j:slf4j-api:${slf4j}"
+	compile "ch.qos.logback:logback-classic:${logback}" 
+	compile "org.slf4j:jcl-over-slf4j:${slf4j}"
+	compile "org.slf4j:log4j-over-slf4j:${slf4j}"
+	compile "net.logstash.logback:logstash-logback-encoder:${logstash}"
+	testCompile "com.github.skjolber.log-domain:log-domain-test-logback:${version}"
+	testCompile "junit:junit:${junit}"
+	testCompile "org.mockito:mockito-core:${mockito}"
+	testCompile "org.hamcrest:hamcrest-core:${hamcrest}"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
 
+sourceSets{
+    main.java.srcDirs +=[jsonLogDomain.logback.outputDirectory]
+}
