@@ -10,9 +10,12 @@ import java.util.Set;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.stackdriver.StackDriverGenerator;
@@ -26,7 +29,7 @@ public class StackDriverTask extends DefaultTask {
 	protected StackDriver stackDriver;
 
     @TaskAction
-    public void generate() throws IOException {
+    public void generate(IncrementalTaskInputs inputs) throws IOException {
     	if(stackDriver.isAction() && stackDriver.getGenerate()) {
     		File destination = stackDriver.getOutputDirectory();
     		Path javaOutput = destination.toPath();
@@ -47,7 +50,8 @@ public class StackDriverTask extends DefaultTask {
     	}
     }
 
-	public ConfigurableFileCollection getDefinitions() {
+    @InputFiles
+    public ConfigurableFileCollection getDefinitions() {
 		return definitions;
 	}
 
@@ -55,7 +59,7 @@ public class StackDriverTask extends DefaultTask {
 		this.definitions = definitions;
 	}
 
-    @Input
+	@Nested
 	@Optional
 	public StackDriver getStackDriver() {
 		return stackDriver;

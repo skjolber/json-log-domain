@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Destroys;
 import org.gradle.api.tasks.TaskAction;
 
 public class CleanTask extends DefaultTask {
@@ -44,5 +45,8 @@ public class CleanTask extends DefaultTask {
     	}
     }
 	
-	
+	@Destroys
+	public Property<File> getOutputDirectory() {
+		return outputDirectory;
+	}	
 }

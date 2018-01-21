@@ -7,6 +7,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 
 // https://docs.gradle.org/4.4.1/userguide/custom_plugins.html#sec:getting_input_from_the_build
 public class JsonLogDomainPluginExtension {
@@ -25,12 +26,14 @@ public class JsonLogDomainPluginExtension {
         // Create a Person instance
     	markdown = project.getObjects().newInstance(Markdown.class);
     	markdown.setOutputDirectory(new File(project.getBuildDir() + MarkdownTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	markdown.setExtension(".md");
     	
     	logback = project.getObjects().newInstance(Logback.class);
     	logback.setOutputDirectory(new File(project.getBuildDir() + LogbackTask.DEFAULT_DESTINATION_DIR));
     	
     	elastic = project.getObjects().newInstance(Elastic.class);
     	elastic.setOutputDirectory(new File(project.getBuildDir() + ElasticTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	elastic.setExtension(".mapping.json");
     	
     	stackDriver = project.getObjects().newInstance(StackDriver.class);
     	stackDriver.setOutputDirectory(new File(project.getBuildDir() + StackDriverTask.DEFAULT_DESTINATION_DIR));
@@ -67,6 +70,7 @@ public class JsonLogDomainPluginExtension {
 		this.definitions.setFrom(definitions);
 	}
 
+    @InputFiles
 	public ConfigurableFileCollection getDefinitions() {
 		return definitions;
 	}

@@ -8,9 +8,11 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.logstash.LogbackGenerator;
@@ -22,7 +24,7 @@ public class LogbackTask extends AbstractTask {
 	protected Logback logback;
 
     @TaskAction
-    public void generate() throws IOException {
+    public void generate(IncrementalTaskInputs inputs) throws IOException {
     	if(logback.isAction() && logback.getGenerate()) {
     		File destination = logback.getOutputDirectory();
     		Path javaOutput = destination.toPath();
@@ -46,8 +48,8 @@ public class LogbackTask extends AbstractTask {
     	}
     }
 
-    @Input
-	@Optional
+    @Nested
+    @Optional
 	public Logback getLogback() {
 		return logback;
 	}
@@ -55,6 +57,5 @@ public class LogbackTask extends AbstractTask {
 	public void setLogback(Logback logback) {
 		this.logback = logback;
 	}
-
     
 }

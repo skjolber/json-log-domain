@@ -31,13 +31,20 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
 
     	final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
 
+    	final IncrementalReverse incrementalReverse = project.getExtensions().create("incrementalReverse", IncrementalReverse.class, project);
+    	IncrementalReverseTask incrementalReverseTask = project.getTasks().create("incrementalReverseTask", IncrementalReverseTask.class, (task) -> { 
+        	task.definitions = incrementalReverse.definitions;
+        });
+
+    	
+    	
     	String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
 
         MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
         	task.definitions = extension.getDefinitions();
         	task.markdown = extension.getMarkdown();
         	task.logback = extension.getLogback();
-        	task.elastic = extension.getElastic();
+        	task.stackDriver = extension.getStackDriver();
         });        
         CleanTask markdownCleanTask = project.getTasks().create("cleanMarkdownDocumentation", CleanTask.class, (task) -> { 
         	task.outputDirectory = extension.getMarkdown().outputDirectory;
@@ -71,7 +78,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
         	task.outputDirectory = extension.getLogback().outputDirectory;
         	task.defaultValue = LogbackTask.DEFAULT_DESTINATION_DIR;
         });
-        
+
         // make sure task runs before compile
         Task compileJava = project.getTasks().findByName("compileJava");
         compileJava.dependsOn(stackDriverTask);

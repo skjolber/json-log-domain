@@ -3,6 +3,10 @@ package com.github.skjolberg.log.domain.codegen.gradle;
 import java.io.File;
 
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputDirectory;
+
+import io.grpc.Internal;
 
 public class Actionable {
 
@@ -19,10 +23,13 @@ public class Actionable {
 	public void setAction(boolean action) {
 		this.action = action;
 	}
+	
+	@Internal
 	public boolean isAction() {
 		return action;
 	}
 
+	@Input
 	public boolean getGenerate() {
 		return generate.get();
 	}
@@ -35,11 +42,9 @@ public class Actionable {
 		this.outputDirectory.set(outputDirectory);
 	}
 	
+	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory.getOrNull();
 	}
 
-	public File getOutputDirectory(File file) {
-		return outputDirectory.getOrElse(file);
-	}
 }

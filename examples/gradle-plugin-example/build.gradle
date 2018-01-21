@@ -13,6 +13,15 @@ buildscript{
 apply plugin: 'java'
 apply plugin: 'com.github.skjolber.json-log-domain'
 
+incrementalReverse  {
+	definitions = files(
+		'src/main/resources/network.yaml', 
+		'src/main/resources/language.yaml', 
+		'src/main/resources/global.yaml'
+		)
+}
+
+
 jsonLogDomain { 
 	definitions = files(
 		'src/main/resources/network.yaml', 

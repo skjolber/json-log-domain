@@ -236,7 +236,7 @@ sourceSets {
 ```
 with the addition of `markdown`, `elastic` and `stackDriver` configurations for additional generation.
 
-## Interconnected libraries
+## Multi-domain
 In a multi-domain setup, the recommended approach is to generate per-domain artifacts, so that each project only generates helper classes for its own application-specific YAML file and accesses the helper classes for the other domains via a Gradle/Maven dependency.
 
 ## Support-library

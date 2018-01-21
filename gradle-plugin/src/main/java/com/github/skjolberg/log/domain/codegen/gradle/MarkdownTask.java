@@ -5,18 +5,20 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 
-import org.gradle.api.DefaultTask;
+import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+import org.gradle.api.tasks.incremental.InputFileDetails;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
-public class MarkdownTask extends DefaultTask {
+public class MarkdownTask extends FilesTask {
 
 	public static final String DEFAULT_DESTINATION_RESOURCE_DIR = "/generatedSources/src/main/resources";
 			
@@ -24,32 +26,64 @@ public class MarkdownTask extends DefaultTask {
 	
 	protected Markdown markdown;
 	protected Logback logback;
-	protected Elastic elastic;
+	protected StackDriver stackDriver;
 
     @TaskAction
-    public void generate() throws IOException {
-    	if(markdown.isAction() && markdown.getGenerate()) {
+    public void generate(IncrementalTaskInputs inputs) throws IOException {
+    	if(markdown.isAction()) {
+	    	if(!markdown.getGenerate()) {
+	    		deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
+    		} else {
+    			if(!inputs.isIncremental()) {
+    	    		deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
+    			}
+
+    	    	boolean logbackCodeGenerated = logback.getGenerate();
+    	    	boolean stackDriverCodeGenerated = stackDriver.getGenerate();
+
+	    		File destination = markdown.getOutputDirectory();
+	    		if(!definitions.isEmpty()) {
+	    			System.out.println("Generating markdown to " + destination.getAbsolutePath());
+			    	if(!destination.exists()) {
+			    		Files.createDirectories(destination.toPath());
+		    		}
+	    		}
+
+	    		inputs.outOfDate(new Action<InputFileDetails>() {
+					@Override
+					public void execute(InputFileDetails details) {
+						try {
+				    		Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
+					    	
+				    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
+			    			MarkdownGenerator.generate(result, output, logbackCodeGenerated, stackDriverCodeGenerated);
+						} catch(Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+
+				});
 	    		
-    		File destination = markdown.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
+	    		inputs.removed(new Action<InputFileDetails>() {
+					@Override
+					public void execute(InputFileDetails details) {
+						try {
+				    		Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
 
-	    	System.out.println("Generating markdown to " + destination.getAbsolutePath());
+				    		if(Files.exists(output)) {
+				    			Files.delete(output);
+				    		}
+						} catch(Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+				});
 
-	    	Set<File> files = definitions.getFiles();
-	    	for(File file : files) {
-	    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8));
-	
-        		Path output = destination.toPath().resolve(result.getName() + ".md");
-		    	
-		    	if(!Files.exists(output.getParent())) Files.createDirectories(output.getParent());
-
-		    	boolean logbackCodeGenerated = markdown.getGenerate();
-		    	boolean stackDriverCodeGenerated = markdown.getGenerate();
-		    	
-    			MarkdownGenerator.generate(result, output, logbackCodeGenerated, stackDriverCodeGenerated);
-	    	}
+    		}
     	}
    	}
 
+    @InputFiles
 	public ConfigurableFileCollection getDefinitions() {
 		return definitions;
 	}
@@ -58,7 +92,7 @@ public class MarkdownTask extends DefaultTask {
 		this.definitions = definitions;
 	}
 
-    @Input
+	@Nested
 	@Optional
 	public Markdown getMarkdown() {
 		return markdown;
@@ -68,7 +102,7 @@ public class MarkdownTask extends DefaultTask {
 		this.markdown = markdown;
 	}
 
-    @Input
+	@Nested
 	@Optional
 	public Logback getLogback() {
 		return logback;
@@ -78,16 +112,14 @@ public class MarkdownTask extends DefaultTask {
 		this.logback = logback;
 	}
 
-    @Input
 	@Optional
-	public Elastic getElastic() {
-		return elastic;
+	@Nested
+	public void setStackDriver(StackDriver stackDriver) {
+		this.stackDriver = stackDriver;
 	}
-
-	public void setElastic(Elastic elastic) {
-		this.elastic = elastic;
+	
+	public StackDriver getStackDriver() {
+		return stackDriver;
 	}
-
-
     
 }

@@ -7,44 +7,84 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+import org.gradle.api.tasks.incremental.InputFileDetails;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.ElasticGenerator;
+import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
-public class ElasticTask extends DefaultTask {
+public class ElasticTask extends FilesTask {
 
 	public static final String DEFAULT_DESTINATION_RESOURCE_DIR = "/generatedSources/src/main/resources";
-			
+	
 	protected ConfigurableFileCollection definitions;
 	
 	protected Elastic elastic;
 
     @TaskAction
-    public void generate() throws IOException {
-    	if(elastic.isAction() && elastic.getGenerate()) {
-    		File destination = elastic.getOutputDirectory(new File(getProject().getBuildDir() + DEFAULT_DESTINATION_RESOURCE_DIR));
+    public void generate(IncrementalTaskInputs inputs) throws IOException {
+    	if(elastic.isAction()) {
+    		
+	    	if(!elastic.getGenerate()) {
+	    		deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
+    		} else {
+    			if(!inputs.isIncremental()) {
+    	    		deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
+    			}
 
-	    	System.out.println("Generating Elastic configuration to " + destination.getAbsolutePath());
+	    		File destination = elastic.getOutputDirectory();
+	    		if(!definitions.isEmpty()) {
+			    	System.out.println("Generating Elastic configuration to " + destination.getAbsolutePath());
+			    	if(!destination.exists()) {
+			    		Files.createDirectories(destination.toPath());
+		    		}
+		    	}
+	
+	    		inputs.outOfDate(new Action<InputFileDetails>() {
+					@Override
+					public void execute(InputFileDetails details) {
+						try {
+				    		Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
+					    	
+				    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
+				    		
+			    			ElasticGenerator.generate(result, output);
+						} catch(Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
 
-	    	Set<File> files = definitions.getFiles();
-	    	for(File file : files) {
-	    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8));
+				});	    		
+	    		
+	
+	    		inputs.removed(new Action<InputFileDetails>() {
+					@Override
+					public void execute(InputFileDetails details) {
+						try {
+				    		Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
 
-        		Path output = destination.toPath().resolve(result.getName() + ".mapping.json");
-		    	
-		    	if(!Files.exists(output.getParent())) Files.createDirectories(output.getParent());
-
-    			ElasticGenerator.generate(result, output);
-        	}
-
+				    		if(Files.exists(output)) {
+				    			Files.delete(output);
+				    		}
+						} catch(Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+				});
+    		}
     	}
     }
 
+    @InputFiles
 	public ConfigurableFileCollection getDefinitions() {
 		return definitions;
 	}
@@ -53,7 +93,7 @@ public class ElasticTask extends DefaultTask {
 		this.definitions = definitions;
 	}
 
-    @Input
+    @Nested
 	@Optional
 	public Elastic getElastic() {
 		return elastic;
