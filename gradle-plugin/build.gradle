@@ -1,3 +1,14 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
+  }
+}
+
 plugins {
   id 'java-gradle-plugin'
   id 'maven-publish'
@@ -5,26 +16,28 @@ plugins {
   id 'eclipse'
   id 'idea'
   id 'java'
+  id "com.gradle.plugin-publish" version "0.9.9"
 }
 
 apply from: "$rootDir/gradle/functional-test.gradle"
 
 group 'com.github.skjolber.json-log-domain.gradle'
-version '1.0.0'
+version '1.0.3-SNAPSHOT'
 
 gradlePlugin {
   plugins {
-    jsonLogDomain {
-      id = "com.github.skjolber.json-log-domain"
-      implementationClass = "com.github.skjolberg.log.domain.codegen.gradle.JsonLogDomainPlugin"
+    jsonLogDomainPlugin {
+      id = 'com.github.skjolber.json-log-domain'
+      implementationClass = 'com.github.skjolberg.log.domain.codegen.gradle.JsonLogDomainPlugin'
     }
   }
 }
 
 dependencies {
-    // Use JUnit test framework
+	compile gradleApi()
+	
     compile('com.github.skjolber.log-domain:log-domain-codegen:1.0.3-SNAPSHOT'){
-	    exclude module: "logback-classic"
+	    exclude module: 'logback-classic'
     }
 
     testCompile gradleTestKit()
@@ -37,3 +50,19 @@ repositories {
     jcenter()
 }
 
+/*
+pluginBundle {
+  plugins {
+    jsonLogDomainPlugin {
+		  website = 'https://github.com/skjolber/json-log-domain'
+		  vcsUrl = 'https://github.com/skjolber/json-log-domain'
+		  description = 'Library supporting JSON-logging.'
+		  tags = ['slf4j', 'json', 'stackdriver', 'logback', 'logging']
+    
+	      id = 'com.github.skjolber.json-log-domain'
+	      displayName = 'json-log-domain gradle plugin'
+	      version '1.0.3-SNAPSHOT'
+    }
+  }
+}
+*/

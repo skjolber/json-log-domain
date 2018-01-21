@@ -56,6 +56,12 @@ public class MdcGenerator {
 							.returns(boolean.class)
 							.build()
 						)
+					.addMethod(MethodSpec.methodBuilder("getType")
+							.addModifiers(Modifier.PUBLIC)
+							.addStatement("return $T.class", markerName)
+							.returns(ParameterizedTypeName.get(ClassName.get(Class.class), markerName))
+							.build()
+						)
 					.build())
 				
 				.build();

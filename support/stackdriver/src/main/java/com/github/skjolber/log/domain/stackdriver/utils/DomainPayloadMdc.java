@@ -147,4 +147,6 @@ public abstract class DomainPayloadMdc<T extends DomainPayload> {
 	
 	public abstract boolean supports(Class<? extends DomainPayload> type);
 
+	public abstract Class<T> getType();
+
 }

@@ -188,33 +188,30 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 	public DomainLogEntry build() {
 		// add mdc for domains which have no marker within the event
 		if(domainPayload != null) {
-			Set<String> filter = new HashSet<>();
+			@SuppressWarnings("rawtypes")
+			Set<Class> filter = new HashSet<>();
 	
 			Map<String, Object> map = new HashMap<>();
 			
 			domainPayload.build(map);
-			filter.add(domainPayload.getClass().getName());
-			
-			
+			filter.add(domainPayload.getClass());
 			
 			if(domainPayload.hasReferences()) {
 				for (DomainPayload reference : domainPayload.getRefereces()) {
-					filter.add(reference.getClass().getName());
+					filter.add(reference.getClass());
 					
 					reference.build(map);
 				}
 			}
 			
-			List<DomainPayloadMdc<? extends DomainPayload>> mdcs = DomainPayloadMdc.getMdcs(); // list of possible MDCs
-			List<DomainPayload> deferredMarkers = new ArrayList<>(mdcs.size());
-			for (DomainPayloadMdc<? extends DomainPayload> abstractMdc : mdcs) {
-				if(!filter.contains(abstractMdc.getClass().getName())) {
-					DomainPayload domainMarker = abstractMdc.get();
-					if(domainMarker != null) {
-						deferredMarkers.add(domainMarker);
-						
-						domainMarker.build(map);
-					}
+			for (DomainPayloadMdc<? extends DomainPayload> abstractMdc : DomainPayloadMdc.getMdcs()) {
+				if(filter.contains(abstractMdc.getType())) {
+					continue;
+				}
+				DomainPayload domainMarker = abstractMdc.get();
+				if(domainMarker != null) {
+					// copy values into map
+					domainMarker.build(map);
 				}
 			}
 			

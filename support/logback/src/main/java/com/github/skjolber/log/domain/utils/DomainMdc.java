@@ -160,4 +160,5 @@ public abstract class DomainMdc<T extends DomainMarker> {
 	
 	public abstract boolean supports(Class<? extends DomainMarker> type);
 
+	public abstract Class<T> getType();
 }

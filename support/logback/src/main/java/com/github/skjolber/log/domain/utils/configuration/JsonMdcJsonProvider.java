@@ -56,10 +56,12 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			if(marker instanceof DeferredMdcMarker) {
 				((DeferredMdcMarker)marker).writeTo(generator);
 			} else if(marker instanceof DomainMarker) {
+				
+				// filter MDCs for the current marker
 				DomainMarker domainMarker = (DomainMarker)marker;
 				
 				for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
-					if(!Objects.equals(abstractMdc.getQualifier(), domainMarker.getQualifier())) {
+					if(!abstractMdc.supports(domainMarker.getClass())) {
 						DomainMarker mdcMarker = abstractMdc.get();
 						if(mdcMarker != null) {
 							mdcMarker.writeTo(generator);
@@ -77,11 +79,12 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			return;
 		}
 		
-		Set<String> filter = new HashSet<>();
+		// filter MDCs for the current marker plus all its references
+		@SuppressWarnings("rawtypes")
+		Set<Class> filter = new HashSet<>();
 
 		if(marker instanceof DomainMarker) {
-			DomainMarker domainMarker = (DomainMarker)marker;
-			filter.add(domainMarker.getQualifier());
+			filter.add(marker.getClass());
 		}
 			
 		Iterator<Marker> iterator = marker.iterator();
@@ -89,20 +92,20 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			Marker next = iterator.next();
 			
 			if(next instanceof DomainMarker) {
-				DomainMarker domainMarker = (DomainMarker)next;
-				filter.add(domainMarker.getQualifier());
+				filter.add(next.getClass());
 			} else if(next instanceof DeferredMdcMarker) {
 				((DeferredMdcMarker)next).writeTo(generator);
 				return;
 			}
 		}
 		
-		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) { // list of possible MDCs
-			if(!filter.contains(abstractMdc.getQualifier())) {
-				DomainMarker mdcMarker = abstractMdc.get();
-				if(mdcMarker != null) {
-					mdcMarker.writeTo(generator);
-				}
+		for (DomainMdc<? extends DomainMarker> mdc : DomainMdc.getMdcs()) { // list of possible MDCs
+			if(filter.contains(mdc.getType())) {
+				continue;
+			}
+			DomainMarker mdcMarker = mdc.get();
+			if(mdcMarker != null) {
+				mdcMarker.writeTo(generator);
 			}
 		}
     }
@@ -148,12 +151,13 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			}
 		} else {
 			// add mdc for domains which have no marker within the event
-			Set<String> filter = new HashSet<>();
+			@SuppressWarnings("rawtypes")
+			Set<Class> filter = new HashSet<>();
 
 			if(marker instanceof DomainMarker) {
 				DomainMarker domainMarker = (DomainMarker)marker;
 				domainMarker.prepareForDeferredProcessing();
-				filter.add(domainMarker.getClass().getName());
+				filter.add(domainMarker.getClass());
 			}
 			
 			if(marker.hasReferences()) {
@@ -164,21 +168,24 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 					if(next instanceof DomainMarker) {
 						DomainMarker domainMarker = (DomainMarker)next;
 						domainMarker.prepareForDeferredProcessing();
-						filter.add(domainMarker.getClass().getName());
+						filter.add(domainMarker.getClass());
 					}
 				}
 			}
 			
 			List<DomainMdc<? extends DomainMarker>> mdcs = DomainMdc.getMdcs(); // list of possible MDCs
 			List<DomainMarker> deferredMarkers = new ArrayList<>(mdcs.size());
-			for (DomainMdc<? extends DomainMarker> abstractMdc : mdcs) {
-				if(!filter.contains(abstractMdc.getClass().getName())) {
-					DomainMarker domainMarker = abstractMdc.get();
-					if(domainMarker != null) {
-						deferredMarkers.add(domainMarker);
-					}
+			
+			for (DomainMdc<? extends DomainMarker> mdc : DomainMdc.getMdcs()) { // list of possible MDCs
+				if(filter.contains(mdc.getType())) {
+					continue;
 				}
-			}
+				DomainMarker domainMarker = mdc.get();
+				if(domainMarker != null) {
+					deferredMarkers.add(domainMarker);
+				}
+			}			
+			
 			marker.add(new DeferredMdcMarker(deferredMarkers));
 
 		}

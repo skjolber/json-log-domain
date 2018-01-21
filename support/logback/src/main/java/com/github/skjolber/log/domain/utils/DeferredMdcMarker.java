@@ -34,12 +34,12 @@ public class DeferredMdcMarker extends LogstashMarker implements StructuredArgum
 	}
 
 	public void writeToString(StringBuilder builder) {
-		for (int i = 0; i < deferredMarkers.size(); i++) {
-			DomainMarker domainMarker = deferredMarkers.get(i);
-			domainMarker.writeToString(builder);
-			if(i != deferredMarkers.size() - 1) {
+		if(!deferredMarkers.isEmpty()) {
+			for (DomainMarker domainMarker : deferredMarkers) {
+				domainMarker.writeToString(builder);
 				builder.append(" ");
 			}
+			builder.setLength(builder.length() - 1);
 		}
 	}
 	
