@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Marker;
 
-import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 
 public class ContainsMarkerMatcher<T> extends AbstractMarkerMatcher<T> {
@@ -30,12 +29,6 @@ public class ContainsMarkerMatcher<T> extends AbstractMarkerMatcher<T> {
 	private void populate(Marker marker, List<DomainMarker> markers) {
 		if (marker instanceof DomainMarker) {
 			markers.add((DomainMarker)marker);
-		} else if(marker instanceof DeferredMdcMarker) {
-			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
-			
-			for(DomainMarker mdcMarker : deferredMdcMarker.getMarkers()) {
-				markers.add(mdcMarker);
-			}
 		}
 		
 		if(marker.hasReferences()) {

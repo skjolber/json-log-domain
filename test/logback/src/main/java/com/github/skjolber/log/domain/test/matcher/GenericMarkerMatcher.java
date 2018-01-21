@@ -15,7 +15,6 @@ import org.hamcrest.core.IsEqual;
 import org.slf4j.Marker;
 
 import com.github.skjolber.log.domain.test.LogbackJUnitRule;
-import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainTag;
 
@@ -111,16 +110,6 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 			if(value != null && matcher.matches(value)) {
 				return true;
 			}
-			
-		} else if(marker instanceof DeferredMdcMarker) {
-			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
-			
-			for(DomainMarker mdcMarker : deferredMdcMarker.getMarkers()) {
-				Object value = getter((DomainMarker) mdcMarker, key);
-				if(value != null && matcher.matches(value)) {
-					return true;
-				}
-			}
 		}
 		return false;
 	}
@@ -165,15 +154,6 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 	    	if(Objects.equals(qualifier, domainMarker.getQualifier())) {
 	    		return domainMarker;
 	    	}
-    	} else if(marker instanceof DeferredMdcMarker) {
-			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
-			
-			for (DomainMarker domainMarker : deferredMdcMarker.getMarkers()) {
-				DomainMarker found = find(qualifier, domainMarker);
-				if(found != null) {
-					return found;
-				}
-			}
     	}
     	
     	if(marker.hasReferences()) {
@@ -185,15 +165,6 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
 	        		if(domainMarker != null) {
 	            		return domainMarker;
 	            	}
-	        	} else if(next instanceof DeferredMdcMarker) {
-	    			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)next;
-	    			
-	    			for (DomainMarker domainMarker : deferredMdcMarker.getMarkers()) {
-	    				DomainMarker found = find(qualifier, domainMarker);
-	    				if(found != null) {
-	    					return found;
-	    				}
-	    			}
 	    		}
 	    	}
     	}

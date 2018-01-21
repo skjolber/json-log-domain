@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.slf4j.Marker;
 
-import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
+import com.github.skjolber.log.domain.utils.DomainMdc;
 
 public class ContainsMdcMarkerMatcher<T> extends AbstractMarkerMatcher<T> {
 
@@ -18,50 +18,40 @@ public class ContainsMdcMarkerMatcher<T> extends AbstractMarkerMatcher<T> {
 	public ContainsMdcMarkerMatcher(DomainMarker marker) {
 		super(marker);
 		
-		this.markers = toList(marker, false);
+		this.markers = toList(marker);
 	}
 
-	private List<DomainMarker> toList(Marker marker, boolean mdc) {
+	private List<DomainMarker> toList(Marker marker) {
 		List<DomainMarker> markers = new ArrayList<>();
-		populate(marker, markers, mdc);
+		populate(marker, markers);
 		return markers;
 	}
 
-	private void populate(Marker marker, List<DomainMarker> markers, boolean mdc) {
+	private void populate(Marker marker, List<DomainMarker> markers) {
 		if (marker instanceof DomainMarker) {
-			DomainMarker domainMarker = (DomainMarker)marker;
-
-			if(mdc) {
-				DomainMarker parent = domainMarker.getParent(); // assume from mdc context
-				if(parent != null) {
-					markers.add(parent);
-				}
-			} else {
-				markers.add(domainMarker);
-			}
-		} else if(marker instanceof DeferredMdcMarker) {
-			DeferredMdcMarker deferredMdcMarker = (DeferredMdcMarker)marker;
-			
-			for(DomainMarker mdcMarker : deferredMdcMarker.getMarkers()) {
-				markers.add(mdcMarker);
-			}
+			markers.add((DomainMarker)marker);
 		}
 		
 		if(marker.hasReferences()) {
 	    	Iterator<Marker> iterator = marker.iterator();
 	    	while(iterator.hasNext()) {
-	    		populate(iterator.next(), markers, mdc);
+	    		populate(iterator.next(), markers);
 	    	}
     	}
 	}
 
 	public boolean matches(Marker marker) {
-		List<DomainMarker> candiates = toList(marker, true);
+		List<DomainMarker> candiates = toList(marker);
 		
 		required:
 		for(DomainMarker required : markers) {
 			for(DomainMarker candidate : candiates) {
-				if(required.equalTo(candidate)) {
+				
+				DomainMarker mdc = candidate;
+				if(!isMdc(candidate)) {
+					mdc = candidate.getParent();
+				}
+				if(mdc != null && required.equalTo(mdc)) {
 					continue required;
 				}
 			}
@@ -69,6 +59,11 @@ public class ContainsMdcMarkerMatcher<T> extends AbstractMarkerMatcher<T> {
 		}
 		
 		return true;
+	}
+
+	private boolean isMdc(DomainMarker candidate) {
+		DomainMdc<? extends DomainMarker> mdc = DomainMdc.mdcForType(candidate.getClass());
+		return mdc != null && mdc.exists(candidate);
 	}
 
 }

@@ -153,9 +153,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 			while(iterator.hasNext()) {
 				Marker marker = iterator.next();
 				builder.append(" ");
-				if(marker instanceof DeferredMdcMarker) {
-					((DeferredMdcMarker)marker).writeToString(builder);
-				} else if(marker instanceof DomainMarker) {
+				if(marker instanceof DomainMarker) {
 					((DomainMarker)marker).writeToString(builder);
 				} else {
 					builder.append(marker.toString());

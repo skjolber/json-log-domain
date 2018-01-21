@@ -143,6 +143,22 @@ public class LoggingTest {
 		}
 	}
 	
+	@Test
+	public void multipleDomainsMDCLocalPrecedence() throws IOException {
+		Closeable mdc = DomainMdc.mdc(host("localhost"));
+		try {
+			logger.info(host("127.0.0.1"), "Hello world");
+			
+			assertThat(rule, contains(host("127.0.0.1")));
+			assertThat(rule, qualifier("network").key("host").value("127.0.0.1"));
+
+			assertThat(rule, containsMdc(host("localhost")));
+		} finally {
+			mdc.close();
+		}
+	}
+		
+	
 	/**
 	 * 
 	 * Combine with various built-in markers for deep object support.

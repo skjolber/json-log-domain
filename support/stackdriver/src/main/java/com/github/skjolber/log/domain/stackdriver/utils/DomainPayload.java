@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Marker;
+
 public abstract class DomainPayload implements AutoCloseable, Closeable {
 
 	private static final long serialVersionUID = 1L;
@@ -71,6 +73,23 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
         }
 		refereces.add(reference);
 	}
+	
+    public boolean remove(DomainPayload referenceToRemove) {
+        if (refereces == null) {
+            return false;
+        }
+
+        int size = refereces.size();
+        for (int i = 0; i < size; i++) {
+        	DomainPayload m = (DomainPayload) refereces.get(i);
+            if (referenceToRemove.equals(m)) {
+            	refereces.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 	@SuppressWarnings("resource")
 	public void pushContext() {

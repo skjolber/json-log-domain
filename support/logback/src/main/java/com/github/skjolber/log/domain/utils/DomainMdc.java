@@ -73,10 +73,16 @@ public abstract class DomainMdc<T extends DomainMarker> {
 					Marker next = iterator.next();
 					
 					if(next instanceof DomainMarker) {
+						// a mdc marker can be a child of multiple markers
+						// but not have any children itself
+
+						marker.remove(next);
+						
 						mdc((DomainMarker)next);
 					}
 				}
 			}
+			
 			return domainMarker;
 		}
 		throw new IllegalArgumentException("Expected instance of " + DomainMarker.class.getName());
@@ -130,7 +136,7 @@ public abstract class DomainMdc<T extends DomainMarker> {
 	public void pop(T item) {
     	T tail = inheritableThreadLocal.get();
     	if(tail == null) {
-    		throw new IllegalArgumentException("Cannot pop MDC stack, already empty");
+    		throw new IllegalArgumentException("Cannot pop MDC stack for type " + getType().getName() + ", already empty");
     	} else if(item != tail) {
     		throw new IllegalArgumentException("MDC entries must be removed in the reverse order as they were added");
     	}
@@ -141,6 +147,28 @@ public abstract class DomainMdc<T extends DomainMarker> {
 		} else {
 	    	inheritableThreadLocal.remove();
 		}
+    }
+    
+    /**
+     * Check whether a marker is in the MDC stack.
+     * 
+     * @param marker the marker to check
+     * @return true if present in the stack
+     */
+    
+    public boolean exists(DomainMarker marker) {
+    	DomainMarker tail = inheritableThreadLocal.get();
+    	
+    	if(tail != null) {
+    		do {
+    			if(tail == marker) {
+    				return true;
+    			}
+    			tail = tail.parent;
+    		} while(tail != null);
+    	}
+    	
+    	return false;
     }
     
     public void remove() {

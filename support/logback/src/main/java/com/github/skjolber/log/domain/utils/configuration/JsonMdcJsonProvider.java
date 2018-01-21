@@ -14,19 +14,16 @@ package com.github.skjolber.log.domain.utils.configuration;
  * limitations under the License.
  */
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.slf4j.Marker;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.github.skjolber.log.domain.utils.DeferredMdcMarker;
 import com.github.skjolber.log.domain.utils.DomainMarker;
 import com.github.skjolber.log.domain.utils.DomainMdc;
+import com.github.skjolber.log.domain.utils.MdcListMarker;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
@@ -50,35 +47,21 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
     	
 		Marker marker = event.getMarker();
 		if(marker == null) {
-			writeMdc(generator);
-			return;
+			writeFullContext(generator);
+		} else if(marker instanceof MdcListMarker) {
+			// all mdc data already captured
 		} else if(!marker.hasReferences()) {
-			if(marker instanceof DeferredMdcMarker) {
-				((DeferredMdcMarker)marker).writeTo(generator);
-			} else if(marker instanceof DomainMarker) {
-				
-				// filter MDCs for the current marker
-				DomainMarker domainMarker = (DomainMarker)marker;
-				
-				for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
-					if(!abstractMdc.supports(domainMarker.getClass())) {
-						DomainMarker mdcMarker = abstractMdc.get();
-						if(mdcMarker != null) {
-							mdcMarker.writeTo(generator);
-						}
-					}
-				}
+			if(marker instanceof DomainMarker) {
+				writeContextForFilteredMarker(generator, marker);
 			} else {
-				writeMdc(generator);
+				writeFullContext(generator);
 			}
-			return;
+		} else {
+			writeContextForFilteredMarkerAndReferences(generator, marker);
 		}
+    }
 
-		if(marker instanceof DeferredMdcMarker) {
-			((DeferredMdcMarker)marker).writeTo(generator);
-			return;
-		}
-		
+	private void writeContextForFilteredMarkerAndReferences(JsonGenerator generator, Marker marker) throws IOException {
 		// filter MDCs for the current marker plus all its references
 		@SuppressWarnings("rawtypes")
 		Set<Class> filter = new HashSet<>();
@@ -93,14 +76,13 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			
 			if(next instanceof DomainMarker) {
 				filter.add(next.getClass());
-			} else if(next instanceof DeferredMdcMarker) {
-				((DeferredMdcMarker)next).writeTo(generator);
-				return;
 			}
 		}
 		
+		// write mdc context now
 		for (DomainMdc<? extends DomainMarker> mdc : DomainMdc.getMdcs()) { // list of possible MDCs
 			if(filter.contains(mdc.getType())) {
+				// skip
 				continue;
 			}
 			DomainMarker mdcMarker = mdc.get();
@@ -108,9 +90,24 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 				mdcMarker.writeTo(generator);
 			}
 		}
-    }
+	}
 
-	private void writeMdc(JsonGenerator generator) throws IOException {
+	private void writeContextForFilteredMarker(JsonGenerator generator, Marker marker) throws IOException {
+		// filter MDCs for the current marker
+		DomainMarker domainMarker = (DomainMarker)marker;
+		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
+			if(abstractMdc.supports(domainMarker.getClass())) {
+				// skip
+				continue;
+			}
+			DomainMarker mdcMarker = abstractMdc.get();
+			if(mdcMarker != null) {
+				mdcMarker.writeTo(generator);
+			}
+		}
+	}
+
+	private void writeFullContext(JsonGenerator generator) throws IOException {
 		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
 			DomainMarker domainMarker = abstractMdc.get();
 			if(domainMarker != null) {
@@ -128,68 +125,75 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 
     @SuppressWarnings("resource")
 	public static void captureContext(ILoggingEvent event) {
-		// add a holder for domains which have no marker within the current event
+		// add from mdc those types which have no marker within the current event
 		Marker marker = event.getMarker();
 		
 		if(marker == null) {
 			// insert mdc-logging
 			// kind of a hack, but best possible solution given constraints in logger/loggerfactory
 			if(event instanceof LoggingEvent) {
-				List<DomainMdc<? extends DomainMarker>> mdcs = DomainMdc.getMdcs(); // list of possible MDCs
-				List<DomainMarker> deferredMarkers = new ArrayList<>(mdcs.size());
-				for (DomainMdc<? extends DomainMarker> abstractMdc : mdcs) {
-					DomainMarker domainMarker = abstractMdc.get();
-					if(domainMarker != null) {
-						deferredMarkers.add(domainMarker);
-					}
-				}
-
-				LoggingEvent loggingEvent = (LoggingEvent)event;
-				loggingEvent.setMarker(new DeferredMdcMarker(deferredMarkers));
+				captureContextAsList(event);
 			} else {
 				throw new IllegalArgumentException("Event cannot be prepared for deferred processing: " + event.getClass().getName() + ", please use events of type " + LoggingEvent.class.getName());
 			}
 		} else {
-			// add mdc for domains which have no marker within the event
-			@SuppressWarnings("rawtypes")
-			Set<Class> filter = new HashSet<>();
-
-			if(marker instanceof DomainMarker) {
-				DomainMarker domainMarker = (DomainMarker)marker;
-				domainMarker.prepareForDeferredProcessing();
-				filter.add(domainMarker.getClass());
-			}
-			
-			if(marker.hasReferences()) {
-				Iterator<Marker> iterator = marker.iterator();
-				while(iterator.hasNext()) {
-					Marker next = iterator.next();
-					
-					if(next instanceof DomainMarker) {
-						DomainMarker domainMarker = (DomainMarker)next;
-						domainMarker.prepareForDeferredProcessing();
-						filter.add(domainMarker.getClass());
-					}
-				}
-			}
-			
-			List<DomainMdc<? extends DomainMarker>> mdcs = DomainMdc.getMdcs(); // list of possible MDCs
-			List<DomainMarker> deferredMarkers = new ArrayList<>(mdcs.size());
-			
-			for (DomainMdc<? extends DomainMarker> mdc : DomainMdc.getMdcs()) { // list of possible MDCs
-				if(filter.contains(mdc.getType())) {
-					continue;
-				}
-				DomainMarker domainMarker = mdc.get();
-				if(domainMarker != null) {
-					deferredMarkers.add(domainMarker);
-				}
-			}			
-			
-			marker.add(new DeferredMdcMarker(deferredMarkers));
-
+			captureContextAsReferences(marker);			
 		}
     }
+
+	public static void captureContextAsReferences(Marker marker) {
+		// add mdc as references for domains which have no marker within the event
+		@SuppressWarnings("rawtypes")
+		Set<Class> filter = new HashSet<>();
+
+		if(marker instanceof DomainMarker) {
+			DomainMarker domainMarker = (DomainMarker)marker;
+			domainMarker.prepareForDeferredProcessing();
+			filter.add(domainMarker.getClass());
+		}
+		
+		if(marker.hasReferences()) {
+			Iterator<Marker> iterator = marker.iterator();
+			while(iterator.hasNext()) {
+				Marker next = iterator.next();
+				
+				if(next instanceof DomainMarker) {
+					DomainMarker domainMarker = (DomainMarker)next;
+					domainMarker.prepareForDeferredProcessing();
+					filter.add(domainMarker.getClass());
+				}
+			}
+		}
+		
+		// add mdc context as references now
+		for (DomainMdc<? extends DomainMarker> mdc : DomainMdc.getMdcs()) { // list of possible MDCs
+			if(filter.contains(mdc.getType())) {
+				continue;
+			}
+			DomainMarker domainMarker = mdc.get();
+			if(domainMarker != null) {
+				marker.add(domainMarker);
+			}
+		}
+	}
+
+	public static void captureContextAsList(ILoggingEvent event) {
+		MdcListMarker mdcListMarker = null;
+		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
+			DomainMarker domainMarker = abstractMdc.get();
+			if(domainMarker != null) {
+				if(mdcListMarker == null) {
+					mdcListMarker = new MdcListMarker();
+				}
+				mdcListMarker.add(domainMarker);
+			}
+		}
+
+		if(mdcListMarker != null) {
+			LoggingEvent loggingEvent = (LoggingEvent)event;
+			loggingEvent.setMarker(mdcListMarker);
+		}
+	}
 
     
     @Override
