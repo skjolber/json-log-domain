@@ -31,13 +31,6 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
 
     	final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
 
-    	final IncrementalReverse incrementalReverse = project.getExtensions().create("incrementalReverse", IncrementalReverse.class, project);
-    	IncrementalReverseTask incrementalReverseTask = project.getTasks().create("incrementalReverseTask", IncrementalReverseTask.class, (task) -> { 
-        	task.definitions = incrementalReverse.definitions;
-        });
-
-    	
-    	
     	String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
 
         MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
@@ -48,7 +41,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
         });        
         CleanTask markdownCleanTask = project.getTasks().create("cleanMarkdownDocumentation", CleanTask.class, (task) -> { 
         	task.outputDirectory = extension.getMarkdown().outputDirectory;
-        	task.defaultValue = MarkdownTask.DEFAULT_DESTINATION_RESOURCE_DIR;
+        	task.defaultValue = MarkdownTask.DEFAULT_DESTINATION_DIR;
         });
         
         ElasticTask elasticTask = project.getTasks().create("generateElasticConfiguration", ElasticTask.class, (task) -> { 
@@ -57,7 +50,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
         });
         CleanTask elasticCleanTask = project.getTasks().create("cleanElasticDocumentation", CleanTask.class, (task) -> { 
         	task.outputDirectory = extension.getElastic().outputDirectory;
-        	task.defaultValue = ElasticTask.DEFAULT_DESTINATION_RESOURCE_DIR;
+        	task.defaultValue = ElasticTask.DEFAULT_DESTINATION_DIR;
         });
         
         StackDriverTask stackDriverTask = project.getTasks().create("generateStackDriverJavaHelpers", StackDriverTask.class, (task) -> { 
@@ -72,8 +65,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
         LogbackTask logbackTask = project.getTasks().create("generateLogbackJavaHelpers", LogbackTask.class, (task) -> { 
         	task.definitions = extension.getDefinitions();
         	task.logback = extension.getLogback();
-        });           
-        
+        });
         CleanTask logbackCleanTask = project.getTasks().create("cleanLogbackJavaHelpers", CleanTask.class, (task) -> { 
         	task.outputDirectory = extension.getLogback().outputDirectory;
         	task.defaultValue = LogbackTask.DEFAULT_DESTINATION_DIR;

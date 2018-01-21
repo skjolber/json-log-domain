@@ -25,14 +25,14 @@ public class JsonLogDomainPluginExtension {
     public JsonLogDomainPluginExtension(Project project) {
         // Create a Person instance
     	markdown = project.getObjects().newInstance(Markdown.class);
-    	markdown.setOutputDirectory(new File(project.getBuildDir() + MarkdownTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	markdown.setOutputDirectory(new File(project.getBuildDir() + MarkdownTask.DEFAULT_DESTINATION_DIR));
     	markdown.setExtension(".md");
     	
     	logback = project.getObjects().newInstance(Logback.class);
     	logback.setOutputDirectory(new File(project.getBuildDir() + LogbackTask.DEFAULT_DESTINATION_DIR));
     	
     	elastic = project.getObjects().newInstance(Elastic.class);
-    	elastic.setOutputDirectory(new File(project.getBuildDir() + ElasticTask.DEFAULT_DESTINATION_RESOURCE_DIR));
+    	elastic.setOutputDirectory(new File(project.getBuildDir() + ElasticTask.DEFAULT_DESTINATION_DIR));
     	elastic.setExtension(".mapping.json");
     	
     	stackDriver = project.getObjects().newInstance(StackDriver.class);

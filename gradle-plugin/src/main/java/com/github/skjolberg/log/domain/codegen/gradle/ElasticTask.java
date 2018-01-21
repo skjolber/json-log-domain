@@ -5,13 +5,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 
 import org.gradle.api.Action;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -20,13 +15,10 @@ import org.gradle.api.tasks.incremental.InputFileDetails;
 
 import com.github.skjolber.log.domain.codegen.DomainFactory;
 import com.github.skjolber.log.domain.codegen.ElasticGenerator;
-import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
 public class ElasticTask extends FilesTask {
 
-	public static final String DEFAULT_DESTINATION_RESOURCE_DIR = "/generatedSources/src/main/resources";
-	
-	protected ConfigurableFileCollection definitions;
+	public static final String DEFAULT_DESTINATION_DIR = "/generatedSources/src/main/resources";
 	
 	protected Elastic elastic;
 
@@ -83,15 +75,6 @@ public class ElasticTask extends FilesTask {
     		}
     	}
     }
-
-    @InputFiles
-	public ConfigurableFileCollection getDefinitions() {
-		return definitions;
-	}
-
-	public void setDefinitions(ConfigurableFileCollection definitions) {
-		this.definitions = definitions;
-	}
 
     @Nested
 	@Optional

@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.gradle.api.Action;
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -20,10 +18,8 @@ import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 
 public class MarkdownTask extends FilesTask {
 
-	public static final String DEFAULT_DESTINATION_RESOURCE_DIR = "/generatedSources/src/main/resources";
+	public static final String DEFAULT_DESTINATION_DIR = "/generatedSources/src/main/resources";
 			
-	protected ConfigurableFileCollection definitions;
-	
 	protected Markdown markdown;
 	protected Logback logback;
 	protected StackDriver stackDriver;
@@ -82,15 +78,6 @@ public class MarkdownTask extends FilesTask {
     		}
     	}
    	}
-
-    @InputFiles
-	public ConfigurableFileCollection getDefinitions() {
-		return definitions;
-	}
-
-	public void setDefinitions(ConfigurableFileCollection definitions) {
-		this.definitions = definitions;
-	}
 
 	@Nested
 	@Optional

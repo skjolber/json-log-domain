@@ -28,4 +28,24 @@ public class Markdown extends Actionable {
 	public void setExtension(String ext) {
 		this.extension.set(ext);
 	}
+	
+	@Input
+    public boolean getStackDriver() {
+		return stackDriver.get();
+	}
+	
+	public void setStackDriver(boolean value) {
+		this.stackDriver.set(value);
+	}
+
+	@Input
+    public boolean getLogback() {
+		return logback.get();
+	}
+	
+	public void setLogback(boolean value) {
+		this.logback.set(value);
+	}
+
+	
 }
