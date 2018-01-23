@@ -278,6 +278,10 @@ If you do not like this prosject, maybe you'll like
   * [slf4j-json-logger]
   * [logback-more-appenders]
 
+# See also
+
+  * [Logbook]
+
 # History
 
  - [1.0.3-SNAPSHOT]: Stackdriver support, minor improvements.
@@ -306,4 +310,6 @@ If you do not like this prosject, maybe you'll like
 [logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders
 [Logback support]:              support/logback
 [test]:                         test
-[gradle]						gradle-plugin
+[gradle]:						gradle-plugin
+[logbook]:						https://github.com/zalando/logbook
+
