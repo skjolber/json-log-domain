@@ -7,7 +7,7 @@ Users will benefit from
 
  * JSON-logging with domain-specific subtrees
  * Simple YAML-based definition format
- * User-friendly helper-classes generated via [Maven] or [gradle] plugin
+ * User-friendly helper-classes generated via [Maven] or [Gradle] plugin
  * Markdown documentation generator
  * Elasticsearch configuration generator
  * JAX-RS log-annotation for [automatic MDC population]
@@ -280,11 +280,11 @@ If you do not like this prosject, maybe you'll like
 
 # See also
 
-  * [Logbook]
+  * [Logbook] - configurable request/response-logging
 
 # History
 
- - [1.0.3-SNAPSHOT]: Stackdriver support, minor improvements.
+ - [1.0.3-SNAPSHOT]: Stackdriver and Gradle support, minor improvements.
  - 1.0.2: JAX-RS helper library, various improvements.
  - 1.0.1: Added MDC support, various improvements.
  - 1.0.0: Initial version
@@ -310,6 +310,6 @@ If you do not like this prosject, maybe you'll like
 [logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders
 [Logback support]:              support/logback
 [test]:                         test
-[gradle]:						gradle-plugin
+[Gradle]:						gradle-plugin
 [logbook]:						https://github.com/zalando/logbook
 
