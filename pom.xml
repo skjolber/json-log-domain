@@ -325,6 +325,7 @@
 				<module>examples/elastic-example</module>
 				<module>examples/jax-rs-example</module>
 				<module>examples/spring-rest-example</module>
+				<module>examples/stackdriver-maven-plugin-example</module>
 			</modules>			
 		</profile>
 	</profiles>

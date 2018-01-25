@@ -196,7 +196,7 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
         </execution>
     </executions>
     <configuration>
-        <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+        <outputDirectory>${project.build.directory}/generated-sources/domain-log-codegen</outputDirectory>
         <types>
             <markdown>true</markdown>
             <java>

@@ -19,7 +19,7 @@ Requires a Stackdriver account and jwt credentials in a file.
         </execution>
     </executions>
     <configuration>
-        <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+        <outputDirectory>${project.build.directory}/generated-sources/domain-log-codegen</outputDirectory>
         <types>
             <markdown>true</markdown>
             <java>

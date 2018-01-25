@@ -149,7 +149,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
+                    <outputDirectory>${project.build.directory}/generated-sources/domain-log-codegen</outputDirectory>
 					<types>
 						<java>
 							<logback>true</logback>
