@@ -1,6 +1,7 @@
 package com.github.skjolber.log.domain.utils;
 
 import java.io.IOException;
+
 import java.util.Iterator;
 
 import org.slf4j.Marker;
@@ -9,6 +10,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.marker.LogstashMarker;
+/**
+ * 
+ * Marker list for capturing MDC context. 
+ *
+ */
 
 public class MdcListMarker extends LogstashMarker implements StructuredArgument {
 

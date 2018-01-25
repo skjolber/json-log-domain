@@ -27,6 +27,7 @@ import com.github.skjolber.log.domain.utils.MdcListMarker;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.spi.DeferredProcessingAware;
 import net.logstash.logback.composite.AbstractFieldJsonProvider;
 import net.logstash.logback.composite.FieldNamesAware;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
@@ -146,10 +147,13 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 		@SuppressWarnings("rawtypes")
 		Set<Class> filter = new HashSet<>();
 
+		if(marker instanceof DeferredProcessingAware) {
+			DeferredProcessingAware aware = (DeferredProcessingAware)marker;
+			aware.prepareForDeferredProcessing();
+		}
+
 		if(marker instanceof DomainMarker) {
-			DomainMarker domainMarker = (DomainMarker)marker;
-			domainMarker.prepareForDeferredProcessing();
-			filter.add(domainMarker.getClass());
+			filter.add(marker.getClass());
 		}
 		
 		if(marker.hasReferences()) {
@@ -157,10 +161,13 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			while(iterator.hasNext()) {
 				Marker next = iterator.next();
 				
+				if(marker instanceof DeferredProcessingAware) {
+					DeferredProcessingAware aware = (DeferredProcessingAware)marker;
+					aware.prepareForDeferredProcessing();
+				}
+				
 				if(next instanceof DomainMarker) {
-					DomainMarker domainMarker = (DomainMarker)next;
-					domainMarker.prepareForDeferredProcessing();
-					filter.add(domainMarker.getClass());
+					filter.add(next.getClass());
 				}
 			}
 		}
@@ -172,6 +179,7 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 			}
 			DomainMarker domainMarker = mdc.get();
 			if(domainMarker != null) {
+				domainMarker.prepareForDeferredProcessing();
 				marker.add(domainMarker);
 			}
 		}
@@ -182,6 +190,8 @@ public class JsonMdcJsonProvider extends AbstractFieldJsonProvider<ILoggingEvent
 		for (DomainMdc<? extends DomainMarker> abstractMdc : DomainMdc.getMdcs()) {
 			DomainMarker domainMarker = abstractMdc.get();
 			if(domainMarker != null) {
+				domainMarker.prepareForDeferredProcessing();
+
 				if(mdcListMarker == null) {
 					mdcListMarker = new MdcListMarker();
 				}
