@@ -13,81 +13,81 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 
 public class JsonLogDomainPlugin implements Plugin<Project> {
-	
+
 	public JsonLogDomainPlugin() {
 	}
-	
-    public void apply(Project project) {
-    	// make sure the project has the java plugin
-    	Map<String, String> map = new HashMap<>();
-    	map.put("plugin", "java");
-    	project.apply(map);
-    	
-    	// add source dependency
-    	// https://stackoverflow.com/questions/18594625/gradle-custom-plugin-add-dependency-from-extension-object
-        final Configuration config = project.getConfigurations().create("jsonLogDomain")
-                .setVisible(false)
-                .setDescription("The data artifacts to be processed for this plugin.");
 
-    	final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
+	public void apply(Project project) {
+		// make sure the project has the java plugin
+		Map<String, String> map = new HashMap<>();
+		map.put("plugin", "java");
+		project.apply(map);
 
-    	String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
+		// add source dependency
+		// https://stackoverflow.com/questions/18594625/gradle-custom-plugin-add-dependency-from-extension-object
+		final Configuration config = project.getConfigurations().create("jsonLogDomain")
+				.setVisible(false)
+				.setDescription("The data artifacts to be processed for this plugin.");
 
-        MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
-        	task.definitions = extension.getDefinitions();
-        	task.markdown = extension.getMarkdown();
-        	task.logback = extension.getLogback();
-        	task.stackDriver = extension.getStackDriver();
-        });        
-        CleanTask markdownCleanTask = project.getTasks().create("cleanMarkdownDocumentation", CleanTask.class, (task) -> { 
-        	task.outputDirectory = extension.getMarkdown().outputDirectory;
-        	task.defaultValue = MarkdownTask.DEFAULT_DESTINATION_DIR;
-        });
-        
-        ElasticTask elasticTask = project.getTasks().create("generateElasticConfiguration", ElasticTask.class, (task) -> { 
-        	task.definitions = extension.getDefinitions();
-        	task.elastic = extension.getElastic();
-        });
-        CleanTask elasticCleanTask = project.getTasks().create("cleanElasticDocumentation", CleanTask.class, (task) -> { 
-        	task.outputDirectory = extension.getElastic().outputDirectory;
-        	task.defaultValue = ElasticTask.DEFAULT_DESTINATION_DIR;
-        });
-        
-        StackDriverTask stackDriverTask = project.getTasks().create("generateStackDriverJavaHelpers", StackDriverTask.class, (task) -> { 
-        	task.definitions = extension.getDefinitions();
-        	task.stackDriver = extension.getStackDriver();
-        });
-        CleanTask stackDriverCleanTask = project.getTasks().create("cleanStackDriverJavaHelpers", CleanTask.class, (task) -> { 
-        	task.outputDirectory = extension.getStackDriver().outputDirectory;
-        	task.defaultValue = StackDriverTask.DEFAULT_DESTINATION_DIR;
-        });
-        
-        LogbackTask logbackTask = project.getTasks().create("generateLogbackJavaHelpers", LogbackTask.class, (task) -> { 
-        	task.definitions = extension.getDefinitions();
-        	task.logback = extension.getLogback();
-        });
-        CleanTask logbackCleanTask = project.getTasks().create("cleanLogbackJavaHelpers", CleanTask.class, (task) -> { 
-        	task.outputDirectory = extension.getLogback().outputDirectory;
-        	task.defaultValue = LogbackTask.DEFAULT_DESTINATION_DIR;
-        });
+		final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
 
-        // make sure task runs before compile
-        Task compileJava = project.getTasks().findByName("compileJava");
-        compileJava.dependsOn(stackDriverTask);
-        compileJava.dependsOn(logbackTask);
-        
-        Task assemble = project.getTasks().findByName("assemble");
-        assemble.dependsOn(markdownTask);
-        assemble.dependsOn(elasticTask);
-        
-        Task clean = project.getTasks().findByName("assemble");
-        clean.dependsOn(markdownCleanTask);
-        clean.dependsOn(elasticCleanTask);
-        clean.dependsOn(logbackCleanTask);
-        clean.dependsOn(stackDriverCleanTask);
-        
-        // add support-library as dependency
-        project.afterEvaluate(new Action<Project>() {
+		String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
+
+		MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
+			task.definitions = extension.getDefinitions();
+			task.markdown = extension.getMarkdown();
+			task.logback = extension.getLogback();
+			task.stackDriver = extension.getStackDriver();
+		});        
+		CleanTask markdownCleanTask = project.getTasks().create("cleanMarkdownDocumentation", CleanTask.class, (task) -> { 
+			task.outputDirectory = extension.getMarkdown().outputDirectory;
+			task.defaultValue = MarkdownTask.DEFAULT_DESTINATION_DIR;
+		});
+
+		ElasticTask elasticTask = project.getTasks().create("generateElasticConfiguration", ElasticTask.class, (task) -> { 
+			task.definitions = extension.getDefinitions();
+			task.elastic = extension.getElastic();
+		});
+		CleanTask elasticCleanTask = project.getTasks().create("cleanElasticDocumentation", CleanTask.class, (task) -> { 
+			task.outputDirectory = extension.getElastic().outputDirectory;
+			task.defaultValue = ElasticTask.DEFAULT_DESTINATION_DIR;
+		});
+
+		StackDriverTask stackDriverTask = project.getTasks().create("generateStackDriverJavaHelpers", StackDriverTask.class, (task) -> { 
+			task.definitions = extension.getDefinitions();
+			task.stackDriver = extension.getStackDriver();
+		});
+		CleanTask stackDriverCleanTask = project.getTasks().create("cleanStackDriverJavaHelpers", CleanTask.class, (task) -> { 
+			task.outputDirectory = extension.getStackDriver().outputDirectory;
+			task.defaultValue = StackDriverTask.DEFAULT_DESTINATION_DIR;
+		});
+
+		LogbackTask logbackTask = project.getTasks().create("generateLogbackJavaHelpers", LogbackTask.class, (task) -> { 
+			task.definitions = extension.getDefinitions();
+			task.logback = extension.getLogback();
+		});
+		CleanTask logbackCleanTask = project.getTasks().create("cleanLogbackJavaHelpers", CleanTask.class, (task) -> { 
+			task.outputDirectory = extension.getLogback().outputDirectory;
+			task.defaultValue = LogbackTask.DEFAULT_DESTINATION_DIR;
+		});
+
+		// make sure task runs before compile
+		Task compileJava = project.getTasks().findByName("compileJava");
+		compileJava.dependsOn(stackDriverTask);
+		compileJava.dependsOn(logbackTask);
+
+		Task assemble = project.getTasks().findByName("assemble");
+		assemble.dependsOn(markdownTask);
+		assemble.dependsOn(elasticTask);
+
+		Task clean = project.getTasks().findByName("assemble");
+		clean.dependsOn(markdownCleanTask);
+		clean.dependsOn(elasticCleanTask);
+		clean.dependsOn(logbackCleanTask);
+		clean.dependsOn(stackDriverCleanTask);
+
+		// add support-library as dependency
+		project.afterEvaluate(new Action<Project>() {
 			@Override
 			public void execute(Project project) {
 				// add support dependencies
@@ -99,5 +99,5 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
 				}
 			}
 		});
-    }
+	}
 }

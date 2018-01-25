@@ -19,65 +19,65 @@ import com.github.skjolber.log.domain.codegen.MarkdownGenerator;
 public class MarkdownTask extends FilesTask {
 
 	public static final String DEFAULT_DESTINATION_DIR = "/generatedSources/src/main/resources";
-			
+
 	protected Markdown markdown;
 	protected Logback logback;
 	protected StackDriver stackDriver;
 
-    @TaskAction
-    public void generate(IncrementalTaskInputs inputs) throws IOException {
-    	if(markdown.isAction()) {
-	    	if(!markdown.getGenerate()) {
-	    		deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
-    		} else {
-    			if(!inputs.isIncremental()) {
-    	    		deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
-    			}
+	@TaskAction
+	public void generate(IncrementalTaskInputs inputs) throws IOException {
+		if(markdown.isAction()) {
+			if(!markdown.getGenerate()) {
+				deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
+			} else {
+				if(!inputs.isIncremental()) {
+					deleteOutputFiles(markdown.getExtension(), markdown.getOutputDirectory());
+				}
 
-    	    	boolean logbackCodeGenerated = logback.getGenerate();
-    	    	boolean stackDriverCodeGenerated = stackDriver.getGenerate();
+				boolean logbackCodeGenerated = logback.getGenerate();
+				boolean stackDriverCodeGenerated = stackDriver.getGenerate();
 
-	    		File destination = markdown.getOutputDirectory();
-	    		if(!definitions.isEmpty()) {
-	    			System.out.println("Generating markdown to " + destination.getAbsolutePath());
-			    	if(!destination.exists()) {
-			    		Files.createDirectories(destination.toPath());
-		    		}
-	    		}
+				File destination = markdown.getOutputDirectory();
+				if(!definitions.isEmpty()) {
+					System.out.println("Generating markdown to " + destination.getAbsolutePath());
+					if(!destination.exists()) {
+						Files.createDirectories(destination.toPath());
+					}
+				}
 
-	    		inputs.outOfDate(new Action<InputFileDetails>() {
+				inputs.outOfDate(new Action<InputFileDetails>() {
 					@Override
 					public void execute(InputFileDetails details) {
 						try {
-				    		Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
-					    	
-				    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
-			    			MarkdownGenerator.generate(result, output, logbackCodeGenerated, stackDriverCodeGenerated);
+							Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
+
+							com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
+							MarkdownGenerator.generate(result, output, logbackCodeGenerated, stackDriverCodeGenerated);
 						} catch(Exception e) {
 							throw new RuntimeException(e);
 						}
 					}
 
 				});
-	    		
-	    		inputs.removed(new Action<InputFileDetails>() {
+
+				inputs.removed(new Action<InputFileDetails>() {
 					@Override
 					public void execute(InputFileDetails details) {
 						try {
-				    		Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
+							Path output = getOutputFile(destination, details.getFile(), markdown.getExtension());
 
-				    		if(Files.exists(output)) {
-				    			Files.delete(output);
-				    		}
+							if(Files.exists(output)) {
+								Files.delete(output);
+							}
 						} catch(Exception e) {
 							throw new RuntimeException(e);
 						}
 					}
 				});
 
-    		}
-    	}
-   	}
+			}
+		}
+	}
 
 	@Nested
 	@Optional
@@ -104,9 +104,9 @@ public class MarkdownTask extends FilesTask {
 	public void setStackDriver(StackDriver stackDriver) {
 		this.stackDriver = stackDriver;
 	}
-	
+
 	public StackDriver getStackDriver() {
 		return stackDriver;
 	}
-    
+
 }

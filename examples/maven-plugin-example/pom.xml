@@ -4,9 +4,9 @@
     <groupId>com.github.skjolber</groupId>
     <artifactId>log-domain-maven-plugin-example</artifactId>
     <version>1.0.3-SNAPSHOT</version>
-	<name>log-domain-maven-plugin-example</name>
-	<description>Example project for maven plugin</description>
-	
+    <name>log-domain-maven-plugin-example</name>
+    <description>Example project for maven plugin</description>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -96,11 +96,11 @@
                 </executions>
                 <configuration>
                     <outputDirectory>target/generated-sources/domain-log-codegen</outputDirectory>
-					<types>
-						<java>
-							<logback>true</logback>
-						</java>
-					</types>
+                    <types>
+                        <java>
+                            <logback>true</logback>
+                        </java>
+                    </types>
                     <domains>
                         <domain>
                             <path>${basedir}/src/main/resources/yaml/network.yaml</path>

@@ -10,15 +10,15 @@ public class Elastic extends Actionable {
 
 	final Property<String> extension;
 
-    @javax.inject.Inject
-    public Elastic(ObjectFactory objectFactory) {
-    	super(objectFactory.property(Boolean.class), objectFactory.property(File.class));
-    	
-    	extension = objectFactory.property(String.class);
-    }
+	@javax.inject.Inject
+	public Elastic(ObjectFactory objectFactory) {
+		super(objectFactory.property(Boolean.class), objectFactory.property(File.class));
+		
+		extension = objectFactory.property(String.class);
+	}
 	
 	@Input
-    public String getExtension() {
+	public String getExtension() {
 		return extension.get();
 	}
 	

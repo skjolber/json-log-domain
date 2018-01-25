@@ -284,7 +284,7 @@ If you do not like this prosject, maybe you'll like
 
 # History
 
- - [1.0.3-SNAPSHOT]: Stackdriver and Gradle support, minor improvements.
+ - [1.0.3]: Stackdriver and Gradle support, minor improvements.
  - 1.0.2: JAX-RS helper library, various improvements.
  - 1.0.1: Added MDC support, various improvements.
  - 1.0.0: Initial version
@@ -308,8 +308,7 @@ If you do not like this prosject, maybe you'll like
 [slf4j-json-logger]:			https://github.com/savoirtech/slf4j-json-logger
 [Google Stackdriver]:			https://cloud.google.com/stackdriver
 [logback-more-appenders]:		https://github.com/sndyuk/logback-more-appenders
-[Logback support]:              support/logback
+[Logback support]:				support/logback
 [test]:                         test
 [Gradle]:						gradle-plugin
 [logbook]:						https://github.com/zalando/logbook
-

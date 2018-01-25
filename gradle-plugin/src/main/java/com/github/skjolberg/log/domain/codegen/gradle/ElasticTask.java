@@ -19,64 +19,64 @@ import com.github.skjolber.log.domain.codegen.ElasticGenerator;
 public class ElasticTask extends FilesTask {
 
 	public static final String DEFAULT_DESTINATION_DIR = "/generatedSources/src/main/resources";
-	
+
 	protected Elastic elastic;
 
-    @TaskAction
-    public void generate(IncrementalTaskInputs inputs) throws IOException {
-    	if(elastic.isAction()) {
-    		
-	    	if(!elastic.getGenerate()) {
-	    		deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
-    		} else {
-    			if(!inputs.isIncremental()) {
-    	    		deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
-    			}
+	@TaskAction
+	public void generate(IncrementalTaskInputs inputs) throws IOException {
+		if(elastic.isAction()) {
 
-	    		File destination = elastic.getOutputDirectory();
-	    		if(!definitions.isEmpty()) {
-			    	System.out.println("Generating Elastic configuration to " + destination.getAbsolutePath());
-			    	if(!destination.exists()) {
-			    		Files.createDirectories(destination.toPath());
-		    		}
-		    	}
-	
-	    		inputs.outOfDate(new Action<InputFileDetails>() {
+			if(!elastic.getGenerate()) {
+				deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
+			} else {
+				if(!inputs.isIncremental()) {
+					deleteOutputFiles(elastic.getExtension(), elastic.getOutputDirectory());
+				}
+
+				File destination = elastic.getOutputDirectory();
+				if(!definitions.isEmpty()) {
+					System.out.println("Generating Elastic configuration to " + destination.getAbsolutePath());
+					if(!destination.exists()) {
+						Files.createDirectories(destination.toPath());
+					}
+				}
+
+				inputs.outOfDate(new Action<InputFileDetails>() {
 					@Override
 					public void execute(InputFileDetails details) {
 						try {
-				    		Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
-					    	
-				    		com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
-				    		
-			    			ElasticGenerator.generate(result, output);
+							Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
+
+							com.github.skjolber.log.domain.model.Domain result = DomainFactory.parse(Files.newBufferedReader(details.getFile().toPath(), StandardCharsets.UTF_8));
+
+							ElasticGenerator.generate(result, output);
 						} catch(Exception e) {
 							throw new RuntimeException(e);
 						}
 					}
 
 				});	    		
-	    		
-	
-	    		inputs.removed(new Action<InputFileDetails>() {
+
+
+				inputs.removed(new Action<InputFileDetails>() {
 					@Override
 					public void execute(InputFileDetails details) {
 						try {
-				    		Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
+							Path output = getOutputFile(destination, details.getFile(), elastic.getExtension());
 
-				    		if(Files.exists(output)) {
-				    			Files.delete(output);
-				    		}
+							if(Files.exists(output)) {
+								Files.delete(output);
+							}
 						} catch(Exception e) {
 							throw new RuntimeException(e);
 						}
 					}
 				});
-    		}
-    	}
-    }
+			}
+		}
+	}
 
-    @Nested
+	@Nested
 	@Optional
 	public Elastic getElastic() {
 		return elastic;

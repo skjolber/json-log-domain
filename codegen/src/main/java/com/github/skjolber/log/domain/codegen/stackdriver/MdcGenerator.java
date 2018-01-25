@@ -8,8 +8,8 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.github.skjolber.log.domain.model.Domain;
 import com.github.skjolber.log.domain.model.Key;
-import com.github.skjolber.log.domain.stackdriver.utils.DomainPayloadMdc;
 import com.github.skjolber.log.domain.stackdriver.utils.DomainPayload;
+import com.github.skjolber.log.domain.stackdriver.utils.DomainPayloadMdc;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;

@@ -1,28 +1,24 @@
 package com.github.skjolber.log.domain.stackdriver.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Marker;
-
 import com.google.cloud.MonitoredResource;
 import com.google.cloud.logging.DefaultLogEntry.DefaultBuilder;
-import com.google.cloud.logging.Payload.JsonPayload;
 import com.google.cloud.logging.HttpRequest;
 import com.google.cloud.logging.Operation;
 import com.google.cloud.logging.Payload;
+import com.google.cloud.logging.Payload.JsonPayload;
 import com.google.cloud.logging.Severity;
 import com.google.cloud.logging.SourceLocation;
 
 public class DomainLogEntryBuilder extends DefaultBuilder {
 
 	private DomainPayload domainPayload;
-	
+
+	@SuppressWarnings("rawtypes")
 	public DomainLogEntryBuilder() {
 		this((Payload)null);
 	}
@@ -172,6 +168,7 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 	 *
 	 * @see <a href="https://cloud.google.com/logging/docs/view/logs_index">Log Entries and Logs</a>
 	 */
+	@SuppressWarnings("rawtypes")
 	public DomainLogEntryBuilder setPayload(Payload payload) {
 		super.setPayload(payload);
 		return this;
@@ -190,20 +187,20 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 		if(domainPayload != null) {
 			@SuppressWarnings("rawtypes")
 			Set<Class> filter = new HashSet<>();
-	
+
 			Map<String, Object> map = new HashMap<>();
-			
+
 			domainPayload.build(map);
 			filter.add(domainPayload.getClass());
-			
+
 			if(domainPayload.hasReferences()) {
 				for (DomainPayload reference : domainPayload.getRefereces()) {
 					filter.add(reference.getClass());
-					
+
 					reference.build(map);
 				}
 			}
-			
+
 			for (DomainPayloadMdc<? extends DomainPayload> abstractMdc : DomainPayloadMdc.getMdcs()) {
 				if(filter.contains(abstractMdc.getType())) {
 					continue;
@@ -214,11 +211,11 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 					domainMarker.build(map);
 				}
 			}
-			
+
 			super.setPayload(JsonPayload.of(map));
 		}
-		
+
 		return new DomainLogEntry(this);
 	}
- 
+
 }

@@ -16,10 +16,10 @@ import com.github.skjolber.log.domain.logback.jaxrs.Logged;
 @Logged(value = DocumentStoreMarker.class)
 public class DocumentEndpoint {
 
-    private final static Logger logger = LoggerFactory.getLogger(DocumentEndpoint.class);
+	private final static Logger logger = LoggerFactory.getLogger(DocumentEndpoint.class);
 
 	@GET
-    @Path("/{id}/hello")
+	@Path("/{id}/hello")
 	public String message(@PathParam("id") String id) {
 		logger.info("Say hello");
 		
@@ -27,7 +27,7 @@ public class DocumentEndpoint {
 	}
 	
 	@GET
-    @Path("/some/{id}/hello")
+	@Path("/some/{id}/hello")
 	public String someMessage(@PathParam("id") String id) {
 		logger.info("Say some hello");
 		

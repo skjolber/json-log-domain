@@ -18,7 +18,7 @@ public class DefaultLogEntry extends LogEntry {
 		public DefaultBuilder(LogEntry entry) {
 			super(entry);
 		}
-		
+
 		public DefaultBuilder(Payload<?> payload) {
 			super(payload);
 		}

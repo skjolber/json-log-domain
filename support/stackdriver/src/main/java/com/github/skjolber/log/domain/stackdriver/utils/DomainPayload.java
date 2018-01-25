@@ -5,11 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Marker;
-
 public abstract class DomainPayload implements AutoCloseable, Closeable {
-
-	private static final long serialVersionUID = 1L;
 
 	protected static final Long asLong(Object object) {
 		if(object instanceof Long) {
@@ -40,7 +36,7 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 		}
 		throw new IllegalArgumentException("Expected " + Double.class.getName() + " or " + String.class.getName());
 	}
-	
+
 	protected static final Float asFloat(Object object) {
 		if(object instanceof Float) {
 			return (Float)object;
@@ -50,10 +46,10 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 		}
 		throw new IllegalArgumentException("Expected " + Float.class.getName() + " or " + String.class.getName());
 	}
-	
+
 	protected final String qualifier;
 	protected DomainPayload parent;
-    private List<DomainPayload> refereces;
+	private List<DomainPayload> refereces;
 
 	public DomainPayload(String qualifier) {
 		this.qualifier = qualifier;
@@ -68,30 +64,29 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 		if(reference.hasReferences()) {
 			throw new IllegalArgumentException("Please do not nest markers in more than one level");
 		}
-        if (refereces == null) {
-            refereces = new ArrayList<DomainPayload>();
-        }
+		if (refereces == null) {
+			refereces = new ArrayList<DomainPayload>();
+		}
 		refereces.add(reference);
 	}
-	
-    public boolean remove(DomainPayload referenceToRemove) {
-        if (refereces == null) {
-            return false;
-        }
 
-        int size = refereces.size();
-        for (int i = 0; i < size; i++) {
-        	DomainPayload m = (DomainPayload) refereces.get(i);
-            if (referenceToRemove.equals(m)) {
-            	refereces.remove(i);
-                return true;
-            }
-        }
-        return false;
-    }
+	public boolean remove(DomainPayload referenceToRemove) {
+		if (refereces == null) {
+			return false;
+		}
+
+		int size = refereces.size();
+		for (int i = 0; i < size; i++) {
+			DomainPayload m = (DomainPayload) refereces.get(i);
+			if (referenceToRemove.equals(m)) {
+				refereces.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
 
 
-	@SuppressWarnings("resource")
 	public void pushContext() {
 		// actual operation on this instance delegated to subclass
 		if(hasReferences()) {
@@ -101,7 +96,6 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public void popContext() {
 		// actual operation on this instance delegated to subclass
 		if(hasReferences()) {
@@ -141,25 +135,26 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 		writeToString(builder);
 		return builder.toString();
 	}
-	
+
 	public abstract void setKey(String key, Object value);
-	
+
 	public abstract boolean definesKey(String key);
-	
+
 	public abstract void parseAndSetKey(String key, Object value);
-	
+
 	public abstract void build(Map<String, Object> map);
-	
-    public <T extends DomainPayload> T and(DomainPayload reference) {
-        add(reference);
-        return (T) this;
-    }
-    
-    public boolean hasReferences() {
-        return ((refereces != null) && (refereces.size() > 0));
-    }
-    
-    public List<DomainPayload> getRefereces() {
+
+	@SuppressWarnings("unchecked")
+	public <T extends DomainPayload> T and(DomainPayload reference) {
+		add(reference);
+		return (T) this;
+	}
+
+	public boolean hasReferences() {
+		return ((refereces != null) && (refereces.size() > 0));
+	}
+
+	public List<DomainPayload> getRefereces() {
 		return refereces;
 	}
 }

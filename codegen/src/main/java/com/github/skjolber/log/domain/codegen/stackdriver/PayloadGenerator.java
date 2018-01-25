@@ -307,9 +307,7 @@ public class PayloadGenerator {
 
 		ParameterSpec parameter = ParameterSpec.builder(map, "parent").build();
 		
-		//public abstract void build(Map<String, ?> map);
-
-		
+		// signature: public abstract void build(Map<String, ?> map);
 		MethodSpec.Builder builder = MethodSpec.methodBuilder("build")
 				.addModifiers(Modifier.PUBLIC)
 				.addParameter(parameter);
@@ -364,19 +362,6 @@ public class PayloadGenerator {
 					.build());
 		}
 		return builder.build();
-	}
-
-	private static String getWriteJsonMethod(Key key) {
-		// TODO more write methods
-		if(key.getType().equals("string") && key.getFormat() == null) {
-			return "writeString";
-		}
-		
-		if(key.getType().equals("integer") || key.getType().equals("number")) {
-			return "writeNumber";
-		}
-		
-		return "writeObject";
 	}
 
 	private static FieldSpec getField(ClassName name, Key key) {

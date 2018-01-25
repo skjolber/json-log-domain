@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.gradle.testkit.runner.BuildResult;
@@ -39,7 +38,7 @@ public class PluginProjectTest {
 		}
 
 		File resources = new File(buildFile.getParentFile() + "/src/main/resources/");
-		
+
 		FileUtils.copyDirectory(new File("./src/functTest/resources/"), resources);
 	}
 
@@ -105,7 +104,7 @@ public class PluginProjectTest {
 		assertTrue(result.getOutput().contains("Generating"));
 		assertEquals(result.task(":generateStackDriverJavaHelpers").getOutcome(), TaskOutcome.SUCCESS);
 	}
-	
+
 	@Test
 	public void testBuildElastic() throws Exception {
 

@@ -16,14 +16,14 @@ public class Actionable {
 
 	public Actionable(Property<Boolean> generate, Property<File> outputDirectory) {
 		this.generate = generate;
-    	this.generate.set(true);
-    	this.outputDirectory = outputDirectory;
+		this.generate.set(true);
+		this.outputDirectory = outputDirectory;
 	}
-	
+
 	public void setAction(boolean action) {
 		this.action = action;
 	}
-	
+
 	@Internal
 	public boolean isAction() {
 		return action;
@@ -33,7 +33,7 @@ public class Actionable {
 	public boolean getGenerate() {
 		return generate.get();
 	}
-	
+
 	public void setGenerate(boolean enabled) {
 		this.generate.set(enabled);
 	}
@@ -41,7 +41,7 @@ public class Actionable {
 	public void setOutputDirectory(File outputDirectory) {
 		this.outputDirectory.set(outputDirectory);
 	}
-	
+
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory.getOrNull();
