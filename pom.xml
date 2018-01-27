@@ -150,7 +150,7 @@
 				<groupId>com.google.cloud</groupId>
 				<artifactId>google-cloud-logging-logback</artifactId>
 				<version>${google-cloud-logging-logback.version}</version>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>

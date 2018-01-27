@@ -1,0 +1,11 @@
+<configuration>
+    <appender name="STDOUT_CLASSIC" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger: %msg %mdc %marker %n</pattern>
+        </encoder>
+    </appender>
+    
+	<root level="INFO">
+		<appender-ref ref="STDOUT_CLASSIC" />
+	</root>
+</configuration>

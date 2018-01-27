@@ -2,6 +2,7 @@ package com.example.logging;
 
 /**
  * This sample demonstrates writing logs using the Stackdriver Logging API.
+ * 
  */
 import static com.example.network.NetworkPayloadBuilder.port;
 

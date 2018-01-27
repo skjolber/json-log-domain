@@ -28,17 +28,7 @@ public class MdcListMarker extends LogstashMarker implements StructuredArgument 
 
 	@Override
 	public void writeTo(JsonGenerator generator) throws IOException {
-		Iterator<Marker> iterator = iterator();
-		while(iterator.hasNext()) {
-			Marker next = iterator.next();
-
-			if(next instanceof LogstashMarker) {
-				LogstashMarker reference = (LogstashMarker)next;
-				reference.writeTo(generator);
-			} else {
-				throw new IllegalArgumentException("Unexpected marker type " + next.getClass().getName());
-			}
-		}
+		// the framework take care of writing the references
 	}
 
 	public void writeToString(StringBuilder builder) {

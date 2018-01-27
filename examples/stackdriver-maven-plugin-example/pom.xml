@@ -18,6 +18,11 @@
 			<groupId>com.github.skjolber.log-domain</groupId>
 			<artifactId>log-domain-support-stackdriver</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
 	</dependencies>
 
 	<build>

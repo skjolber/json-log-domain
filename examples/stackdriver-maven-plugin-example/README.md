@@ -1,8 +1,12 @@
 # log-domain-stackdriver-maven-plugin-example
-Example stackdriver project. 
+Example Stackdriver project. 
 
-Requires a Stackdriver account and jwt credentials in a file.
+Running this example requires a Stackdriver account and
 
+  * JWT credentials in a local JSON file
+  * Project id (e.g. stackdriver-123)
+  * Resource name (e.g. global)
+      
 ## Maven plugin configuration
 
 ```xml
@@ -35,9 +39,8 @@ Requires a Stackdriver account and jwt credentials in a file.
 </plugin>
 ```
 
-## Usage
+## Logging
 After generating code, add static imports
-
 
 ```java
 import static com.example.network.NetworkPayloadBuilder.*;
@@ -83,12 +86,17 @@ and the result should be statements like
    "timestamp":"2018-01-02T14:05:56.176942353Z"
 }
 ```
+in the [Stackdriver Logging] view. 
 
-### Command line
+### Execute via command line
 Run the command
 
     java -jar target/log-domain-stackdriver-maven-plugin-example-jar-with-dependencies.jar <path to jwt access credentials> <projectId> <log name>
 
+i.e.
+
+    java -jar target/log-domain-stackdriver-maven-plugin-example-jar-with-dependencies.jar "/home/me/stackdriver-123.json" "stackdriver-456" global
+    
 ## Corresponding Gradle plugin configuration
 Add
 
@@ -111,4 +119,4 @@ sourceSets {
 }
 ```
 
-
+[Stackdriver Logging]:			https://console.cloud.google.com/logs
