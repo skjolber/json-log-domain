@@ -21,7 +21,9 @@ public class DocumentEndpoint {
 	@GET
 	@Path("/{id}/hello")
 	public String message(@PathParam("id") String id) {
-		logger.info("Say hello");
+		logger.info("Say hello info");
+		logger.warn("Say hello warning");
+		logger.error("Say hello error");
 		
 		return "Hello " + id;
 	}
@@ -29,7 +31,9 @@ public class DocumentEndpoint {
 	@GET
 	@Path("/some/{id}/hello")
 	public String someMessage(@PathParam("id") String id) {
-		logger.info("Say some hello");
+		logger.info("Say some hello info");
+		logger.warn("Say some hello warning");
+		logger.error("Say some hello error");
 		
 		return "Some hello " + id;
 	}

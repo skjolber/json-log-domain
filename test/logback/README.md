@@ -31,7 +31,7 @@ optionally also using `Class` and `Level` filtering. Import the library using
 ```
 
 ## Pretty-printer
-The test library also contains a JSON [pretty-printer] which is more friendly on the eyes if you are logging JSON to console during testing. For your `logback-test.xml` file, use for example
+The test library contains JSON pretty-printers which is more friendly on the eyes if you are logging JSON to console during testing. For your `logback-test.xml` file, use for example
 
 ```xml
 <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -39,6 +39,6 @@ The test library also contains a JSON [pretty-printer] which is more friendly on
     <provider class="com.github.skjolber.log.domain.utils.configuration.JsonMdcJsonProvider"/>
     
     <!-- add pretty-printing for testing -->
-    <jsonGeneratorDecorator class="com.github.skjolber.log.domain.test.util.PrettyPrintingDecorator"/>
+    <jsonGeneratorDecorator class="com.github.skjolber.decorators.SyntaxHighligtingDecorator"/>
 </encoder>
 ```

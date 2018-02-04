@@ -60,7 +60,8 @@
 		<fluency.version>1.6.0</fluency.version>
 		<stackdriver.version>1.14.0</stackdriver.version>
 		<google-cloud-logging-logback.version>0.32.0-alpha</google-cloud-logging-logback.version>
-		
+		<jackson.version>2.9.3</jackson.version>
+		<logback-logstash-more-decorators.version>1.0.0-SNAPSHOT</logback-logstash-more-decorators.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.11.0</mockito.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -142,6 +143,16 @@
 				<version>${json.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>			
+			<dependency>
 			  <groupId>com.google.cloud</groupId>
 			  <artifactId>google-cloud-logging</artifactId>
 			  <version>${stackdriver.version}</version>
@@ -151,6 +162,11 @@
 				<artifactId>google-cloud-logging-logback</artifactId>
 				<version>${google-cloud-logging-logback.version}</version>
 			</dependency>
+	        <dependency>
+				<groupId>com.github.skjolber.logback-logstash-more-decorators</groupId>
+				<artifactId>logback-logstash-more-decorators</artifactId>	        
+				<version>${logback-logstash-more-decorators.version}</version>
+	        </dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
