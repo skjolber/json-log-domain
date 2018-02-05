@@ -70,8 +70,8 @@
             <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
         <dependency>
-			<groupId>com.github.skjolber.logback-logstash-more-decorators</groupId>
-			<artifactId>logback-logstash-more-decorators</artifactId>
+			<groupId>com.github.skjolber.logback-logstash-syntax-highlighting-decorators</groupId>
+			<artifactId>logback-logstash-syntax-highlighting-decorators</artifactId>
 			<scope>test</scope>
         </dependency>
         <dependency>
