@@ -55,17 +55,22 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<logback.version>1.2.3</logback.version>
 		<logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
-		<json.version>20170516</json.version>
-		
-		<fluency.version>1.6.0</fluency.version>
-		<stackdriver.version>1.14.0</stackdriver.version>
-		<google-cloud-logging-logback.version>0.32.0-alpha</google-cloud-logging-logback.version>
+		<json.version>20180130</json.version>
+		<google.truth.version>0.39</google.truth.version>
+		<fluency.version>1.7.0</fluency.version>
+		<stackdriver.version>1.17.0</stackdriver.version>
+		<google-cloud-logging-logback.version>0.35.0-alpha</google-cloud-logging-logback.version>
 		<jackson.version>2.9.4</jackson.version>
 		<logback-logstash-syntax-highlighting-decorators.version>1.0.0</logback-logstash-syntax-highlighting-decorators.version>
 		<junit.version>4.12</junit.version>
-		<mockito.version>2.11.0</mockito.version>
+		<mockito.version>2.15.0</mockito.version>
 		<hamcrest.version>1.3</hamcrest.version>
-
+		<markdowngenerator.version>1.3.0.0</markdowngenerator.version>
+		<commons-io.version>2.5</commons-io.version>
+		<javapoet.version>1.9.0</javapoet.version>
+		<yamlbeans.version>1.13</yamlbeans.version>
+		<commons-lang3.version>3.7</commons-lang3.version>
+		
 		<!-- plugins -->
 		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
@@ -78,6 +83,7 @@
 		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
 		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<owasp-dependency-check.version>3.1.1</owasp-dependency-check.version>
 	</properties>
 
 	<dependencyManagement>
@@ -167,6 +173,31 @@
 				<artifactId>logback-logstash-syntax-highlighting-decorators</artifactId>	        
 				<version>${logback-logstash-syntax-highlighting-decorators.version}</version>
 	        </dependency>
+	        <dependency>
+	          <groupId>net.steppschuh.markdowngenerator</groupId>
+	          <artifactId>markdowngenerator</artifactId>
+	          <version>${markdowngenerator.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>commons-io</groupId>
+	            <artifactId>commons-io</artifactId>
+	            <version>${commons-io.version}</version>
+	        </dependency>
+	       <dependency>
+	            <groupId>com.squareup</groupId>
+	            <artifactId>javapoet</artifactId>
+	            <version>${javapoet.version}</version>
+	        </dependency>
+			<dependency>
+			  <groupId>org.apache.commons</groupId>
+			  <artifactId>commons-lang3</artifactId>
+			  <version>${commons-lang3.version}</version>
+			</dependency>	        
+	        <dependency>
+	            <groupId>com.esotericsoftware.yamlbeans</groupId>
+	            <artifactId>yamlbeans</artifactId>
+	            <version>${yamlbeans.version}</version>
+	        </dependency>	        
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -182,6 +213,12 @@
 				<artifactId>hamcrest-core</artifactId>
 				<version>${hamcrest.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.google.truth</groupId>
+				<artifactId>truth</artifactId>
+				<version>${google.truth.version}</version>
+			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
 
@@ -288,8 +325,34 @@
 						</execution>
 					</executions>
 				</plugin>
+	            <plugin>
+	              <groupId>org.owasp</groupId>
+	              <artifactId>dependency-check-maven</artifactId>
+	              <version>${owasp-dependency-check.version}</version>
+	              <executions>
+	                  <execution>
+	                      <goals>
+	                          <goal>check</goal>
+	                      </goals>
+	                  </execution>
+	              </executions>
+	            </plugin>
 			</plugins>
 		</pluginManagement>
+		<!-- common plugins -->
+		<plugins>
+           <plugin>
+              <groupId>org.owasp</groupId>
+              <artifactId>dependency-check-maven</artifactId>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+            </plugin>
+		</plugins>
 	</build>
 
 	<modules>
@@ -345,7 +408,7 @@
 			</modules>			
 		</profile>
 	</profiles>
-
+	
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>

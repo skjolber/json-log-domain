@@ -37,7 +37,11 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 	 * alphanumeric characters: {@code [A-Za-z0-9]}; and punctuation characters: {@code _-./}. The
 	 * forward-slash ({@code /}) characters in the log name must be URL-encoded. Examples:
 	 * {@code syslog}, {@code library.googleapis.com%2Fbook_log}.
+	 * 
+	 * @param logName log name
+	 * @return this
 	 */
+	
 	public DomainLogEntryBuilder setLogName(String logName) {
 		super.setLogName(logName);
 		return this;
@@ -48,6 +52,9 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 	 * Sets the monitored resource associated with this log entry. Example: a log entry that reports
 	 * a database error would be associated with the monitored resource designating the particular
 	 * database that reported the error.
+	 * 
+	 * @param resource resource
+	 * @return this
 	 */
 	public DomainLogEntryBuilder setResource(MonitoredResource resource) {
 		super.setResource(resource);
@@ -58,6 +65,8 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 	/**
 	 * Sets the time at which the event described by the log entry occurred, in milliseconds. If
 	 * omitted, the Logging service will use the time at which the log entry is received.
+	 * @param timestamp timestamp
+	 * @return this
 	 */
 	public DomainLogEntryBuilder setTimestamp(long timestamp) {
 		super.setTimestamp(timestamp);
@@ -67,6 +76,8 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 
 	/**
 	 * Sets the time the log entry was received by Stackdriver Logging.
+	 * @param receiveTimestamp receive timestamp 
+	 * @return this
 	 */
 	public DomainLogEntryBuilder setReceiveTimestamp(long receiveTimestamp) {
 		super.setReceiveTimestamp(receiveTimestamp);
@@ -76,6 +87,8 @@ public class DomainLogEntryBuilder extends DefaultBuilder {
 
 	/**
 	 * Sets the severity of the log entry. If not set, {@link Severity#DEFAULT} is used.
+	 * @param severity severity 
+	 * @return this
 	 */
 	public DomainLogEntryBuilder setSeverity(Severity severity) {
 		super.setSeverity(severity);

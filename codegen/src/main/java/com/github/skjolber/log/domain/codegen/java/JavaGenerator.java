@@ -26,9 +26,18 @@ public abstract class JavaGenerator {
 	 * Do not overwrite files if there is no changes.
 	 */
 
-	protected boolean changed(JavaFile tags, Path outputDirectory) throws IOException {
-		if (!tags.packageName.isEmpty()) {
-			for (String packageComponent : tags.packageName.split("\\.")) {
+	/**
+	 * Do not overwrite files if there is no changes.
+	 * 
+	 * @param file file to check
+	 * @param outputDirectory output directory
+	 * @return true if file does not exist or is not equal to the file parameter.
+	 * @throws IOException if io exception occored.
+	 */
+	
+	protected boolean changed(JavaFile file, Path outputDirectory) throws IOException {
+		if (!file.packageName.isEmpty()) {
+			for (String packageComponent : file.packageName.split("\\.")) {
 				outputDirectory = outputDirectory.resolve(packageComponent);
 			}
 			if(Files.notExists(outputDirectory) || !Files.isDirectory(outputDirectory)) {
@@ -36,14 +45,14 @@ public abstract class JavaGenerator {
 			}
 		}
 
-		Path outputPath = outputDirectory.resolve(tags.typeSpec.name + ".java");
+		Path outputPath = outputDirectory.resolve(file.typeSpec.name + ".java");
 		if(Files.notExists(outputPath) || !Files.isRegularFile(outputPath)) {
 			return true;
 		}
 
 		String previous = IOUtils.toString(Files.newInputStream(outputPath), StandardCharsets.UTF_8);
 		StringWriter writer = new StringWriter();
-		tags.writeTo(writer);
+		file.writeTo(writer);
 		return !previous.equals(writer.toString());
 	}
 }
