@@ -119,6 +119,7 @@ public abstract class DomainPayload implements AutoCloseable, Closeable {
 	/**
 	 * Write the equivalent of toString() to a buffer. Subclasses are expected to override this method.
 	 * 
+	 * @param builder the builder to append to
 	 */
 
 	public void writeToString(StringBuilder builder) {

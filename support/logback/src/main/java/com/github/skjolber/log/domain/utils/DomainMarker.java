@@ -145,6 +145,7 @@ public abstract class DomainMarker extends LogstashMarker implements StructuredA
 	/**
 	 * Write the equivalent of toString() to a buffer. Subclasses are expected to override this method.
 	 * 
+	 * @param builder the {@linkplain StringBuilder} which to append to.
 	 */
 
 	public void writeToString(StringBuilder builder) {

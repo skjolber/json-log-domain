@@ -10,7 +10,8 @@ public class DomainLogEntry extends DefaultLogEntry {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Returns a builder for {@code LogEntry} objects given the entry payload.
+	 * Create a new builder for {@code LogEntry} objects given the entry payload.
+	 * @return Returns a builder for {@code LogEntry} objects 
 	 */
 
 	public static DomainLogEntryBuilder newBuilder() {
@@ -19,6 +20,8 @@ public class DomainLogEntry extends DefaultLogEntry {
 
 	/**
 	 * Returns a builder for {@code LogEntry} objects given the entry payload.
+	 * @param payload the payload 
+	 * @return Returns a builder for {@code LogEntry} objects 
 	 */
 
 	public static DomainLogEntryBuilder newBuilder(DomainPayload payload) {

@@ -7,6 +7,9 @@ public class MarkerMatcherBuilder {
 	/**
 	 * Check that all markers contained within the argument is present in a single log statement.
 	 * 
+	 * @param marker the marker to match
+	 * @param <T> any type
+	 * @return newly created matcher
 	 */
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -17,6 +20,10 @@ public class MarkerMatcherBuilder {
 	/**
 	 * 
 	 * Check that all markers contained within the argument is present as MDC in a single log statement.
+	 * 
+	 * @param marker the marker to match
+	 * @param <T> any type
+	 * @return newly created matcher
 	 * 
 	 */
 

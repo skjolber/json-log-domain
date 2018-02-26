@@ -144,7 +144,8 @@ public class GenericMarkerMatcher<T> extends BaseMatcher<T> implements Serializa
     /**
      * Search chained {@linkplain DomainMarker}s for the correct qualifier.
      * 
-     * @param qualifier
+     * @param qualifier the qualifier (field name)
+     * @param marker the target marker
      * @return a marker matching the qualifier, or null if no such exists.
      */
     
