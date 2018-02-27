@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.skjolber</groupId>
     <artifactId>log-domain-elastic-example</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
 	<name>log-domain-elastic-example</name>
 	<description>Example project for Elasticsearch mapping</description>
 	

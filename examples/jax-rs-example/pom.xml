@@ -10,7 +10,7 @@
     
     <groupId>com.github.skjolber</groupId>
     <artifactId>log-domain-jax-rs-example</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
 	<name>log-domain-jax-rs-example</name>
 	<description>Example project for JAX-RS MDC mapping</description>
 	<packaging>jar</packaging>
