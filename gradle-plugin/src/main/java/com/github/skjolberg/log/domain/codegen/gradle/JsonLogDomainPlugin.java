@@ -31,7 +31,7 @@ public class JsonLogDomainPlugin implements Plugin<Project> {
 
 		final JsonLogDomainPluginExtension extension = project.getExtensions().create("jsonLogDomain", JsonLogDomainPluginExtension.class, project);
 
-		String version = extension.getVersion().getOrElse("1.0.3-SNAPSHOT");
+		String version = extension.getVersion().getOrElse("1.0.4-SNAPSHOT");
 
 		MarkdownTask markdownTask = project.getTasks().create("generateMarkdownDocumentation", MarkdownTask.class, (task) -> { 
 			task.definitions = extension.getDefinitions();

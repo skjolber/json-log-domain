@@ -4,7 +4,7 @@ buildscript{
 		mavenLocal()
 		
 	    dependencies {
-	        classpath 'com.github.skjolber.json-log-domain.gradle:log-domain-gradle-plugin:+'
+	        classpath 'com.github.skjolber.json-log-domain.gradle:log-domain-gradle-plugin:1.0.4-SNAPSHOT'
 	    }
 		
     }

@@ -215,9 +215,12 @@ YAML-files are converted to helper classes using `log-domain-maven-plugin`.
 ```
 
 ## Gradle plugin
-Add plugin using
+Add [Gradle plugin] using
+
 ```groovy
-apply plugin: 'com.github.skjolber.json-log-domain'
+plugins {
+  id "com.github.skjolber.json-log-domain" version "1.0.3"
+}
 ```
 
 and configure a `jsonLogDomain` task
@@ -312,3 +315,4 @@ If you do not like this prosject, maybe you'll like
 [test]:                         test
 [Gradle]:						gradle-plugin
 [logbook]:						https://github.com/zalando/logbook
+[Gradle plugin]:				https://plugins.gradle.org/plugin/com.github.skjolber.json-log-domain

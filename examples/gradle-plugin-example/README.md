@@ -1,4 +1,4 @@
 # gradle plugin example
 
 ## build
-./gradlew build
+./gradlew clean build --info

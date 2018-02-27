@@ -5,7 +5,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
+    classpath "com.gradle.publish:plugin-publish-plugin:0.9.10"
   }
 }
 
@@ -16,13 +16,13 @@ plugins {
   id 'eclipse'
   id 'idea'
   id 'java'
-  id "com.gradle.plugin-publish" version "0.9.9"
+  id "com.gradle.plugin-publish" version "0.9.10"
 }
 
 apply from: "$rootDir/gradle/functional-test.gradle"
 
 group 'com.github.skjolber.json-log-domain.gradle'
-version '1.0.3'
+version '1.0.4-SNAPSHOT'
 
 gradlePlugin {
   plugins {
@@ -36,7 +36,7 @@ gradlePlugin {
 dependencies {
 	compile gradleApi()
 	
-    compile('com.github.skjolber.log-domain:log-domain-codegen:1.0.3'){
+    compile('com.github.skjolber.log-domain:log-domain-codegen:1.0.4-SNAPSHOT'){
 	    exclude module: 'logback-classic'
     }
 
@@ -50,19 +50,17 @@ repositories {
     jcenter()
 }
 
-/*
 pluginBundle {
   plugins {
     jsonLogDomainPlugin {
 		  website = 'https://github.com/skjolber/json-log-domain'
 		  vcsUrl = 'https://github.com/skjolber/json-log-domain'
-		  description = 'Library supporting JSON-logging.'
+		  description = 'Library supporting JSON-logging for Logback.'
 		  tags = ['slf4j', 'json', 'stackdriver', 'logback', 'logging']
     
 	      id = 'com.github.skjolber.json-log-domain'
 	      displayName = 'json-log-domain gradle plugin'
-	      version '1.0.3'
+	      version '1.0.4-SNAPSHOT'
     }
   }
 }
-*/
