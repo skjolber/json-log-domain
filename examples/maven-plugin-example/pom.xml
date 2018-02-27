@@ -13,6 +13,7 @@
 
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+		<jackson.version>2.9.4</jackson.version>
 
         <junit.version>4.12</junit.version>
         <mockito.version>2.15.0</mockito.version>
@@ -22,6 +23,21 @@
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
     </properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>			
+		</dependencies>
+	</dependencyManagement>
 
     <dependencies>
         <dependency>
