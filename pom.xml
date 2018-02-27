@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.skjolber.log-domain</groupId>
 	<artifactId>log-domain-parent</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>log-domain-parent</name>
 	<description>Parent for log-domain modules</description>
@@ -31,7 +31,7 @@
 		<connection>scm:git:git@github.com:skjolber/json-log-domain.git</connection>
 		<developerConnection>scm:git:git@github.com:skjolber/json-log-domain.git</developerConnection>
 		<url>git@github.com:skjolber/json-log-domain.git</url>
-	  <tag>log-domain-parent-1.0.3</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>
