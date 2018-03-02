@@ -12,9 +12,9 @@
 	<description>Maven plugin for generating sources</description>
 	
     <properties>
-        <mavenVersion>3.5.0</mavenVersion>
+        <mavenVersion>3.5.2</mavenVersion>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
-        <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
+        <maven-plugin-annotations.version>3.5.1</maven-plugin-annotations.version>
     </properties>
 
     <dependencies>
@@ -63,7 +63,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.2</version>
+                    <version>3.5.1</version>
                     <executions>
                         <execution>
                             <id>mojo-descriptor</id>
@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
-                <version>1.7</version>
+                <version>3.0.1</version>
                 <configuration>
                     <debug>true</debug>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>

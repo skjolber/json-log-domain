@@ -4,9 +4,6 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
 
-/**
- * Created by Daryl on 3/31/2015.
- */
 public class CodeGenTest extends AbstractMojoTestCase {
 
     @Override
