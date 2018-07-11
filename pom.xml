@@ -58,7 +58,7 @@
 		<json.version>20180130</json.version>
 		<google.truth.version>0.39</google.truth.version>
 		<fluency.version>1.7.0</fluency.version>
-		<stackdriver.version>1.23.0</stackdriver.version>
+		<stackdriver.version>1.35.0</stackdriver.version>
 		<google-cloud-logging-logback.version>0.41.0-alpha</google-cloud-logging-logback.version>
 		<jackson.version>2.9.5</jackson.version>
 		<logback-logstash-syntax-highlighting-decorators.version>1.0.1</logback-logstash-syntax-highlighting-decorators.version>
