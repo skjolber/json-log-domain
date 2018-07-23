@@ -60,7 +60,7 @@
 		<fluency.version>1.7.0</fluency.version>
 		<stackdriver.version>1.37.1</stackdriver.version>
 		<google-cloud-logging-logback.version>0.55.1-alpha</google-cloud-logging-logback.version>
-		<jackson.version>2.9.5</jackson.version>
+		<jackson.version>2.9.6</jackson.version>
 		<logback-logstash-syntax-highlighting-decorators.version>1.0.1</logback-logstash-syntax-highlighting-decorators.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.19.0</mockito.version>
