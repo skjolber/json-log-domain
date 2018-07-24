@@ -83,7 +83,7 @@
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
 		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-		<owasp-dependency-check.version>3.1.1</owasp-dependency-check.version>
+		<owasp-dependency-check.version>3.3.0</owasp-dependency-check.version>
 	</properties>
 
 	<dependencyManagement>
