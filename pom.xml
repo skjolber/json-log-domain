@@ -55,7 +55,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<logback.version>1.2.3</logback.version>
 		<logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
-		<json.version>20180130</json.version>
+		<json.version>20180813</json.version>
 		<google.truth.version>0.42</google.truth.version>
 		<fluency.version>1.8.0</fluency.version>
 		<stackdriver.version>1.40.0</stackdriver.version>
