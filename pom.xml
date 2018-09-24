@@ -69,7 +69,7 @@
 		<commons-io.version>2.6</commons-io.version>
 		<javapoet.version>1.11.1</javapoet.version>
 		<yamlbeans.version>1.13</yamlbeans.version>
-		<commons-lang3.version>3.8</commons-lang3.version>
+		<commons-lang3.version>3.8.1</commons-lang3.version>
 		
 		<!-- plugins -->
 		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
