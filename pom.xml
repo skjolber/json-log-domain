@@ -57,7 +57,7 @@
 		<logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
 		<json.version>20180813</json.version>
 		<google.truth.version>0.42</google.truth.version>
-		<fluency.version>1.8.0</fluency.version>
+		<fluency.version>1.8.1</fluency.version>
 		<stackdriver.version>1.48.0</stackdriver.version>
 		<google-cloud-logging-logback.version>0.67.0-alpha</google-cloud-logging-logback.version>
 		<jackson.version>2.9.7</jackson.version>
