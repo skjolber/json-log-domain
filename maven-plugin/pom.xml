@@ -14,7 +14,7 @@
     <properties>
         <mavenVersion>3.5.4</mavenVersion>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
-        <maven-plugin-annotations.version>3.5.2</maven-plugin-annotations.version>
+        <maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
     </properties>
 
     <dependencies>
