@@ -59,7 +59,7 @@
 		<google.truth.version>0.42</google.truth.version>
 		<fluency.version>1.8.1</fluency.version>
 		<stackdriver.version>1.51.0</stackdriver.version>
-		<google-cloud-logging-logback.version>0.68.0-alpha</google-cloud-logging-logback.version>
+		<google-cloud-logging-logback.version>0.69.0-alpha</google-cloud-logging-logback.version>
 		<jackson.version>2.9.7</jackson.version>
 		<logback-logstash-syntax-highlighting-decorators.version>1.0.1</logback-logstash-syntax-highlighting-decorators.version>
 		<junit.version>4.12</junit.version>
