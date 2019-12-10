@@ -52,16 +52,16 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<!-- dependencies -->
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<logback.version>1.2.3</logback.version>
-		<logstash-logback-encoder.version>5.3</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>6.3</logstash-logback-encoder.version>
 		<json.version>20180813</json.version>
-		<google.truth.version>0.42</google.truth.version>
+		<google.truth.version>0.45</google.truth.version>
 		<fluency.version>1.8.1</fluency.version>
-		<stackdriver.version>1.59.0</stackdriver.version>
-		<google-cloud-logging-logback.version>0.79.0-alpha</google-cloud-logging-logback.version>
+		<stackdriver.version>1.77.0</stackdriver.version>
+		<google-cloud-logging-logback.version>0.111.0-alpha</google-cloud-logging-logback.version>
 		<jackson.version>2.9.8</jackson.version>
-		<logback-logstash-syntax-highlighting-decorators.version>1.0.1</logback-logstash-syntax-highlighting-decorators.version>
+		<logback-logstash-syntax-highlighting-decorators.version>1.0.2</logback-logstash-syntax-highlighting-decorators.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.24.0</mockito.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -69,21 +69,21 @@
 		<commons-io.version>2.6</commons-io.version>
 		<javapoet.version>1.11.1</javapoet.version>
 		<yamlbeans.version>1.13</yamlbeans.version>
-		<commons-lang3.version>3.8.1</commons-lang3.version>
+		<commons-lang3.version>3.9</commons-lang3.version>
 		
 		<!-- plugins -->
 		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
 		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
 		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-		<owasp-dependency-check.version>4.0.2</owasp-dependency-check.version>
+		<owasp-dependency-check.version>5.0.0</owasp-dependency-check.version>
 	</properties>
 
 	<dependencyManagement>
