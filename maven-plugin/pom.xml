@@ -12,7 +12,7 @@
 	<description>Maven plugin for generating sources</description>
 	
     <properties>
-        <mavenVersion>3.6.1</mavenVersion>
+        <mavenVersion>3.8.2</mavenVersion>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
         <maven-plugin-annotations.version>3.5.2</maven-plugin-annotations.version>
     </properties>
